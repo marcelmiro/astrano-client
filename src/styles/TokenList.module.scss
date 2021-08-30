@@ -1,0 +1,93 @@
+@use "token" as *;
+
+.container {
+	@extend .container;
+	display: flex;
+	flex-flow: row nowrap;
+	& + & {
+		margin-top: 1.25rem;
+	}
+}
+
+.image {
+	@extend .image;
+	margin-right: 1.25rem;
+}
+
+.content {
+	flex: 1 0 0;
+	overflow: hidden;
+}
+
+.upperRow,
+.lowerRow {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-between;
+}
+.upperRow {
+	align-items: flex-start;
+}
+.lowerRow {
+	align-items: flex-end;
+}
+
+.info {
+	overflow: hidden;
+}
+.nameContainer {
+	@extend .nameContainer;
+}
+.name {
+	@extend .name;
+	font-size: 1.25rem;
+}
+.ticker {
+	@extend .ticker;
+	margin-right: 0.625rem;
+	span {
+		font-size: 0.875rem;
+	}
+}
+.author {
+	@extend .author;
+}
+
+.tags {
+	margin-top: 0.375rem;
+	margin-right: 0.625rem;
+	flex: 1 0 0;
+	position: relative;
+	white-space: nowrap;
+	overflow: hidden;
+	&::after {
+		content: '';
+		width: 3.125rem;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		right: 0;
+		background: linear-gradient(
+			90deg,
+			transparent,
+			rgb(var(--background-200))
+		);
+	}
+}
+.tag {
+	@extend .tag;
+	& + & {
+		margin-left: 0.313rem;
+	}
+}
+
+.price {
+	@extend .price;
+	font-size: 1.125rem;
+	overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.likes {
+	@extend .likes;
+}

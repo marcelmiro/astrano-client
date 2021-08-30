@@ -1,0 +1,239 @@
+.container {
+	width: 16rem;
+	margin-right: 6.25rem;
+}
+
+.action + .action {
+	margin-top: 1.5rem;
+}
+
+.divider {
+	width: 100%;
+	height: 0.063rem;
+	background-color: rgb(var(--primary-700));
+	margin: 1.5rem 0;
+}
+
+.filters {
+	margin-top: 3rem;
+}
+.filter + .filter {
+	margin-top: 1.5rem;
+}
+.filterContainer {
+	width: 100%;
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: flex-start;
+}
+
+.item {
+	font-weight: 400;
+	font-size: 0.875rem;
+	color: rgb(var(--primary));
+	padding-right: 0.25rem;
+	cursor: pointer;
+	display: flex;
+	flex-flow: row nowrap;
+	input[type='radio'] {
+		position: absolute;
+		opacity: 0;
+		cursor: pointer;
+		height: 0;
+		width: 0;
+		&:checked + .radio {
+			border-color: rgb(var(--primary-accent-700));
+			&::after {
+				opacity: 1;
+			}
+		}
+	}
+	&:hover .radio {
+		border-color: rgb(var(--primary-450));
+	}
+	& + & {
+		margin-top: 0.313rem;
+	}
+}
+.radio {
+	width: 1rem;
+	min-width: 1rem;
+	height: 1rem;
+	margin-right: 0.5rem;
+	border: 0.063rem solid rgb(var(--primary-500));
+	border-radius: 50%;
+	position: relative;
+	top: 0.125rem;
+	transition: border-color 0.16s;
+	&::after {
+		content: '';
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 50%;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		opacity: 0;
+		transition: opacity 0.16s;
+		background: rgb(var(--primary-accent-700));
+		background: -moz-radial-gradient(
+			66.67% 66.67% at 50% 50%,
+			rgb(var(--primary-accent-700)) 0%,
+			rgb(var(--primary-accent)) 100%
+		);
+		background: -webkit-radial-gradient(
+			66.67% 66.67% at 50% 50%,
+			rgb(var(--primary-accent-700)) 0%,
+			rgb(var(--primary-accent)) 100%
+		);
+		background: radial-gradient(
+			66.67% 66.67% at 50% 50%,
+			rgb(var(--primary-accent-700)) 0%,
+			rgb(var(--primary-accent)) 100%
+		);
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#{rgb(var(--primary-accent-700))}",endColorstr="#{rgb(var(--primary-accent))}",GradientType=1);
+	}
+}
+
+.customItem {
+	margin-top: 1rem;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	span {
+		font-weight: 400;
+		font-size: 0.875rem;
+		margin: 0 0.625rem;
+	}
+}
+.customLabel {
+	width: 4.5rem;
+	height: 1.75rem;
+	background-color: rgb(var(--background-200));
+	color: rgb(var(--primary-500));
+	font-weight: 400;
+	font-size: 0.875rem;
+	border-radius: 0.3125rem;
+	padding-left: 0.5rem;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	overflow: hidden;
+	position: relative;
+	z-index: 1;
+}
+.customInput {
+	min-width: 0;
+	height: 100%;
+	color: rgb(var(--primary));
+	background: none;
+	font-family: inherit;
+	font-weight: 400;
+	font-size: 0.875rem;
+	margin: 0 0.25rem;
+	flex: 1 0 0;
+	outline: none;
+	border: none;
+	-moz-appearance: textfield;
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+}
+.customLabel:focus-within .inputBorder {
+	opacity: 1;
+}
+.customSubmit {
+	width: 0.875rem;
+	height: 0.875rem;
+	margin-left: 0.5rem;
+	padding: 0.125rem;
+	box-sizing: content-box;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	svg {
+		width: 100%;
+		height: 100%;
+		&,
+		path {
+			fill: rgb(var(--primary));
+			transition: fill 0.1s;
+		}
+	}
+	&:hover svg {
+		&,
+		path {
+			fill: rgb(var(--primary-500));
+		}
+	}
+}
+.customError {
+	margin-top: 0.5rem;
+	font-weight: 400;
+	font-size: 0.75rem;
+	color: rgb(var(--error));
+	display: flex;
+	flex-flow: row nowrap;
+	svg {
+		width: 0.75rem;
+		min-width: 0.75rem;
+		height: 0.75rem;
+		margin-right: 0.375rem;
+		position: relative;
+		top: 0.188rem;
+		&, path {
+			fill: rgb(var(--error));
+		}
+	}
+}
+
+.reset {
+	font-weight: 400;
+	font-size: 1rem;
+	color: rgb(var(--primary-450));
+	cursor: pointer;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	transition: color 0.16s;
+	svg {
+		width: 0.875rem;
+		min-width: 0.875rem;
+		height: 0.875rem;
+		margin-right: 0.5rem;
+	}
+	svg,
+	path {
+		fill: rgb(var(--primary-450));
+		transition: fill 0.16s;
+	}
+	&:hover {
+		color: rgb(var(--primary));
+		svg,
+		path {
+			fill: rgb(var(--primary));
+		}
+	}
+}
+
+.footer {
+	margin-top: 2rem;
+	display: flex;
+	flex-flow: row wrap;
+	gap: 0.625rem 0.813rem;
+	* {
+		font-weight: 400;
+		font-size: 0.813rem;
+		color: rgb(var(--primary-500));
+	}
+	a {
+		transition: color 0.16s;
+		&:hover {
+			color: rgb(var(--primary-450));
+		}
+	}
+}

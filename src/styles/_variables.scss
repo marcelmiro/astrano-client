@@ -1,0 +1,62 @@
+$background: #0f0e13;
+$background-300: #1a1a21;
+$background-200: #24262e;
+$background-100: #3a3f4a;
+$primary: white;
+$primary-450: #cad8ed;
+$primary-500: #93a3bb;
+$primary-700: #353c47;
+$primary-accent: #cc92f9;
+$primary-accent-700: #b75bf7;
+$secondary-accent: #5795f9;
+$secondary-accent-300: #a5a4f9;
+$secondary-accent-500: #435bf9;
+$secondary-accent-700: #1521f8;
+$error: #ef466f;
+
+$themeTransition: 0.16s;
+
+$themes: (
+	dark: (
+		background: '15, 14, 19',
+		background-300: '26, 26, 33',
+		background-200: '36, 38, 46',
+		background-100: '58, 63, 74',
+		primary: '255, 255, 255',
+		primary-450: '202, 216, 237',
+		primary-500: '147, 163, 187',
+		primary-700: '53, 60, 71',
+		primary-accent: '204, 146, 249',
+		primary-accent-700: '183, 91, 247',
+		secondary-accent: '87, 149, 249',
+		secondary-accent-300: '165, 164, 249',
+		secondary-accent-500: '67, 91, 249',
+		secondary-accent-700: '21, 33, 248',
+		error: '239, 70, 111',
+	),
+	light: (
+		background: '255, 255, 255',
+		primary: '22, 25, 30',
+		primary-450: '59, 65, 74',
+		primary-500: '95, 105, 120',
+		primary-700: '200, 216, 241',
+		primary-accent: '204, 146, 249',
+		primary-accent-700: '183, 91, 247',
+		secondary-accent: '87, 149, 249',
+		secondary-accent-300: '165, 164, 249',
+		secondary-accent-500: '67, 91, 249',
+		secondary-accent-700: '21, 33, 248',
+	),
+);
+
+:root {
+	@each $name, $color in map-get($themes, 'dark') {
+		--#{$name}: #{$color};
+	}
+}
+
+html.light-theme {
+	@each $name, $color in map-get($themes, 'light') {
+		--#{$name}: #{$color};
+	}
+}

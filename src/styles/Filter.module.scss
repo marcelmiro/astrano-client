@@ -1,0 +1,28 @@
+.button {
+	font-weight: 400;
+	font-size: 0.875rem;
+	color: rgb(var(--primary-500));
+	padding-right: 0.25rem;
+	margin-bottom: 0.75rem;
+	cursor: pointer;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	transition: color 0.16s;
+	svg {
+		width: 0.625rem;
+		height: 0.625rem;
+		margin-right: 0.625rem;
+		transition: transform 0.36s;
+	}
+	svg,
+	path {
+		fill: rgb(var(--primary));
+	}
+	&:hover {
+		color: rgb(var(--primary-450));
+	}
+}
+.open .button svg {
+	transform: rotate(-180deg);
+}

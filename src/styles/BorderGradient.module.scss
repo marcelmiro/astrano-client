@@ -1,0 +1,66 @@
+.border {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: -1;
+	opacity: 0;
+	transition: opacity 0.1s ease-in-out;
+	rect {
+		$stroke-width: 0.125rem;
+		stroke-width: $stroke-width;
+		width: calc(100% - #{$stroke-width});
+		height: calc(100% - #{$stroke-width});
+		transform: translate(
+			calc(#{$stroke-width} / 2),
+			calc(#{$stroke-width} / 2)
+		);
+	}
+	stop {
+		transition: stop-color 0.16s ease-in-out;
+	}
+}
+.strokeStop1 {
+	stop-color: rgb(var(--primary-accent));
+}
+.strokeStop2 {
+	stop-color: rgb(var(--primary-accent-700));
+}
+.fillStop1,
+.fillStop2 {
+	stop-color: transparent;
+}
+
+.borderWidth1 rect {
+	$stroke-width: 0.063rem;
+	stroke-width: $stroke-width;
+	width: calc(100% - #{$stroke-width});
+	height: calc(100% - #{$stroke-width});
+	transform: translate(
+		calc(#{$stroke-width} / 2),
+		calc(#{$stroke-width} / 2)
+	);
+}
+.borderWidth3 rect {
+	$stroke-width: 0.188rem;
+	stroke-width: $stroke-width;
+	width: calc(100% - #{$stroke-width});
+	height: calc(100% - #{$stroke-width});
+	transform: translate(
+		calc(#{$stroke-width} / 2),
+		calc(#{$stroke-width} / 2)
+	);
+}
+.borderWidth4 rect {
+	$stroke-width: 0.25rem;
+	stroke-width: $stroke-width;
+	width: calc(100% - #{$stroke-width});
+	height: calc(100% - #{$stroke-width});
+	transform: translate(
+		calc(#{$stroke-width} / 2),
+		calc(#{$stroke-width} / 2)
+	);
+}

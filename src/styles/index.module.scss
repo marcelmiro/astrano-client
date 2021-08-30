@@ -1,0 +1,23 @@
+.wrapper {
+	width: 100%;
+	max-width: 75rem;
+	margin: 0 auto;
+}
+
+.container {
+	margin: 5rem 0;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: flex-start;
+}
+
+.tokensContainer {
+	flex: 1 0 0;
+	overflow: hidden;
+}
+
+.tokenCards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+}

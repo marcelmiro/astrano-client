@@ -1,0 +1,115 @@
+.container {
+	width: 100%;
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: flex-start;
+}
+
+.item {
+	font-weight: 400;
+	font-size: 0.875rem;
+	color: rgb(var(--primary));
+	padding-right: 0.25rem;
+	cursor: pointer;
+	display: flex;
+	flex-flow: row nowrap;
+	input[type='checkbox'] {
+		position: absolute;
+		opacity: 0;
+		cursor: pointer;
+		height: 0;
+		width: 0;
+		&:checked + .checkbox {
+			border-color: transparent;
+			.checkboxIcon,
+			.checkboxBackground {
+				opacity: 1;
+			}
+		}
+	}
+	&:hover .checkbox {
+		border-color: rgb(var(--primary-450));
+	}
+	& + & {
+		margin-top: 0.313rem;
+	}
+}
+.checkbox {
+	width: 1rem;
+	min-width: 1rem;
+	height: 1rem;
+	margin-right: 0.5rem;
+	border: 0.063rem solid rgb(var(--primary-500));
+	border-radius: 0.25rem;
+	position: relative;
+	top: 0.125rem;
+	transition: border-color 0.16s;
+}
+.checkboxIcon {
+	width: 0.625rem;
+	height: 0.625rem;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 1;
+	opacity: 0;
+	transition: opacity 0.16s;
+	path {
+		fill: white;
+	}
+}
+.checkboxBackground {
+	width: 1rem;
+	height: 1rem;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	border-radius: 0.25rem;
+	opacity: 0;
+	background: rgb(var(--primary-accent-700));
+	background: -moz-radial-gradient(
+		66.67% 66.67% at 50% 50%,
+		rgb(var(--primary-accent-700)) 0%,
+		rgb(var(--primary-accent)) 100%
+	);
+	background: -webkit-radial-gradient(
+		66.67% 66.67% at 50% 50%,
+		rgb(var(--primary-accent-700)) 0%,
+		rgb(var(--primary-accent)) 100%
+	);
+	background: radial-gradient(
+		66.67% 66.67% at 50% 50%,
+		rgb(var(--primary-accent-700)) 0%,
+		rgb(var(--primary-accent)) 100%
+	);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#{rgb(var(--primary-accent-700))}",endColorstr="#{rgb(var(--primary-accent))}",GradientType=1);
+	transition: opacity 0.16s;
+}
+
+.viewMore {
+	margin-top: 0.625rem;
+	font-weight: 400;
+	font-size: 0.875rem;
+	color: rgb(var(--primary-450));
+	cursor: pointer;
+	transition: color 0.16s;
+	svg {
+		width: 0.563rem;
+		height: 0.563rem;
+		margin-right: 0.313rem;
+	}
+	svg,
+	path {
+		fill: rgb(var(--primary-450));
+		transition: fill 0.16s;
+	}
+	&:hover {
+		color: rgb(var(--primary));
+		svg,
+		path {
+			fill: rgb(var(--primary));
+		}
+	}
+}

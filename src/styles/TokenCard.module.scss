@@ -1,0 +1,71 @@
+@use "token" as *;
+
+.container {
+	@extend .container;
+	position: relative;
+	overflow: hidden;
+}
+
+.content {
+	max-width: 11.5rem;
+	margin: 0 auto;
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: flex-start;
+}
+
+.image {
+	@extend .image;
+	margin: 0 auto;
+	z-index: 1;
+}
+
+.nameContainer {
+	@extend .nameContainer;
+	margin-top: 1.25rem;
+}
+.name {
+	@extend .name;
+}
+.ticker {
+	@extend .ticker;
+}
+.author {
+	@extend .author;
+}
+
+.tags {
+	margin: 0.625rem -0.15625rem 0;
+	max-height: 4.687rem;
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	flex-flow: row wrap;
+	&::after {
+		content: '';
+		width: 100%;
+		height: 1.25rem;
+		position: absolute;
+		top: 3.375rem;
+		left: 0;
+		background: linear-gradient(transparent, rgb(var(--background-200)));
+	}
+}
+.tag {
+	@extend .tag;
+	margin: 0.15625rem;
+	white-space: nowrap;
+}
+
+.price {
+	@extend .price;
+	margin-top: 0.625rem;
+	word-break: break-all;
+}
+
+.likes {
+	@extend .likes;
+	position: absolute;
+	top: 1.25rem;
+	right: 1.25rem;
+}
