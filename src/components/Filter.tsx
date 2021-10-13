@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import classNames from 'classnames'
 
-import ArrowHead from '../../public/arrowhead.svg'
-import styles from '../styles/Filter.module.scss'
+import ArrowHead from '@/public/arrowhead.svg'
+import styles from '@/styles/Filter.module.scss'
 
 interface FilterProps {
 	title: string

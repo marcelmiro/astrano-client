@@ -1,54 +1,45 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState /* useEffect, useRef */ } from 'react'
 import classNames from 'classnames'
 
-import Navbar from '../components/Navbar'
-import FilterPanel from '../components/FilterPanel'
-import TokenList from '../components/TokenList'
-import TokenCard from '../components/TokenCard'
-
 import {
+	pagesMetaData,
 	sort as sortObject,
 	view as viewObject,
-	priceFilter as priceFilterObject,
-	tokenFilter as tokenFilterObject,
-	projectFilter as projectFilterObject,
+	// priceFilter as priceFilterObject,
+	// tokenFilter as tokenFilterObject,
+	// projectFilter as projectFilterObject,
 	// otherFilter as otherFilterObject
-} from '../../public/constants'
-import tokens from '../../public/tokens.json'
+} from '@/constants'
+import Meta from '@/components/Meta'
+import Navbar from '@/components/Navbar'
+import FilterPanel from '@/components/FilterPanel'
+import ProjectListing from '@/components/ProjectListing'
+import ProjectCard from '@/components/ProjectCard'
 
-import styles from '../styles/index.module.scss'
+import projects from '@/public/projects.json'
+import styles from '@/styles/index.module.scss'
 
-interface IPriceFilter {
+/* interface IPriceFilter {
 	min?: number
 	max?: number
-}
+} */
 
-export default function Home() {
+export default function Index() {
 	const [sort, setSort] = useState('')
 	const [view, setView] = useState('')
-	const [priceFilter, setPriceFilter] = useState<IPriceFilter>({})
-	const [tokenFilter, setTokenFilter] = useState<string[]>([])
-	const [projectFilter, setProjectFilter] = useState<string[]>([])
+	// const [priceFilter, setPriceFilter] = useState<IPriceFilter>({})
+	// const [tokenFilter, setTokenFilter] = useState<string[]>([])
+	// const [projectFilter, setProjectFilter] = useState<string[]>([])
 	// const [otherFilter, setOtherFilter] = useState<string[]>([])
-	const isMounted = useRef(false)
+	// const isMounted = useRef(false)
 
 	/* useEffect(() => {
 		if (!isMounted.current) return
-		console.log('New sort mode: ' + sort)
-	}, [sort])
-	useEffect(() => {
-		if (!isMounted.current) return
 		console.log('New view mode: ' + view)
-	}, [view]) */
-	/* useEffect(() => {
-		if (!isMounted.current) return
-		console.log(tokenFilter)
-	}, [tokenFilter]) */
+	}, [view])
 	useEffect(() => {
-		// if (!isMounted.current) return
-		console.log(priceFilter)
-	}, [priceFilter])
-	useEffect(() => { isMounted.current = true }, [])
+		isMounted.current = true
+	}, []) */
 
 	const FilterPanelProps = {
 		sort: {
@@ -63,7 +54,7 @@ export default function Home() {
 			items: viewObject.items,
 			storage: viewObject.storage,
 		},
-		priceFilter: {
+		/* priceFilter: {
 			title: 'Price',
 			setter: setPriceFilter,
 			items: priceFilterObject.items,
@@ -81,7 +72,7 @@ export default function Home() {
 			items: projectFilterObject.items,
 			query: projectFilterObject.query,
 		},
-		/* otherFilter: {
+		otherFilter: {
 			title: 'Other',
 			setter: setOtherFilter,
 			items: otherFilterObject.items,
@@ -90,33 +81,45 @@ export default function Home() {
 	}
 
 	return (
-		<div className={styles.wrapper}>
+		<>
+			<Meta
+				title={pagesMetaData.index.title}
+				description={pagesMetaData.index.description}
+			/>
+
 			<Navbar />
+
 			<div className={styles.container}>
 				<FilterPanel
 					sort={FilterPanelProps.sort}
 					view={FilterPanelProps.view}
-					priceFilter={FilterPanelProps.priceFilter}
-					tokenFilter={FilterPanelProps.tokenFilter}
-					projectFilter={FilterPanelProps.projectFilter}
+					// priceFilter={FilterPanelProps.priceFilter}
+					// tokenFilter={FilterPanelProps.tokenFilter}
+					// projectFilter={FilterPanelProps.projectFilter}
 					// otherFilter={FilterPanelProps.otherFilter}
 				/>
 
 				<div
-					className={classNames(styles.tokensContainer, {
-						[styles.tokenCards]: view === 'card',
+					className={classNames(styles.projectsContainer, {
+						[styles.projectCards]: view === 'card',
 					})}
 				>
-					{tokens &&
+					{projects &&
 						(view === 'card'
-							? tokens.map((token) => (
-									<TokenCard {...token} key={token.id} />
+							? projects.map((project) => (
+									<ProjectCard
+										{...project}
+										key={project.id}
+									/>
 							  ))
-							: tokens.map((token) => (
-									<TokenList {...token} key={token.id} />
+							: projects.map((project) => (
+									<ProjectListing
+										{...project}
+										key={project.id}
+									/>
 							  )))}
 				</div>
 			</div>
-		</div>
+		</>
 	)
 }

@@ -1,7 +1,7 @@
 .button {
 	font-weight: 400;
 	font-size: 0.875rem;
-	color: rgb(var(--primary-500));
+	color: rgb(var(--primary-400));
 	padding-right: 0.25rem;
 	margin-bottom: 0.75rem;
 	cursor: pointer;
@@ -20,7 +20,7 @@
 		fill: rgb(var(--primary));
 	}
 	&:hover {
-		color: rgb(var(--primary-450));
+		color: rgb(var(--primary-200));
 	}
 }
 .open .button svg {

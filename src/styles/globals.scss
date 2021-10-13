@@ -27,3 +27,9 @@ body {
 	position: relative;
 	// overflow-x: hidden; // Prevents position sticky from working
 }
+
+.wrapper {
+	width: 100%;
+	max-width: 75rem;
+	margin: 0 auto 5rem;
+}

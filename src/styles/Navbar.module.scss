@@ -1,7 +1,8 @@
 .header {
 	width: 100%;
 	margin-top: 2.625rem;
-	z-index: 10;
+	margin: 2.625rem 0 5rem;
+	z-index: 5;
 }
 
 .container {
@@ -33,16 +34,21 @@
 	width: 31.25rem;
 	height: 100%;
 	position: relative;
-	background-color: rgb(var(--background-200));
+	background-color: rgb(var(--primary-700));
 	border-radius: 0.5rem;
 	cursor: text;
 	z-index: 0;
+	border: 0.125rem solid transparent;
+	transition: border-color 0.1s;
+	&:focus-within {
+		border-color: rgb(var(--purple-accent));
+	}
 }
 .searchLabel {
-    height: 100%;
+	height: 100%;
 	padding-left: 1.5rem;
 	cursor: text;
-    display: flex;
+	display: flex;
 	flex-flow: row nowrap;
 	align-items: center;
 	svg {
@@ -62,21 +68,18 @@
 	outline: none;
 	border: none;
 	&::placeholder {
-		color: rgb(var(--primary-500));
+		color: rgb(var(--primary-400));
 		font-weight: 400;
 		font-size: 1rem;
 	}
 }
 .searchIcon {
-	color: rgb(var(--primary-500));
+	color: rgb(var(--primary-400));
 	width: 1rem;
 	height: 1rem;
 	path {
-		fill: rgb(var(--primary-500));
+		fill: rgb(var(--primary-400));
 	}
-}
-.searchLabel:focus-within + .searchBorder {
-    opacity: 1;
 }
 
 .nav {
@@ -87,12 +90,89 @@
 	width: 1.25rem;
 	height: 1.25rem;
 	path {
+		fill: rgb(var(--primary));
 		transition: fill 0.16s ease-in-out;
 	}
 	& + & {
 		margin-left: 1.5rem;
 	}
 	&:not(.navActive):hover path {
-		fill: rgb(var(--primary-450));
+		fill: rgb(var(--primary-200));
 	}
+}
+
+.userIcon {
+	position: relative;
+}
+.userButton {
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+}
+
+.dropdownContainer {
+	min-width: 100%;
+	background-color: rgb(var(--primary-700));
+	border-radius: 0.5rem;
+	padding: 0.313rem;
+	position: absolute;
+	top: calc(100% + 1rem);
+	left: 0;
+	z-index: 7;
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: flex-start;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(1rem);
+	transition: all 0.3s;
+	box-shadow: 0 1rem 2rem 0 rgba(var(--primary-800), 0.5);
+	&.open {
+		visibility: visible;
+		opacity: 1;
+		transform: translateY(0);
+	}
+	&.rightAlign {
+		left: auto;
+		right: -0.188rem;
+	}
+}
+.dropdownItem {
+	min-width: 100%;
+	height: 2.5rem;
+	padding: 0 0.625rem;
+	border-radius: 0.5rem;
+	font-weight: 400;
+	font-size: 0.875rem;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	white-space: nowrap;
+	span {
+		white-space: nowrap;
+	}
+	svg {
+		width: 0.875rem;
+		height: 0.875rem;
+		fill: rgb(var(--primary));
+		margin-right: 0.875rem;
+	}
+	&:not(.noHover) {
+		cursor: pointer;
+		transition: background-color 0.1s ease-in-out;
+		&:hover {
+			background-color: rgb(var(--primary-800));
+		}
+	}
+}
+
+.themeButton {
+	margin-right: 1.25rem;
+	cursor: default;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }

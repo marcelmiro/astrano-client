@@ -1,4 +1,4 @@
-@use "token" as *;
+@use "project" as *;
 
 .container {
 	@extend .container;
@@ -42,8 +42,8 @@
 	@extend .name;
 	font-size: 1.25rem;
 }
-.ticker {
-	@extend .ticker;
+.symbol {
+	@extend .symbol;
 	margin-right: 0.625rem;
 	span {
 		font-size: 0.875rem;
@@ -70,15 +70,12 @@
 		background: linear-gradient(
 			90deg,
 			transparent,
-			rgb(var(--background-200))
+			rgb(var(--primary-700))
 		);
 	}
 }
 .tag {
 	@extend .tag;
-	& + & {
-		margin-left: 0.313rem;
-	}
 }
 
 .price {

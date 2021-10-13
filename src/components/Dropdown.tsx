@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import classNames from 'classnames'
 
-import { getItem, setItem } from '../helpers/localStorage'
-import BorderGradient from './BorderGradient'
-import ArrowHead from '../../public/arrowhead.svg'
-import styles from '../styles/Dropdown.module.scss'
+import { getItem, setItem } from '@/helpers/localStorage'
+import { handleBlur } from '@/utils/element'
+
+import ArrowHead from '@/public/arrowhead.svg'
+import styles from '@/styles/Dropdown.module.scss'
 
 interface IItem {
 	label: string
@@ -14,7 +15,7 @@ interface IItem {
 
 interface DropdownProps {
 	value?: IItem['value']
-	onChange?: (value: string) => void
+	onChange?(value: string): void
 	items: IItem[]
 	storage?: string
 	className?: string
@@ -66,16 +67,6 @@ export default function Dropdown({
 	const toggleOpen = () => setOpen((open) => !open)
 	const isMounted = useRef(false)
 
-	// https://gist.github.com/pstoica/4323d3e6e37e8a23dd59
-	const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-		const currentTarget = e.currentTarget
-		setTimeout(() => {
-			if (!currentTarget.contains(document.activeElement)) {
-				setOpen(false)
-			}
-		}, 0)
-	}
-
 	const handleClick = (item: IItem) => {
 		if (onChange) onChange(item.value)
 		if (storage) setItem(storage, item.value)
@@ -106,7 +97,7 @@ export default function Dropdown({
 			className={classNames(styles.container, className, {
 				[styles.open]: open,
 			})}
-			onBlur={handleBlur}
+			onBlur={(e) => handleBlur(e, () => setOpen(false))}
 		>
 			<button className={styles.button} onClick={toggleOpen}>
 				{defaultItem.labelIcon && (
@@ -116,7 +107,6 @@ export default function Dropdown({
 				)}
 				<span>{defaultItem.label}</span>
 				<ArrowHead className={styles.buttonArrow} />
-				<BorderGradient className={styles.buttonBorder} />
 			</button>
 
 			<div className={styles.content}>

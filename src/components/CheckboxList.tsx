@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
+import classNames from 'classnames'
 
-import { getItem, addItems } from '../helpers/urlQuery'
+import { getItem, addItems } from '@/helpers/urlQuery'
 
-import CheckVector from '../../public/check.svg'
-import ArrowHead from '../../public/arrowhead.svg'
-import styles from '../styles/CheckboxList.module.scss'
+import CheckVector from '@/public/check.svg'
+import ArrowHead from '@/public/arrowhead.svg'
+import styles from '@/styles/CheckboxList.module.scss'
 
 interface IItem {
 	label: string
@@ -16,13 +17,23 @@ interface IItem {
 interface CheckboxListProps {
 	title: string
 	items: IItem[]
-	onChange?: (data: IItem['value'][]) => void
+	onChange?(data: IItem['value'][]): void
 	maxShownItems?: number
+	maxCheckedItems?: number
 	query?: string
+	className?: string
 }
 
 export default React.forwardRef(function CheckboxList(
-	{ title, items, onChange, maxShownItems, query }: CheckboxListProps,
+	{
+		title,
+		items,
+		onChange,
+		maxShownItems,
+		maxCheckedItems,
+		query,
+		className,
+	}: CheckboxListProps,
 	ref: React.Ref<unknown>
 ) {
 	const router = useRouter()
@@ -86,11 +97,18 @@ export default React.forwardRef(function CheckboxList(
 			...item,
 			checked: itemIndex === index ? !item.checked : item.checked,
 		}))
+		if (
+			maxCheckedItems &&
+			newData[index].checked &&
+			newData.filter((item) => item.checked).length > maxCheckedItems
+		) {
+			return
+		}
 		setData(newData)
 	}
 
 	return (
-		<div className={styles.container}>
+		<div className={classNames(styles.container, className)}>
 			{data &&
 				data.length > 0 &&
 				data
@@ -113,7 +131,6 @@ export default React.forwardRef(function CheckboxList(
 							/>
 							<div className={styles.checkbox}>
 								<CheckVector className={styles.checkboxIcon} />
-								<div className={styles.checkboxBackground} />
 							</div>
 							{label}
 						</label>

@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 
-import styles from '../styles/BorderGradient.module.scss'
+import styles from '@/styles/BorderGradient.module.scss'
 
 interface BorderGradientProps {
 	borderWidth?: number

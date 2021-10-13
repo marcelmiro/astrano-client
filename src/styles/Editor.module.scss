@@ -1,0 +1,64 @@
+.container {
+	border-radius: 0.5rem;
+	overflow: hidden;
+}
+
+.toolbox {
+	width: 100%;
+	padding: 0 0.5rem;
+	background-color: rgb(var(--primary-800));
+	display: flex;
+	flex-flow: row wrap;
+	align-items: center;
+}
+.toolboxButton {
+	width: 2.625rem;
+	height: 2.625rem;
+	font-weight: 400;
+	font-size: 1rem;
+	color: rgb(var(--primary-100));
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	transition: background-color 0.16s;
+	svg {
+		width: 1rem;
+		height: 1rem;
+		&,
+		path {
+			fill: rgb(var(--primary-100));
+		}
+	}
+	&:hover,
+	&.active {
+		background-color: rgb(var(--primary-600));
+	}
+}
+
+.editor {
+	width: 100%;
+	padding: 0.875rem;
+	cursor: text;
+	:global(.public-DraftEditor-content) {
+		min-height: min(10rem, 80vh);
+		cursor: text;
+	}
+	@extend .editorStyles;
+}
+.editorStyles {
+	font-weight: 400;
+	font-size: 0.875rem;
+	h1 {
+		font-weight: 600;
+		font-size: 1.5rem;
+	}
+	h2 {
+		font-weight: 600;
+		font-size: 1.25rem;
+	}
+	h3 {
+		font-weight: 500;
+		font-size: 1.125rem;
+	}
+}

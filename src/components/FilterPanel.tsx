@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react'
-import { useRouter, NextRouter } from 'next/router'
+import React, { /* useState, useEffect */ } from 'react'
+// import { useRouter, NextRouter } from 'next/router'
 import Link from 'next/link'
 
-import { getItems, addItems } from '../helpers/urlQuery'
+// import { getItems, addItems } from '@/helpers/urlQuery'
+import Dropdown from '@/components/Dropdown'
+// import Filter from '@/components/Filter'
 
-import Dropdown from './Dropdown'
-import Filter from './Filter'
-import CheckboxList from './CheckboxList'
-import BorderGradient from './BorderGradient'
-import ArrowVector from '../../public/arrow.svg'
-import CrossVector from '../../public/cross.svg'
-import ExclamationVector from '../../public/exclamation.svg'
-import styles from '../styles/FilterPanel.module.scss'
+// import CheckboxList from '@/components/CheckboxList'
+// import ArrowVector from '@/public/arrow.svg'
+// import CrossVector from '@/public/cross-filled.svg'
+// import ExclamationVector from '@/public/exclamation.svg'
+import styles from '@/styles/FilterPanel.module.scss'
 
 interface IDropdown {
 	value?: string
-	setter: (value: any) => void
+	setter(value: any): void
 	items: Array<{
 		label: string
 		value: string
@@ -24,9 +23,9 @@ interface IDropdown {
 	storage?: string
 }
 
-interface IFilter {
+/* interface IFilter {
 	title: string
-	setter: (value: any) => void
+	setter(value: any): void
 	items: Array<{
 		label: string
 		value: string
@@ -38,27 +37,27 @@ interface IPriceItem {
 	label: string
 	min?: number
 	max?: number
-}
+} */
 
-interface IPriceFilter extends Omit<IFilter, 'items'> {
+/* interface IPriceFilter extends Omit<IFilter, 'items'> {
 	items: IPriceItem[]
-}
+} */
 
 interface FilterPanelProps {
 	sort: IDropdown
 	view: IDropdown
-	priceFilter: IPriceFilter
-	tokenFilter: IFilter
-	projectFilter: IFilter
+	// priceFilter: IPriceFilter
+	// tokenFilter: IFilter
+	// projectFilter: IFilter
 	// otherFilter: IFilter
 }
 
-interface IPriceRange {
+/* interface IPriceRange {
 	min?: number | string
 	max?: number | string
-}
+} */
 
-const FLOAT_REGEX = new RegExp(`^(\\d*\\.)?\\d+$`)
+/* const FLOAT_REGEX = new RegExp(`^(\\d*\\.)?\\d+$`)
 const validatePriceRange = (
 	min?: number | string,
 	max?: number | string
@@ -104,17 +103,17 @@ const addPriceQuery = (router: NextRouter, { min, max }: IPriceRange) => {
 		max = max || max === 0 ? max.toString() || undefined : undefined
 	}
 	addItems(router, { min, max })
-}
+} */
 
 export default function FilterPanel({
 	sort,
 	view,
-	priceFilter,
-	tokenFilter,
-	projectFilter,
+	// priceFilter,
+	// tokenFilter,
+	// projectFilter,
 }: // otherFilter,
 FilterPanelProps) {
-	const router = useRouter()
+	/* const router = useRouter()
 	const [selectedPriceIndex, setSelectedPriceIndex] = useState(-1)
 	const [priceRange, setPriceRange] = useState<{
 		min?: string
@@ -123,8 +122,8 @@ FilterPanelProps) {
 	const [priceRangeError, setPriceRangeError] = useState('')
 
 	// Reset filters with references
-	const resetRefs: { reset?: () => void }[] = []
-	const addResetRef = (ref: { reset?: () => void }) => resetRefs.push(ref)
+	const resetRefs: { reset?(): void }[] = []
+	const addResetRef = (ref: { reset?(): void }) => resetRefs.push(ref)
 	const resetFilters = () => {
 		resetPriceFilter()
 		for (const ref of resetRefs) ref?.reset?.()
@@ -155,7 +154,7 @@ FilterPanelProps) {
 		if (priceRangeError) {
 			const { error } = validatePriceRange(priceRange.min, priceRange.max)
 			console.log(error)
-			setPriceRangeError((prevError) => prevError || error || '')
+			if (error) setPriceRangeError(error)
 		}
 
 		setPriceRange((prevState) => ({
@@ -212,7 +211,7 @@ FilterPanelProps) {
 			setPriceRange({ min: min?.toString(), max: max?.toString() })
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [router.isReady])
+	}, [router.isReady]) */
 
 	return (
 		<div className={styles.container}>
@@ -232,7 +231,7 @@ FilterPanelProps) {
 				className={styles.action}
 			/>
 
-			<div className={styles.divider} />
+			{/* <div className={styles.divider} />
 
 			<div className={styles.filters}>
 				<Filter title={priceFilter.title} className={styles.filter}>
@@ -328,7 +327,7 @@ FilterPanelProps) {
 					/>
 				</Filter>
 
-				{/* <Filter title={otherFilter.title} className={styles.filter}>
+				<Filter title={otherFilter.title} className={styles.filter}>
 					<CheckboxList
 						title={otherFilter.title}
 						items={otherFilter.items}
@@ -336,7 +335,7 @@ FilterPanelProps) {
 						query={otherFilter.query}
 						ref={addResetRef}
 					/>
-				</Filter> */}
+				</Filter>
 
 				<div className={styles.divider} />
 
@@ -344,8 +343,9 @@ FilterPanelProps) {
 					<CrossVector />
 					Reset filters
 				</button>
+			</div> */}
 
-				<div className={styles.footer}>
+			<div className={styles.footer}>
 					<a
 						href="https://astrano.io/#about"
 						target="_blank"
@@ -364,7 +364,6 @@ FilterPanelProps) {
 					</Link>
 					<p>© 2021 ASTRANO</p>
 				</div>
-			</div>
 		</div>
 	)
 }

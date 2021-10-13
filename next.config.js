@@ -36,6 +36,6 @@ module.exports = {
 		return config
 	},
 	images: {
-		domains: ['s2.coinmarketcap.com'],
+		domains: ['s2.coinmarketcap.com', 'i.imgur.com'],
 	},
 }

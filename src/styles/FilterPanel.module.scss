@@ -10,7 +10,7 @@
 .divider {
 	width: 100%;
 	height: 0.063rem;
-	background-color: rgb(var(--primary-700));
+	background-color: rgb(var(--primary-600));
 	margin: 1.5rem 0;
 }
 
@@ -30,7 +30,6 @@
 .item {
 	font-weight: 400;
 	font-size: 0.875rem;
-	color: rgb(var(--primary));
 	padding-right: 0.25rem;
 	cursor: pointer;
 	display: flex;
@@ -42,14 +41,14 @@
 		height: 0;
 		width: 0;
 		&:checked + .radio {
-			border-color: rgb(var(--primary-accent-700));
+			border-color: rgb(var(--purple-accent-500));
 			&::after {
 				opacity: 1;
 			}
 		}
 	}
 	&:hover .radio {
-		border-color: rgb(var(--primary-450));
+		border-color: rgb(var(--primary-200));
 	}
 	& + & {
 		margin-top: 0.313rem;
@@ -60,7 +59,7 @@
 	min-width: 1rem;
 	height: 1rem;
 	margin-right: 0.5rem;
-	border: 0.063rem solid rgb(var(--primary-500));
+	border: 0.063rem solid rgb(var(--primary-400));
 	border-radius: 50%;
 	position: relative;
 	top: 0.125rem;
@@ -76,23 +75,23 @@
 		transform: translate(-50%, -50%);
 		opacity: 0;
 		transition: opacity 0.16s;
-		background: rgb(var(--primary-accent-700));
+		background: rgb(var(--purple-accent-500));
 		background: -moz-radial-gradient(
 			66.67% 66.67% at 50% 50%,
-			rgb(var(--primary-accent-700)) 0%,
-			rgb(var(--primary-accent)) 100%
+			rgb(var(--purple-accent-500)) 0%,
+			rgb(var(--purple-accent-300)) 100%
 		);
 		background: -webkit-radial-gradient(
 			66.67% 66.67% at 50% 50%,
-			rgb(var(--primary-accent-700)) 0%,
-			rgb(var(--primary-accent)) 100%
+			rgb(var(--purple-accent-500)) 0%,
+			rgb(var(--purple-accent-300)) 100%
 		);
 		background: radial-gradient(
 			66.67% 66.67% at 50% 50%,
-			rgb(var(--primary-accent-700)) 0%,
-			rgb(var(--primary-accent)) 100%
+			rgb(var(--purple-accent-500)) 0%,
+			rgb(var(--purple-accent-300)) 100%
 		);
-		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#{rgb(var(--primary-accent-700))}",endColorstr="#{rgb(var(--primary-accent))}",GradientType=1);
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#{rgb(var(--purple-accent-500))}",endColorstr="#{rgb(var(--purple-accent-300))}",GradientType=1);
 	}
 }
 
@@ -110,8 +109,8 @@
 .customLabel {
 	width: 4.5rem;
 	height: 1.75rem;
-	background-color: rgb(var(--background-200));
-	color: rgb(var(--primary-500));
+	background-color: rgb(var(--primary-700));
+	color: rgb(var(--primary-400));
 	font-weight: 400;
 	font-size: 0.875rem;
 	border-radius: 0.3125rem;
@@ -126,7 +125,6 @@
 .customInput {
 	min-width: 0;
 	height: 100%;
-	color: rgb(var(--primary));
 	background: none;
 	font-family: inherit;
 	font-weight: 400;
@@ -167,7 +165,7 @@
 	&:hover svg {
 		&,
 		path {
-			fill: rgb(var(--primary-500));
+			fill: rgb(var(--primary-400));
 		}
 	}
 }
@@ -194,7 +192,7 @@
 .reset {
 	font-weight: 400;
 	font-size: 1rem;
-	color: rgb(var(--primary-450));
+	color: rgb(var(--primary-200));
 	cursor: pointer;
 	display: flex;
 	flex-flow: row nowrap;
@@ -208,7 +206,7 @@
 	}
 	svg,
 	path {
-		fill: rgb(var(--primary-450));
+		fill: rgb(var(--primary-200));
 		transition: fill 0.16s;
 	}
 	&:hover {
@@ -228,12 +226,12 @@
 	* {
 		font-weight: 400;
 		font-size: 0.813rem;
-		color: rgb(var(--primary-500));
+		color: rgb(var(--primary-400));
 	}
 	a {
 		transition: color 0.16s;
 		&:hover {
-			color: rgb(var(--primary-450));
+			color: rgb(var(--primary-200));
 		}
 	}
 }
