@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react'
 import classNames from 'classnames'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -38,6 +39,20 @@ export default function Modal({
 	containerClassName,
 	onCloseComplete,
 }: ModalProps) {
+	const handleClose = (e?: any) => {
+		e?.preventDefault()
+		e?.stopPropagation()
+		onClose()
+	}
+
+	useEffect(() => {
+		const close = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') handleClose(e)
+		}
+		window.addEventListener('keydown', close)
+		return () => window.removeEventListener('keydown', close)
+	}, [])
+
 	return (
 		<AnimatePresence
 			exitBeforeEnter
@@ -48,7 +63,7 @@ export default function Modal({
 					className={classNames(styles.container, {
 						[styles.open]: show,
 					})}
-					onClick={onClose}
+					onMouseDown={handleClose}
 					initial="hidden"
 					animate="visible"
 					exit="hidden"
@@ -61,6 +76,7 @@ export default function Modal({
 							containerClassName
 						)}
 						onClick={(e) => e.stopPropagation()}
+						onMouseDown={(e) => e.stopPropagation()}
 						variants={contentAnimations}
 						transition={{
 							duration: ANIMATION_DURATION,

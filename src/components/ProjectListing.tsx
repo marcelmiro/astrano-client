@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-import { Project as IProject } from '@/types'
+import { IProject } from '@/types'
 import { addThousandSeparator } from '@/utils/number'
 import SkeletonImage from '@/components/SkeletonImage'
+import Skeleton from './Skeleton'
 
 import HeartVector from '@/public/heart.svg'
 import styles from '@/styles/ProjectListing.module.scss'
@@ -13,23 +14,23 @@ interface ProjectProps extends IProject {}
 export default function ProjectListing({
 	name,
 	slug,
-	symbol,
-	logoUrl,
-	type,
-	author,
+	logoUri,
+	user: { username },
 	tags,
-	price,
+	token: { symbol, price },
+	status: { name: status },
 	likes,
 }: ProjectProps) {
 	const router = useRouter()
 	const projectPageLink = `/p/${slug}`
 	const redirectToProjectPage = () => router.push(projectPageLink)
-	const formattedPrice = addThousandSeparator(price)
+	const _formattedPrice = addThousandSeparator(price)
+	const formattedPrice = _formattedPrice ? '$' + _formattedPrice : '-'
 
 	return (
 		<button className={styles.container} onClick={redirectToProjectPage}>
 			<SkeletonImage
-				src={logoUrl}
+				src={logoUri}
 				alt={name + ' logo'}
 				className={styles.image}
 			/>
@@ -45,7 +46,9 @@ export default function ProjectListing({
 								<span>{symbol}</span>
 							</div>
 						</div>
-						<p className={styles.author}>{author}</p>
+						<p className={styles.author}>
+							{username ? '@' + username : 'user not found'}
+						</p>
 					</div>
 
 					<div className={styles.likes}>
@@ -57,11 +60,11 @@ export default function ProjectListing({
 				<div className={styles.lowerRow}>
 					<div className={styles.tags}>
 						<div className={styles.tag}>
-							{type === 'ico'
+							{status === 'ico'
 								? 'ICO'
-								: type === 'live'
+								: status === 'live'
 								? 'Live'
-								: type}
+								: status}
 						</div>
 						{tags.map((tag, index) => (
 							<div className={styles.tag} key={index}>
@@ -70,8 +73,11 @@ export default function ProjectListing({
 						))}
 					</div>
 
-					<p className={styles.price}>
-						{formattedPrice ? `$${formattedPrice}` : '-'}
+					<p
+						className={styles.price}
+						title={formattedPrice.length > 16 ? formattedPrice : ''}
+					>
+						{formattedPrice}
 						<small>USD</small>
 					</p>
 				</div>

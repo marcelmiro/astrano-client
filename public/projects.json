@@ -20,20 +20,20 @@
 		"projectRelationship": "",
 		"website": "https://milliontoken.org/",
 		"socialUrls": [
-			{ "name": "discord", "link": "https://discord.gg/million" },
-			{ "name": "telegram", "link": "https://t.me/millionjacuzzibar" },
+			{ "name": "discord", "url": "https://discord.gg/million" },
+			{ "name": "telegram", "url": "https://t.me/millionjacuzzibar" },
 			{
 				"name": "reddit",
-				"link": "https://www.reddit.com/r/milliontoken"
+				"url": "https://www.reddit.com/r/milliontoken"
 			},
-			{ "name": "twitter", "link": "https://twitter.com/Million__Token" },
+			{ "name": "twitter", "url": "https://twitter.com/Million__Token" },
 			{
 				"name": "instagram",
-				"link": "https://www.instagram.com/milliontokenofficial/"
+				"url": "https://www.instagram.com/milliontokenofficial/"
 			},
 			{
 				"name": "facebook",
-				"link": "https://www.facebook.com/groups/milliontoken"
+				"url": "https://www.facebook.com/groups/milliontoken"
 			}
 		],
 		"updatedAt": "2021-06-24T15:36:55.917Z",
@@ -62,14 +62,14 @@
 		"socialUrls": [
 			{
 				"name": "github",
-				"link": "https://github.com/ethereum/ethereum-org-website"
+				"url": "https://github.com/ethereum/ethereum-org-website"
 			},
-			{ "name": "twitter", "link": "https://twitter.com/ethdotorg" },
+			{ "name": "twitter", "url": "https://twitter.com/ethdotorg" },
 			{
 				"name": "youtube",
-				"link": "https://youtube.com/channel/UCNOfzGXD_C9YMYmnefmPH0g"
+				"url": "https://youtube.com/channel/UCNOfzGXD_C9YMYmnefmPH0g"
 			},
-			{ "name": "discord", "link": "https://discord.gg/CetY6Y4" }
+			{ "name": "discord", "url": "https://discord.gg/CetY6Y4" }
 		],
 		"updatedAt": "2015-07-30T20:08:26.015Z",
 		"createdAt": "2015-07-30T20:08:26.015Z"
@@ -295,9 +295,9 @@
 		"projectRelationship": "",
 		"website": "https://bitcoin.org/",
 		"socialUrls": [
-			{ "name": "twitter", "link": "https://twitter.com/bitcoin" },
-			{ "name": "reddit", "link": "https://www.reddit.com/r/Bitcoin/" },
-			{ "name": "github", "link": "https://github.com/bitcoin" }
+			{ "name": "twitter", "url": "https://twitter.com/bitcoin" },
+			{ "name": "reddit", "url": "https://www.reddit.com/r/Bitcoin/" },
+			{ "name": "github", "url": "https://github.com/bitcoin" }
 		],
 		"updatedAt": "2009-01-07T20:02:20.955Z",
 		"createdAt": "2009-01-07T20:02:20.955Z"
@@ -324,12 +324,12 @@
 		"projectRelationship": "",
 		"website": "https://www.coin98.com/",
 		"socialUrls": [
-			{ "name": "ios", "link": "https://ios.coin98.com/" },
-			{ "name": "android", "link": "http://android.coin98.com/" },
-			{ "name": "telegram", "link": "https://t.me/coin98wallet" },
-			{ "name": "twitter", "link": "https://twitter.com/coin98_wallet" },
-			{ "name": "discord", "link": "http://c98.link/discord" },
-			{ "name": "chrome extension", "link": "https://chrome.coin98.com/" }
+			{ "name": "ios", "url": "https://ios.coin98.com/" },
+			{ "name": "android", "url": "http://android.coin98.com/" },
+			{ "name": "telegram", "url": "https://t.me/coin98wallet" },
+			{ "name": "twitter", "url": "https://twitter.com/coin98_wallet" },
+			{ "name": "discord", "url": "http://c98.link/discord" },
+			{ "name": "chrome extension", "url": "https://chrome.coin98.com/" }
 		],
 		"updatedAt": "2021-07-11T20:09:54.084Z",
 		"createdAt": "2021-07-11T20:09:54.084Z"
@@ -358,24 +358,24 @@
 		"socialUrls": [
 			{
 				"name": "twitter",
-				"link": "https://twitter.com/vechainofficial?lang=en"
+				"url": "https://twitter.com/vechainofficial?lang=en"
 			},
-			{ "name": "medium", "link": "https://medium.com/@vechainofficial" },
+			{ "name": "medium", "url": "https://medium.com/@vechainofficial" },
 			{
 				"name": "youtube",
-				"link": "https://www.youtube.com/channel/UCqKEWPu5hkEl4o3sxlj3N5A"
+				"url": "https://www.youtube.com/channel/UCqKEWPu5hkEl4o3sxlj3N5A"
 			},
-			{ "name": "reddit", "link": "https://www.reddit.com/r/Vechain/" },
-			{ "name": "weibo", "link": "https://www.weibo.com/u/6353774918" },
+			{ "name": "reddit", "url": "https://www.reddit.com/r/Vechain/" },
+			{ "name": "weibo", "url": "https://www.weibo.com/u/6353774918" },
 			{
 				"name": "telegram",
-				"link": "https://t.me/vechain_official_english"
+				"url": "https://t.me/vechain_official_english"
 			},
 			{
 				"name": "telegram community",
-				"link": "https://t.me/VeChainDevCommunity"
+				"url": "https://t.me/VeChainDevCommunity"
 			},
-			{ "name": "gitter", "link": "https://gitter.im/vechain/thor" }
+			{ "name": "gitter", "url": "https://gitter.im/vechain/thor" }
 		],
 		"updatedAt": "2015-07-22T20:12:53.447Z",
 		"createdAt": "2015-07-22T20:12:53.447Z"
@@ -403,14 +403,14 @@
 		"socialUrls": [
 			{
 				"name": "telegram",
-				"link": "https://t.me/ShibaInu_Dogecoinkiller"
+				"url": "https://t.me/ShibaInu_Dogecoinkiller"
 			},
-			{ "name": "twitter", "link": "https://twitter.com/shibtoken" },
-			{ "name": "reddit", "link": "https://www.reddit.com/r/SHIBArmy/" },
-			{ "name": "discord", "link": "https://discord.gg/shibatoken" },
+			{ "name": "twitter", "url": "https://twitter.com/shibtoken" },
+			{ "name": "reddit", "url": "https://www.reddit.com/r/SHIBArmy/" },
+			{ "name": "discord", "url": "https://discord.gg/shibatoken" },
 			{
 				"name": "instagram",
-				"link": "https://instagram.com/shibatoken_official"
+				"url": "https://instagram.com/shibatoken_official"
 			}
 		],
 		"updatedAt": "2020-08-01T20:12:59.447Z",
@@ -440,27 +440,27 @@
 		"socialUrls": [
 			{
 				"name": "facebook",
-				"link": "https://www.facebook.com/huobiglobalofficial"
+				"url": "https://www.facebook.com/huobiglobalofficial"
 			},
-			{ "name": "twitter", "link": "https://twitter.com/HuobiGlobal" },
+			{ "name": "twitter", "url": "https://twitter.com/HuobiGlobal" },
 			{
 				"name": "youtube",
-				"link": "https://www.youtube.com/HuobiGlobal"
+				"url": "https://www.youtube.com/HuobiGlobal"
 			},
-			{ "name": "telegram", "link": "https://t.me/huobiglobalofficial" },
-			{ "name": "medium", "link": "https://medium.com/@huobiglobal" },
+			{ "name": "telegram", "url": "https://t.me/huobiglobalofficial" },
+			{ "name": "medium", "url": "https://medium.com/@huobiglobal" },
 			{
 				"name": "instagram",
-				"link": "https://www.instagram.com/huobiglobalofficial/"
+				"url": "https://www.instagram.com/huobiglobalofficial/"
 			},
-			{ "name": "weibo", "link": "https://weibo.com/huobicom" },
+			{ "name": "weibo", "url": "https://weibo.com/huobicom" },
 			{
 				"name": "coinmarketcap",
-				"link": "https://coinmarketcap.com/exchanges/huobi-global/"
+				"url": "https://coinmarketcap.com/exchanges/huobi-global/"
 			},
 			{
 				"name": "coingecko",
-				"link": "https://www.coingecko.com/en/exchanges/huobi/"
+				"url": "https://www.coingecko.com/en/exchanges/huobi/"
 			}
 		],
 		"updatedAt": "2018-01-07T10:12:53.447Z",
@@ -490,44 +490,44 @@
 		"socialUrls": [
 			{
 				"name": "bitcoin talk",
-				"link": "https://bitcointalk.org/index.php?topic=5146099"
+				"url": "https://bitcointalk.org/index.php?topic=5146099"
 			},
 			{
 				"name": "linkedin",
-				"link": "https://www.linkedin.com/company/pointpay/about/"
+				"url": "https://www.linkedin.com/company/pointpay/about/"
 			},
-			{ "name": "twitter", "link": "https://twitter.com/PointPay1" },
+			{ "name": "twitter", "url": "https://twitter.com/PointPay1" },
 			{
 				"name": "facebook",
-				"link": "https://www.facebook.com/PointPayLtd"
+				"url": "https://www.facebook.com/PointPayLtd"
 			},
-			{ "name": "medium", "link": "https://medium.com/@pointpay" },
+			{ "name": "medium", "url": "https://medium.com/@pointpay" },
 			{
 				"name": "reddit",
-				"link": "https://www.reddit.com/user/PointPay1/"
+				"url": "https://www.reddit.com/user/PointPay1/"
 			},
 			{
 				"name": "github",
-				"link": "https://github.com/pointpay-technologies/"
+				"url": "https://github.com/pointpay-technologies/"
 			},
 			{
 				"name": "youtube",
-				"link": "https://www.youtube.com/channel/UCS-_VDX97myxM5yLPYezH-w"
+				"url": "https://www.youtube.com/channel/UCS-_VDX97myxM5yLPYezH-w"
 			},
 			{
 				"name": "instagram",
-				"link": "https://www.instagram.com/point_pay"
+				"url": "https://www.instagram.com/point_pay"
 			},
-			{ "name": "vk", "link": "https://vk.com/pointpay_official" },
+			{ "name": "vk", "url": "https://vk.com/pointpay_official" },
 			{
 				"name": "weibo",
-				"link": "https://www.weibo.com/7225332933/profile?topnav=1&wvr=6&is_all=1"
+				"url": "https://www.weibo.com/7225332933/profile?topnav=1&wvr=6&is_all=1"
 			},
 			{
 				"name": "tiktok",
-				"link": "http://www.tiktok.com/@pointpay_official"
+				"url": "http://www.tiktok.com/@pointpay_official"
 			},
-			{ "name": "telegram", "link": "https://t.me/pointpay_talks" }
+			{ "name": "telegram", "url": "https://t.me/pointpay_talks" }
 		],
 		"updatedAt": "2018-09-30T16:12:53.447Z",
 		"createdAt": "2018-09-30T16:12:53.447Z"

@@ -1,45 +1,109 @@
-import { useState /* useEffect, useRef */ } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/router'
 import classNames from 'classnames'
 
+import { IProject } from '@/types'
 import {
 	pagesMetaData,
 	sort as sortObject,
 	view as viewObject,
-	// priceFilter as priceFilterObject,
-	// tokenFilter as tokenFilterObject,
-	// projectFilter as projectFilterObject,
-	// otherFilter as otherFilterObject
 } from '@/constants'
+
 import Meta from '@/components/Meta'
-import Navbar from '@/components/Navbar'
 import FilterPanel from '@/components/FilterPanel'
 import ProjectListing from '@/components/ProjectListing'
 import ProjectCard from '@/components/ProjectCard'
+import Skeleton from '@/components/Skeleton'
+import Modal from '@/components/Modal'
 
-import projects from '@/public/projects.json'
+import { getItem } from '@/helpers/localStorage'
+import { useSwr } from '@/utils/fetcher'
+
+import CheckVector from '@/public/check.svg'
 import styles from '@/styles/index.module.scss'
 
-/* interface IPriceFilter {
-	min?: number
-	max?: number
-} */
+interface UserVerifiedProps {
+	show: boolean
+	onClose(): void
+}
+
+interface ProjectContainerProps {
+	view: string
+	projects?: IProject[]
+}
+
+const UserVerified = ({ show, onClose }: UserVerifiedProps) => (
+	<Modal
+		show={show}
+		onClose={onClose}
+		containerClassName={styles.verifiedContainer}
+	>
+		<div className={styles.verifiedContent}>
+			<div className={styles.verifiedIcon}>
+				<CheckVector />
+			</div>
+			<p className={styles.text}>
+				Congratulations! Your account is now verified.
+			</p>
+			<button className={styles.primaryButton} onClick={onClose}>
+				Close
+			</button>
+		</div>
+	</Modal>
+)
+
+const ProjectContainer = ({ view, projects }: ProjectContainerProps) => {
+	if (!projects) {
+		const skeletons = [...new Array(12)].map((_, index) => (
+			<Skeleton
+				className={
+					view === 'card'
+						? styles.projectCardSkeleton
+						: styles.projectListingSkeleton
+				}
+				key={index}
+			/>
+		))
+		return <>{skeletons}</>
+	}
+
+	return (
+		<>
+			{projects.map((project) =>
+				view === 'card' ? (
+					<ProjectCard {...project} key={project.slug} />
+				) : (
+					<ProjectListing {...project} key={project.slug} />
+				)
+			)}
+		</>
+	)
+}
 
 export default function Index() {
+	const router = useRouter()
 	const [sort, setSort] = useState('')
 	const [view, setView] = useState('')
-	// const [priceFilter, setPriceFilter] = useState<IPriceFilter>({})
-	// const [tokenFilter, setTokenFilter] = useState<string[]>([])
-	// const [projectFilter, setProjectFilter] = useState<string[]>([])
-	// const [otherFilter, setOtherFilter] = useState<string[]>([])
-	// const isMounted = useRef(false)
+	const [verifiedModal, setVerifiedModal] = useState(false)
+	const isMounted = useRef(false)
 
-	/* useEffect(() => {
-		if (!isMounted.current) return
-		console.log('New view mode: ' + view)
-	}, [view])
+	const { data: projects } = useSwr(
+		isMounted.current ? `/projects?sort=${sort}` : null
+	)
+
 	useEffect(() => {
+		const sortLocalStorage = getItem(sortObject.storage)
+		setSort(sortLocalStorage || sortObject.items[0].value)
+		const viewLocalStorage = getItem(viewObject.storage)
+		setView(viewLocalStorage || viewObject.items[0].value)
 		isMounted.current = true
-	}, []) */
+	}, [])
+
+	useEffect(() => {
+		if (!router) return
+		const query = Object.keys(router.query)
+		if (query.includes('verified')) setVerifiedModal(true)
+	}, [router])
 
 	const FilterPanelProps = {
 		sort: {
@@ -54,30 +118,6 @@ export default function Index() {
 			items: viewObject.items,
 			storage: viewObject.storage,
 		},
-		/* priceFilter: {
-			title: 'Price',
-			setter: setPriceFilter,
-			items: priceFilterObject.items,
-			query: priceFilterObject.query,
-		},
-		tokenFilter: {
-			title: 'Token',
-			setter: setTokenFilter,
-			items: tokenFilterObject.items,
-			query: tokenFilterObject.query,
-		},
-		projectFilter: {
-			title: 'Project',
-			setter: setProjectFilter,
-			items: projectFilterObject.items,
-			query: projectFilterObject.query,
-		},
-		otherFilter: {
-			title: 'Other',
-			setter: setOtherFilter,
-			items: otherFilterObject.items,
-			query: otherFilterObject.query
-		} */
 	}
 
 	return (
@@ -87,16 +127,18 @@ export default function Index() {
 				description={pagesMetaData.index.description}
 			/>
 
-			<Navbar />
+			<UserVerified
+				show={verifiedModal}
+				onClose={() => {
+					setVerifiedModal(false)
+					router.replace('/', undefined, { shallow: true })
+				}}
+			/>
 
 			<div className={styles.container}>
 				<FilterPanel
 					sort={FilterPanelProps.sort}
 					view={FilterPanelProps.view}
-					// priceFilter={FilterPanelProps.priceFilter}
-					// tokenFilter={FilterPanelProps.tokenFilter}
-					// projectFilter={FilterPanelProps.projectFilter}
-					// otherFilter={FilterPanelProps.otherFilter}
 				/>
 
 				<div
@@ -104,20 +146,9 @@ export default function Index() {
 						[styles.projectCards]: view === 'card',
 					})}
 				>
-					{projects &&
-						(view === 'card'
-							? projects.map((project) => (
-									<ProjectCard
-										{...project}
-										key={project.id}
-									/>
-							  ))
-							: projects.map((project) => (
-									<ProjectListing
-										{...project}
-										key={project.id}
-									/>
-							  )))}
+					{isMounted.current && (
+						<ProjectContainer view={view} projects={projects} />
+					)}
 				</div>
 			</div>
 		</>

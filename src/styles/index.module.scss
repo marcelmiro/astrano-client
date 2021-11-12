@@ -1,3 +1,6 @@
+@use 'constants' as *;
+@use 'project' as p;
+
 .container {
 	display: flex;
 	flex-flow: row nowrap;
@@ -10,7 +13,75 @@
 }
 
 .projectCards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1.25rem;
+}
+
+.projectListingSkeleton {
+	@include p.container;
+	display: flex;
+	flex-flow: row nowrap;
+	min-height: 7.85rem;
+	pointer-events: none;
+	background: none;
+	& + & {
+		margin-top: 1.25rem;
+	}
+	> * {
+		background-color: rgb(var(--primary-700));
+	}
+}
+
+.projectCardSkeleton {
+	@include p.container;
+	position: relative;
+	overflow: hidden;
+	min-height: 18rem;
+	pointer-events: none;
+	background: none;
+	> * {
+		background-color: rgb(var(--primary-700));
+	}
+}
+
+.verifiedContainer {
+	padding: 1.75rem 2.75rem;
+	border-radius: 1rem;
+	overflow: hidden;
+}
+
+.verifiedContent {
+	text-align: center;
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: center;
+
+	.text {
+		@include text;
+	}
+	.primaryButton {
+		@include primaryButton;
+		margin-top: 1.75rem;
+	}
+}
+
+.verifiedIcon {
+	$size: 2.625rem;
+	$svgSize: 1.25rem;
+	width: $size;
+	height: $size;
+	border-radius: 50%;
+	margin-bottom: $size;
+	background-color: #75e49f;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	svg {
+		width: $svgSize;
+		height: $svgSize;
+		path {
+			fill: rgb(var(--background));
+		}
+	}
 }

@@ -16,6 +16,7 @@ interface ReportProps {
 	onClose(): void
 	onSend(message: string): void
 	status: Status | null
+	onCloseComplete?(): void
 }
 
 interface StatusContentProps {
@@ -36,14 +37,11 @@ interface RenderContentProps {
 
 const LoadingContent = () => (
 	<div className={styles.loadingContent}>
-		<LoadingSpinner
-			containerClassName={styles.loadingSpinner}
-			pathClassName={styles.loadingSpinnerPath}
-		/>
+		<LoadingSpinner containerClassName={styles.loadingSpinner} />
 	</div>
 )
 
-const SuccessContent = ({ onClose, tryAgain }: StatusContentProps) => (
+const SuccessContent = ({ onClose }: StatusContentProps) => (
 	<div className={styles.statusContent}>
 		<div className={styles.successIcon}>
 			<CheckVector />
@@ -52,7 +50,7 @@ const SuccessContent = ({ onClose, tryAgain }: StatusContentProps) => (
 			We will verify your report as soon as possible. Thanks for
 			contributing to the Astrano platform.
 		</p>
-		<button className={styles.primaryButton} onClick={tryAgain}>
+		<button className={styles.primaryButton} onClick={onClose}>
 			Close
 		</button>
 	</div>
@@ -74,12 +72,11 @@ const ErrorContent = ({ onClose }: StatusContentProps) => (
 )
 
 const MainContent = ({ onClose, onSend }: MainContentProps) => {
-	const messageRef = useRef<HTMLTextAreaElement | null>(null)
+	const messageRef = useRef<HTMLTextAreaElement>(null)
 
 	const handleSend = () => {
-		const message = (messageRef.current as HTMLTextAreaElement).value
-		// if (!message) return
-		onSend(message)
+		const message = messageRef?.current?.value
+		if (message) onSend(message)
 	}
 
 	return (
@@ -117,17 +114,22 @@ const RenderContent = ({
 	status,
 	onClose,
 	onSend,
-	tryAgain,
 }: RenderContentProps) => {
 	if (isLoading) return <LoadingContent />
-	else if (status === 'success') return <SuccessContent onClose={onClose} tryAgain={tryAgain} />
+	else if (status === 'success') return <SuccessContent onClose={onClose} />
 	else if (status === 'error') return <ErrorContent onClose={onClose} />
 	else return <MainContent onClose={onClose} onSend={onSend} />
 }
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-export default function Report({ show, onClose, onSend, status, tryAgain }: ReportProps) {
+export default function Report({
+	show,
+	onClose,
+	onSend,
+	status,
+	onCloseComplete,
+}: ReportProps) {
 	const [isLoading, setIsLoading] = useState(false)
 
 	const hasStatus = status && reportStatuses.includes(status)
@@ -146,13 +148,13 @@ export default function Report({ show, onClose, onSend, status, tryAgain }: Repo
 			containerClassName={classNames(styles.container, {
 				[styles.statusContainer]: hasStatus,
 			})}
+			{...(onCloseComplete ? { onCloseComplete } : {})}
 		>
 			<RenderContent
 				isLoading={isLoading}
 				status={status}
 				onClose={onClose}
 				onSend={handleSend}
-				tryAgain={tryAgain}
 			/>
 		</Modal>
 	)

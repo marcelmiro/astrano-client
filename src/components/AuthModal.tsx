@@ -1,346 +1,395 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
+import Link from 'next/link'
 import classNames from 'classnames'
 import { motion } from 'framer-motion'
+import { useForm } from 'react-hook-form'
+import { AxiosRequestConfig } from 'axios'
 
+import { ILogin, IRegister, IUser } from '@/types'
 import {
-	login as loginConstants,
-	register as registerConstants,
+    login as loginConstants,
+    register as registerConstants,
 } from '@/constants'
+import { useAuth } from '@/context/Auth.context'
 import Modal from '@/components/Modal'
+import LoadingSpinner from '@/components/LoadingSpinner'
+import InputGroup from '@/components/InputGroup'
+import ErrorMessage from '@/components/ErrorMessage'
+import fetcher, { parseFormError } from '@/utils/fetcher'
 
 import CrossVector from '@/public/cross.svg'
 import EyeVector from '@/public/eye.svg'
 import EyeDashVector from '@/public/eye-dash.svg'
+import CheckVector from '@/public/check.svg'
 import styles from '@/styles/AuthModal.module.scss'
 
 interface AuthModalProps {
-	show: boolean
-	onClose(): void
-}
-
-interface ILogin {
-	email: string
-	password: string
-}
-
-interface IRegister {
-	email: string
-	username: string
-	firstName: string
-	lastName: string
-	password: string
-	confirmPassword: string
+    show: boolean
+    onClose(value?: boolean): void
 }
 
 interface LoginContentProps {
-	login: Partial<ILogin>
-	updateLogin(newProps: Partial<ILogin>): void
-	showRegister(): void
+    showRegister(): void
+    onClose(): void
+    setUser(data: IUser | null): void
 }
+
 interface RegisterContentProps {
-	register: Partial<IRegister>
-	updateRegister(newProps: Partial<IRegister>): void
-	showLogin(): void
+    showLogin(): void
+    onClose(): void
+    showStatus: boolean
+    setShowStatus(value: boolean): void
 }
+
+const inputGroupDefaults = {
+    containerClassName: styles.inputGroup,
+    labelClassName: styles.label,
+    errorClassName: styles.error,
+}
+
+const VerifyEmail = ({ onClose }: { onClose(): void }) => (
+    <div className={styles.successContainer}>
+        <div className={styles.successIcon}>
+            <CheckVector />
+        </div>
+        <p className={styles.successText}>
+            {
+                'Thanks for signing up! We have sent you an email to verify your account details. Please check your spam and junk folders or email us at '
+            }
+            <Link href="mailto:support@astrano.io">
+                <a className={styles.link}>support@astrano.io</a>
+            </Link>
+            {" if you don't see that email."}
+        </p>
+        <button className={styles.primaryButton} onClick={onClose}>
+            Close
+        </button>
+    </div>
+)
 
 const LoginContent = ({
-	showRegister,
-	login,
-	updateLogin,
+    showRegister,
+    onClose,
+    setUser,
 }: LoginContentProps) => {
-	const [showPassword, setShowPassword] = useState(false)
-	const toggleShowPassword = () => setShowPassword((prev) => !prev)
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors, isSubmitting },
+    } = useForm<ILogin>({
+        defaultValues: {
+            email: 'marcelmiro1@hotmail.com',
+            password: 'pass@123',
+        },
+    })
 
-	const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value
-		updateLogin({ email: value })
-	}
-	const onPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value
-		updateLogin({ password: value })
-	}
+    const [generalError, setGeneralError] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
+    const toggleShowPassword = () => setShowPassword((prev) => !prev)
 
-	return (
-		<>
-			<h6 className={styles.subTitle}>Welcome back</h6>
-			<h4 className={styles.title}>Log into your account</h4>
+    const onSubmit = async (formData: ILogin) => {
+        const options: AxiosRequestConfig = { method: 'POST', data: formData }
+        const { data, error } = await fetcher<IUser>('/auth/login', options)
 
-			<div className={styles.inputGroup}>
-				<label htmlFor="email" className={styles.label}>
-					Email
-				</label>
-				<input
-					type="email"
-					value={login.email || ''}
-					onChange={onEmailChange}
-					minLength={loginConstants.email.minLength}
-					maxLength={loginConstants.email.maxLength}
-					placeholder="Email"
-					id="email"
-					className={styles.input}
-				/>
-			</div>
+        if (error) {
+            const paths: (keyof ILogin)[] = ['email', 'password']
+            parseFormError(error, setError, setGeneralError, paths)
+            return
+        }
+        if (!data) return
 
-			<div className={styles.inputGroup}>
-				<div className={styles.labelContainer}>
-					<label htmlFor="password" className={styles.label}>
-						Password
-					</label>
-					{/* <button className={styles.labelButton}>
-						Forgot password?
-					</button> */}
-				</div>
-				<input
-					type={showPassword ? 'text' : 'password'}
-					value={login.password || ''}
-					onChange={onPasswordChange}
-					minLength={loginConstants.password.minLength}
-					maxLength={loginConstants.password.maxLength}
-					placeholder="Password"
-					id="password"
-					className={styles.passwordInput}
-				/>
-				<button
-					className={styles.passwordEye}
-					onClick={toggleShowPassword}
-					title="Toggle password visibility"
-				>
-					{showPassword ? <EyeVector /> : <EyeDashVector />}
-				</button>
-			</div>
+        setUser(data)
+        setGeneralError('')
+        onClose()
+    }
 
-			<div className={styles.actions}>
-				<button className={styles.button} onClick={showRegister}>
-					Sign up
-				</button>
-				<button className={styles.primaryButton}>Login</button>
-			</div>
+    return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <h6 className={styles.subTitle}>Welcome back</h6>
+            <h4 className={styles.title}>Log into your account</h4>
 
-			<p className={styles.notRegistered}>
-				Not registered yet?{' '}
-				<button onClick={showRegister}>Register</button>
-			</p>
-		</>
-	)
+            <InputGroup
+                label="Email"
+                id="email"
+                error={errors.email?.message}
+                {...inputGroupDefaults}
+            >
+                <input
+                    type="text"
+                    inputMode="email"
+                    {...register('email', loginConstants.email.schema)}
+                    placeholder="Email"
+                    id="email"
+                    className={styles.textbox}
+                />
+            </InputGroup>
+
+            <InputGroup
+                label="Password"
+                id="password"
+                error={errors.password?.message}
+                {...inputGroupDefaults}
+            >
+                <input
+                    type={showPassword ? 'text' : 'password'}
+                    {...register('password', loginConstants.password.schema)}
+                    placeholder="Password"
+                    id="password"
+                    className={styles.passwordInput}
+                />
+                <button
+                    type="button"
+                    className={styles.passwordEye}
+                    onClick={toggleShowPassword}
+                    title="Toggle password visibility"
+                >
+                    {showPassword ? <EyeVector /> : <EyeDashVector />}
+                </button>
+            </InputGroup>
+
+            {/* TODO: Forgot password */}
+            <button type="button" className={styles.forgotPassword}>
+                Forgot password?
+            </button>
+
+            <ErrorMessage message={generalError} className={styles.error} />
+
+            <div className={styles.actions}>
+                <button
+                    type="button"
+                    className={styles.button}
+                    onClick={showRegister}
+                >
+                    Sign up
+                </button>
+                <button
+                    type="submit"
+                    className={styles.primaryButton}
+                    disabled={isSubmitting || Object.keys(errors).length > 0}
+                >
+                    {isSubmitting && <LoadingSpinner />}
+                    Login
+                </button>
+            </div>
+        </form>
+    )
 }
 
 const RegisterContent = ({
-	register,
-	updateRegister,
-	showLogin,
+    showLogin,
+    onClose,
+    showStatus,
+    setShowStatus,
 }: RegisterContentProps) => {
-	const [showPassword, setShowPassword] = useState(false)
-	const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-	const toggleShowPassword = () => setShowPassword((prev) => !prev)
-	const toggleShowConfirmPassword = () => {
-		setShowConfirmPassword((prev) => !prev)
-	}
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setError,
+        formState: { errors, isSubmitting },
+    } = useForm<IRegister>()
 
-	const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value
-		updateRegister({ email: value })
-	}
-	const onUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value
-		updateRegister({ username: value })
-	}
-	const onFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value
-		updateRegister({ firstName: value })
-	}
-	const onLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value
-		updateRegister({ lastName: value })
-	}
-	const onPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value
-		updateRegister({ password: value })
-	}
-	const onConfirmPasswordChange = (
-		e: React.ChangeEvent<HTMLInputElement>
-	) => {
-		const value = e.target.value
-		updateRegister({ confirmPassword: value })
-	}
+    const [generalError, setGeneralError] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const toggleShowPassword = () => setShowPassword((prev) => !prev)
+    const toggleShowConfirmPassword = () => {
+        setShowConfirmPassword((prev) => !prev)
+    }
 
-	return (
-		<motion.div
-			initial={{ height: 0 }}
-			animate={{ height: 'auto' }}
-			transition={{ duration: 0.04 }}
-			style={{ overflow: 'hidden' }}
-		>
-			<h6 className={styles.subTitle}>
-				Already have an account?{' '}
-				<button onClick={showLogin}>Sign in</button>
-			</h6>
-			<h4 className={styles.title}>Create an account</h4>
+    const onSubmit = async (formData: ILogin) => {
+        const options: AxiosRequestConfig = { method: 'POST', data: formData }
+        const { data, error } = await fetcher('/auth/signup', options)
 
-			<div className={styles.inputGroup}>
-				<label htmlFor="email" className={styles.label}>
-					Email
-				</label>
-				<input
-					type="email"
-					value={register.email || ''}
-					onChange={onEmailChange}
-					minLength={registerConstants.email.minLength}
-					maxLength={registerConstants.email.maxLength}
-					placeholder="Email"
-					id="email"
-					className={styles.input}
-				/>
-			</div>
+        if (error) {
+            const paths: (keyof IRegister)[] = [
+                'email',
+                'username',
+                'name',
+                'password',
+                'passwordConfirmation',
+            ]
+            parseFormError(error, setError, setGeneralError, paths)
+            return
+        }
+        if (!data) return
 
-			<div className={styles.inputGroup}>
-				<label htmlFor="username" className={styles.label}>
-					Username
-				</label>
-				<input
-					type="text"
-					value={register.username || ''}
-					onChange={onUsernameChange}
-					minLength={registerConstants.username.minLength}
-					maxLength={registerConstants.username.maxLength}
-					placeholder="Username"
-					id="username"
-					className={styles.input}
-				/>
-			</div>
+        // TODO: Show verification step page
+        setShowStatus(true)
+        setGeneralError('')
+    }
 
-			<div className={styles.inputGroup}>
-				<label htmlFor="firstName" className={styles.label}>
-					First name
-				</label>
-				<input
-					type="text"
-					value={register.firstName || ''}
-					onChange={onFirstNameChange}
-					minLength={registerConstants.firstName.minLength}
-					maxLength={registerConstants.firstName.maxLength}
-					placeholder="First name"
-					id="firstName"
-					className={styles.input}
-				/>
-			</div>
+    if (showStatus) return <VerifyEmail onClose={onClose} />
 
-			<div className={styles.inputGroup}>
-				<label htmlFor="lastName" className={styles.label}>
-					Last name
-				</label>
-				<input
-					type="text"
-					value={register.lastName || ''}
-					onChange={onLastNameChange}
-					minLength={registerConstants.lastName.minLength}
-					maxLength={registerConstants.lastName.maxLength}
-					placeholder="Last name"
-					id="lastName"
-					className={styles.input}
-				/>
-			</div>
+    return (
+        <motion.form
+            onSubmit={handleSubmit(onSubmit)}
+            initial={{ height: 0 }}
+            animate={{ height: 'auto' }}
+            transition={{ duration: 0.04 }}
+            style={{ overflow: 'hidden' }}
+        >
+            <h4 className={styles.title}>Create an account</h4>
 
-			<div className={styles.inputGroup}>
-				<label htmlFor="password" className={styles.label}>
-					Password
-				</label>
-				<input
-					type={showPassword ? 'text' : 'password'}
-					value={register.password || ''}
-					onChange={onPasswordChange}
-					minLength={registerConstants.password.minLength}
-					maxLength={registerConstants.password.maxLength}
-					placeholder="Password"
-					id="password"
-					className={styles.passwordInput}
-				/>
-				<button
-					className={styles.passwordEye}
-					onClick={toggleShowPassword}
-					title="Toggle password visibility"
-				>
-					{showPassword ? <EyeVector /> : <EyeDashVector />}
-				</button>
-			</div>
+            <InputGroup
+                label="Email"
+                id="email"
+                error={errors.email?.message}
+                {...inputGroupDefaults}
+            >
+                <input
+                    type="text"
+                    inputMode="email"
+                    {...register('email', registerConstants.email.schema)}
+                    placeholder="Email"
+                    id="email"
+                    className={styles.textbox}
+                />
+            </InputGroup>
 
-			<div className={styles.inputGroup}>
-				<label htmlFor="confirmPassword" className={styles.label}>
-					Confirm password
-				</label>
-				<input
-					type={showConfirmPassword ? 'text' : 'password'}
-					value={register.confirmPassword || ''}
-					onChange={onConfirmPasswordChange}
-					minLength={registerConstants.password.minLength}
-					maxLength={registerConstants.password.maxLength}
-					placeholder="Confirm password"
-					id="confirmPassword"
-					className={styles.passwordInput}
-				/>
-				<button
-					className={styles.passwordEye}
-					onClick={toggleShowConfirmPassword}
-					title="Toggle password visibility"
-				>
-					{showConfirmPassword ? <EyeVector /> : <EyeDashVector />}
-				</button>
-			</div>
+            <InputGroup
+                label="Username"
+                id="username"
+                error={errors.username?.message}
+                {...inputGroupDefaults}
+            >
+                <input
+                    type="text"
+                    {...register('username', registerConstants.username.schema)}
+                    placeholder="Username"
+                    id="username"
+                    className={styles.textbox}
+                />
+            </InputGroup>
 
-			<div className={styles.actions}>
-				<button className={styles.button} onClick={showLogin}>
-					Login
-				</button>
-				<button className={styles.primaryButton}>Sign up</button>
-			</div>
-		</motion.div>
-	)
+            <InputGroup
+                label="Full name"
+                id="name"
+                error={errors.name?.message}
+                {...inputGroupDefaults}
+            >
+                <input
+                    type="text"
+                    {...register('name', registerConstants.name.schema)}
+                    placeholder="Full name"
+                    id="name"
+                    className={styles.textbox}
+                />
+            </InputGroup>
+
+            <InputGroup
+                label="Password"
+                id="password"
+                error={errors.password?.message}
+                {...inputGroupDefaults}
+            >
+                <input
+                    type={showPassword ? 'text' : 'password'}
+                    {...register('password', registerConstants.password.schema)}
+                    placeholder="Password"
+                    id="password"
+                    className={styles.passwordInput}
+                />
+                <button
+                    type="button"
+                    className={styles.passwordEye}
+                    onClick={toggleShowPassword}
+                    title="Toggle password visibility"
+                >
+                    {showPassword ? <EyeVector /> : <EyeDashVector />}
+                </button>
+            </InputGroup>
+
+            <InputGroup
+                label="Confirm password"
+                id="passwordConfirmation"
+                error={errors.passwordConfirmation?.message}
+                {...inputGroupDefaults}
+            >
+                <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    {...register('passwordConfirmation', {
+                        ...registerConstants.passwordConfirmation.schema,
+                        validate: (value: string) =>
+                            value === watch('password') ||
+                            'Passwords do not match',
+                    })}
+                    placeholder="Confirm password"
+                    id="passwordConfirmation"
+                    className={styles.passwordInput}
+                />
+                <button
+                    type="button"
+                    className={styles.passwordEye}
+                    onClick={toggleShowConfirmPassword}
+                    title="Toggle password visibility"
+                >
+                    {showConfirmPassword ? <EyeVector /> : <EyeDashVector />}
+                </button>
+            </InputGroup>
+
+            <ErrorMessage message={generalError} className={styles.error} />
+
+            <div className={styles.actions}>
+                <button
+                    type="button"
+                    className={styles.button}
+                    onClick={showLogin}
+                >
+                    Login
+                </button>
+                <button
+                    type="submit"
+                    className={styles.primaryButton}
+                    disabled={isSubmitting || Object.keys(errors).length > 0}
+                >
+                    {isSubmitting && <LoadingSpinner />}
+                    Sign up
+                </button>
+            </div>
+        </motion.form>
+    )
 }
 
 export default function AuthModal({ show, onClose }: AuthModalProps) {
-	const [showRegister, setShowRegister] = useState(false)
-	const [login, setLogin] = useState<Partial<ILogin>>({})
-	const [register, setRegister] = useState<Partial<IRegister>>({})
+    const { loading, user, setUser } = useAuth()
 
-	const updateLogin = useCallback((newProps: Partial<ILogin>) => {
-		setLogin((prevState) => ({ ...prevState, ...newProps }))
-	}, [])
+    const [showRegister, setShowRegister] = useState(false)
+    const [showStatus, setShowStatus] = useState(false)
 
-	const updateRegister = useCallback((newProps: Partial<IRegister>) => {
-		setRegister((prevState) => ({ ...prevState, ...newProps }))
-	}, [])
+    if (user || loading) return null
 
-	const resetStates = () => {
-		setShowRegister(false)
-		setLogin({})
-		setRegister({})
-	}
+    const handleClose = () => onClose(false)
 
-	return (
-		<Modal
-			show={show}
-			onClose={onClose}
-			containerClassName={classNames(styles.container, {
-				[styles.registerContainer]: showRegister,
-			})}
-			onCloseComplete={resetStates}
-		>
-			<div className={styles.closeButton} onClick={onClose}>
-				<CrossVector />
-			</div>
+    return (
+        <Modal
+            show={show}
+            onClose={handleClose}
+            containerClassName={classNames(styles.container, {
+                [styles.registerContainer]: showRegister,
+                [styles.statusContainer]: showStatus,
+            })}
+            onCloseComplete={() => setShowStatus(false)}
+        >
+            <div className={styles.closeButton} onClick={handleClose}>
+                <CrossVector />
+            </div>
 
-			{!showRegister ? (
-				<LoginContent
-					login={login}
-					updateLogin={updateLogin}
-					showRegister={() => setShowRegister(true)}
-				/>
-			) : (
-				<RegisterContent
-					register={register}
-					updateRegister={updateRegister}
-					showLogin={() => setShowRegister(false)}
-				/>
-			)}
-		</Modal>
-	)
+            {!showRegister ? (
+                <LoginContent
+                    showRegister={() => setShowRegister(true)}
+                    onClose={handleClose}
+                    setUser={setUser}
+                />
+            ) : (
+                <RegisterContent
+                    showLogin={() => setShowRegister(false)}
+                    onClose={handleClose}
+                    showStatus={showStatus}
+                    setShowStatus={(value: boolean) => setShowStatus(value)}
+                />
+            )}
+        </Modal>
+    )
 }

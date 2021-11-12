@@ -74,22 +74,22 @@ export default function Dropdown({
 		setOpen(false)
 	}
 
-	// On component mount
+	// On value change update button text and icon
 	useEffect(() => {
 		// Set default item to dropdown button
-		const tempDefaultItem = getDefaultItem({
-			storageKey: storage,
-			defaultValue: value,
-			itemsList: items,
-		})
+		const tempDefaultItem = getItemFromValue(value, items) || items[0]
+
 		if (tempDefaultItem) {
 			setDefaultItem(tempDefaultItem)
 			if (onChange && tempDefaultItem.value !== value) {
 				onChange(tempDefaultItem.value)
 			}
 		}
+	}, [value])
+
+	// On component mount
+	useEffect(() => {
 		isMounted.current = true
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	return (

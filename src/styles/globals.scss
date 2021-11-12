@@ -1,4 +1,4 @@
-@use "variables" as *;
+@use 'variables' as *;
 
 * {
 	box-sizing: border-box;
@@ -6,7 +6,8 @@
 	padding: 0;
 }
 
-a, button {
+a,
+button {
 	text-decoration: none;
 	outline: none;
 	border: none;

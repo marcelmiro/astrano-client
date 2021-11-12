@@ -9,6 +9,7 @@ interface MetaProps {
 	description?: string
 	canonical?: string
 	image?: string
+	hideSeo?: boolean
 	children?: React.ReactNode
 }
 
@@ -17,6 +18,7 @@ export default function Meta({
 	description,
 	canonical,
 	image,
+	hideSeo,
 	children,
 }: MetaProps) {
 	const router = useRouter()
@@ -88,6 +90,7 @@ export default function Meta({
 
 			{/* Other */}
 			<link rel="canonical" href={processedCanonical} />
+			{hideSeo && <meta name="robots" content="noindex nofollow" />}
 			{children}
 		</Head>
 	)

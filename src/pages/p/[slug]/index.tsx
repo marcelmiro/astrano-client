@@ -3,23 +3,24 @@ import Link from 'next/link'
 import classNames from 'classnames'
 
 import {
+	blockchainExplorerUrl,
 	pagesMetaData,
 	errorData,
 	contractAddressLastCharactersLength,
 	reportStatuses,
 } from '@/constants'
-import { Project as IProject } from '@/types'
+import { IProject } from '@/types'
 import { addThousandSeparator, safeMultiplication } from '@/utils/number'
 import { copyToClipboard } from '@/utils/element'
+import fetcher from '@/utils/fetcher'
 
 import Error from '@/pages/_error'
-import Navbar from '@/components/Navbar'
 import Meta from '@/components/Meta'
 import SkeletonImage from '@/components/SkeletonImage'
 import ViewEditor from '@/components/ViewEditor'
 import Report from '@/components/Report'
+import { useAuth } from '@/context/Auth.context'
 
-import projects from '@/public/projects.json'
 import HeartVector from '@/public/heart.svg'
 import FlagVector from '@/public/flag.svg'
 import CopyVector from '@/public/copy.svg'
@@ -54,7 +55,7 @@ const emptyTimeLeft = [
 	{ label: 'seconds' },
 ]
 const calculateTimeLeft = (
-	endDate: string
+	endDate: Date
 ): { label: string; value?: number }[] => {
 	const date = endDate ? new Date(endDate) : null
 	if (!date) return emptyTimeLeft
@@ -93,7 +94,7 @@ const calculateTimeLeft = (
 	return processedTimeLeft
 }
 
-const IcoCountdown = ({ endDate }: { endDate: string }) => {
+const IcoCountdown = ({ endDate }: { endDate: Date }) => {
 	const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(endDate))
 
 	useEffect(() => {
@@ -130,24 +131,18 @@ export default function Project({
 	errorCode,
 	name,
 	slug,
-	symbol,
-	totalSupply,
-	distributionTax,
-	logoUrl,
-	contractAddress,
-	blockchainExplorerLink,
-	type,
-	icoEndDate,
-	author,
-	authorAvatarUrl,
+	logoUri,
+	user,
 	tags,
-	likes,
-	price,
 	summary,
 	description,
+	token,
+	status: statusObject,
 	website,
 	socialUrls,
+	likes,
 }: ProjectProps) {
+	const { user: authenticatedUser, setShowAuthModal } = useAuth()
 	const [showReportModal, setShowReportModal] = useState(false)
 	const [reportStatus, setReportStatus] = useState<ReportStatus | null>(null)
 
@@ -160,9 +155,24 @@ export default function Project({
 		)
 	}
 
+	const {
+		symbol: tokenSymbol,
+		totalSupply: tokenSupply,
+		decimals: tokenDecimals,
+		distributionTax: tokenDistributionTax,
+		contractAddress,
+		price,
+	} = token
+
+	const {
+		name: status,
+		startsAt: statusStartsAt,
+		endsAt: statusEndsAt,
+	} = statusObject
+
 	const formattedPrice = addThousandSeparator(price)
 	const marketCap = safeMultiplication(
-		parseInt(totalSupply),
+		parseInt(tokenSupply),
 		parseFloat(price)
 	)
 	const splitContractAddress = [
@@ -181,13 +191,13 @@ export default function Project({
 
 	// const addToMetamask = () => alert('Add token to MetaMask...')
 
-	const closeReport = () => {
-		setShowReportModal(false)
-		setTimeout(() => setReportStatus(null), 100)
-	}
-
 	const sendReport = async (message: string) => {
 		setReportStatus('success')
+	}
+
+	const likeProject = async () => {
+		if (!authenticatedUser) return setShowAuthModal(true)
+		alert('Like')
 	}
 
 	return (
@@ -195,23 +205,21 @@ export default function Project({
 			<Meta
 				title={pagesMetaData.project.title(name)}
 				description={summary}
-				image={logoUrl}
+				image={logoUri}
 			/>
 
 			<Report
 				show={showReportModal}
-				onClose={closeReport}
+				onClose={() => setShowReportModal(false)}
 				onSend={sendReport}
 				status={reportStatus}
-				tryAgain={() => setReportStatus('')}
+				onCloseComplete={() => setReportStatus(null)}
 			/>
-
-			<Navbar />
 
 			<div className={styles.container}>
 				<div className={styles.header}>
 					<SkeletonImage
-						src={logoUrl}
+						src={logoUri}
 						alt={name + ' logo'}
 						className={styles.image}
 					/>
@@ -219,16 +227,33 @@ export default function Project({
 						<div className={styles.title}>
 							<h1 className={styles.name}>{name}</h1>
 							<div className={styles.symbol}>
-								<h3 className={styles.symbolText}>{symbol}</h3>
+								<h3 className={styles.symbolText}>
+									{tokenSymbol}
+								</h3>
 							</div>
 						</div>
 						<div className={styles.author}>
-							<SkeletonImage
-								src={authorAvatarUrl}
-								alt={author + ' icon'}
-								className={styles.authorImage}
-							/>
-							<p className={styles.authorName}>{author}</p>
+							{user?.username ? (
+								<>
+									{user?.avatar ? (
+										<SkeletonImage
+											src={user.avatar}
+											alt={
+												(user.username || 'User') +
+												' icon'
+											}
+											className={styles.authorImage}
+										/>
+									) : null}
+									<p className={styles.authorName}>
+										@{user.username}
+									</p>
+								</>
+							) : (
+								<p className={styles.authorName}>
+									user not found
+								</p>
+							)}
 						</div>
 						<div className={styles.priceContainer}>
 							<div className={styles.price}>
@@ -249,6 +274,7 @@ export default function Project({
 									styles.overviewActionButtons,
 									styles.likes
 								)}
+								onClick={likeProject}
 							>
 								<HeartVector />
 								{likes}
@@ -266,6 +292,7 @@ export default function Project({
 								<a
 									className={styles.investButton}
 									target="_blank"
+									rel="noopener noreferrer"
 								>
 									Invest
 								</a>
@@ -281,14 +308,14 @@ export default function Project({
 							className={styles.datumText}
 							style={{ textTransform: 'capitalize' }}
 						>
-							{type === 'ico' ? 'ICO' : type || 'Live'}
+							{status === 'ico' ? 'ICO' : status || 'Live'}
 						</p>
 					</div>
-					{type === 'ico' && icoEndDate && (
+					{status === 'ico' && statusEndsAt && (
 						<div className={styles.datum}>
 							<h6 className={styles.datumTitle}>ICO ending in</h6>
 							<div className={styles.datumCountdown}>
-								<IcoCountdown endDate={icoEndDate} />
+								<IcoCountdown endDate={statusEndsAt} />
 							</div>
 						</div>
 					)}
@@ -303,16 +330,16 @@ export default function Project({
 					<div className={styles.datum}>
 						<h6 className={styles.datumTitle}>Total supply</h6>
 						<p className={styles.datumText}>
-							{addThousandSeparator(totalSupply)}
+							{addThousandSeparator(tokenSupply)}
 						</p>
 					</div>
-					{!!distributionTax && (
+					{!!tokenDistributionTax && (
 						<div className={styles.datum}>
 							<h6 className={styles.datumTitle}>
 								Distribution tax
 							</h6>
 							<p className={styles.datumText}>
-								{distributionTax}%
+								{tokenDistributionTax}%
 							</p>
 						</div>
 					)}
@@ -367,11 +394,13 @@ export default function Project({
 						</div>
 						<div className={styles.sidebarDetail}>
 							<p className={styles.sidebarTitle}>BSC explorer</p>
-							<Link href={blockchainExplorerLink}>
+							<Link
+								href={blockchainExplorerUrl + contractAddress}
+							>
 								<a
 									className={styles.sidebarText}
 									target="_blank"
-									rel="noreferrer"
+									rel="noopener noreferrer"
 								>
 									<span>bscscan.com</span>
 									<LinkVector />
@@ -384,7 +413,7 @@ export default function Project({
 								<a
 									className={styles.sidebarText}
 									target="_blank"
-									rel="noreferrer"
+									rel="noopener noreferrer"
 								>
 									<span>{websiteDomain}</span>
 									<LinkVector />
@@ -397,11 +426,11 @@ export default function Project({
 									Social media
 								</p>
 								{socialUrls.map((socialMedia, index) => (
-									<Link href={socialMedia.link} key={index}>
+									<Link href={socialMedia.url} key={index}>
 										<a
 											className={styles.socialLink}
 											target="_blank"
-											rel="noreferrer"
+											rel="noopener noreferrer"
 										>
 											<span>{socialMedia.name}</span>
 											<LinkVector />
@@ -421,7 +450,7 @@ export default function Project({
 								<ViewEditor
 									rawState={description}
 									className={styles.description}
-									notFoundComponent={DescriptionNotFound}
+									NotFoundComponent={DescriptionNotFound}
 								/>
 							</>
 						) : (
@@ -440,10 +469,13 @@ export async function getServerSideProps({
 	params: { slug: string }
 }) {
 	const { slug } = params
-	const project = projects?.find(
-		({ slug: projectSlug }) => projectSlug === slug
-	)
 
-	if (!project) return { props: { errorCode: 404 } }
-	else return { props: project }
+	const { data: project, error } = await fetcher('/projects/' + slug)
+
+	if (error || !project) {
+		const errorCode = error?.status || 500
+		return { props: { errorCode } }
+	}
+
+	return { props: project }
 }

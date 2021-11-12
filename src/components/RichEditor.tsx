@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, forwardRef } from 'react'
 import Head from 'next/head'
 import {
 	Editor,
@@ -20,14 +20,13 @@ const { inlineControls: INLINE_CONTROLS, blockControls: BLOCK_CONTROLS } =
 	editorConstants
 
 interface RichEditorProps {
-	onChange?(rawContentState: RawDraftContentState): void
 	initialRawState?: RawDraftContentState
+	onChange?(rawContentState: RawDraftContentState): void
 	placeholder?: string
 	containerClassName?: string
 	toolboxClassName?: string
 	toolboxButtonClassName?: string
 	editorClassName?: string
-	editorRef?: React.Ref<HTMLDivElement>
 	spellCheck?: boolean
 }
 
@@ -134,21 +133,23 @@ const Toolbox = ({
 	)
 }
 
-export default React.memo(function RichEditor({
-	onChange,
-	initialRawState,
-	placeholder,
-	containerClassName,
-	toolboxClassName,
-	toolboxButtonClassName,
-	editorClassName,
-	editorRef,
-	spellCheck = true,
-}: RichEditorProps) {
+export default forwardRef<HTMLDivElement, RichEditorProps>(function RichEditor(
+	{
+		initialRawState,
+		onChange,
+		placeholder,
+		containerClassName,
+		toolboxClassName,
+		toolboxButtonClassName,
+		editorClassName,
+		spellCheck = true,
+	},
+	ref
+) {
 	const [editorState, setEditorState] = useState(EditorState.createEmpty())
-	const editor = useRef<Editor | null>(null)
+	const editor = useRef<Editor>(null)
 
-	const focus = () => (editor.current as Editor)?.focus()
+	const focus = () => editor?.current?.focus()
 
 	const handleChange = (editorState: EditorState) => {
 		setEditorState(editorState)
@@ -221,7 +222,7 @@ export default React.memo(function RichEditor({
 				<div
 					className={classNames(styles.editor, editorClassName)}
 					onClick={focus}
-					ref={editorRef}
+					ref={ref}
 					suppressHydrationWarning
 				>
 					{process.browser && (

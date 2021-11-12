@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import classNames from 'classnames'
 
-import styles from '@/styles/SkeletonImage.module.scss'
+import styles from '@/styles/Skeleton.module.scss'
 
 type ObjectFit = 'contain' | 'cover'
 

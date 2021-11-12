@@ -22,7 +22,6 @@ export default function LoadingSpinner({
 				cy={50}
 				r="20"
 				fill="none"
-				strokeWidth={4.4}
 			/>
 		</svg>
 	)

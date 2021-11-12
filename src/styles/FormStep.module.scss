@@ -1,0 +1,431 @@
+@use 'sass:math';
+@use 'constants' as *;
+
+.button {
+	@include button;
+}
+
+.primaryButton {
+	@include primaryButton;
+}
+
+.hide {
+	display: none;
+	visibility: hidden;
+	opacity: 0;
+}
+
+.title {
+	font-weight: 400;
+	font-size: 1rem;
+	margin-bottom: 1.75rem;
+}
+
+.inputGroup {
+	@include inputGroup;
+}
+.label {
+	@include label;
+}
+.textbox {
+	@include textbox;
+}
+.description {
+	@include description;
+}
+.error {
+	@include error;
+}
+
+.dropdownContainer {
+	position: relative;
+}
+.dropdownButton {
+	height: auto;
+	min-height: 2.625rem;
+	padding-right: 1rem;
+	color: rgb(var(--primary-400));
+	font-weight: 400;
+	font-size: 0.875rem;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	cursor: pointer;
+	&:focus {
+		border-color: rgb(var(--primary-600));
+	}
+	svg {
+		width: 0.75rem;
+		min-width: 0.75rem;
+		height: 0.75rem;
+		transition: transform 0.36s;
+		path {
+			fill: rgb(var(--primary-400));
+		}
+	}
+}
+.dropdownButtonContent {
+	padding: 0.563rem 0;
+	flex: 1 0 0;
+	display: flex;
+	flex-flow: row wrap;
+	gap: 0.375rem;
+}
+.dropdownContent {
+	width: 100%;
+	max-height: 22.5rem;
+	overflow-y: auto;
+	position: absolute;
+	top: calc(100% + 0.75rem);
+	left: 0;
+	display: flex;
+	flex-flow: column nowrap;
+	background-color: rgb(var(--primary-700));
+	border-radius: 0.5rem;
+	padding: 0.5rem 0.75rem;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(1rem);
+	z-index: 2;
+	transition: all 0.36s;
+	@include scrollbar(0.375rem);
+}
+.dropdownContainer.open {
+	.dropdownButton {
+		border-color: rgb(var(--purple-accent));
+		svg {
+			transform: rotate(-180deg);
+		}
+	}
+	.dropdownContent {
+		visibility: visible;
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.toggleButton {
+	margin: 2.25rem 0 1rem;
+	font-weight: 400;
+	font-size: 0.813rem;
+	cursor: pointer;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	transition: color 0.16s;
+	svg {
+		width: 0.625rem;
+		max-width: 0.625rem;
+		height: 0.625rem;
+		margin-right: 0.375rem;
+		transition: transform 0.36s;
+		&,
+		path {
+			fill: rgb(var(--primary));
+		}
+	}
+	&:hover {
+		color: rgb(var(--primary-200));
+	}
+	&.open svg {
+		transform: rotate(-180deg);
+	}
+}
+
+.tag {
+	height: 1.375rem;
+	padding: 0 0.375rem;
+	color: rgb(var(--primary-100));
+	background-color: rgb(var(--primary-500));
+	border-radius: 100vmax;
+	font-weight: 400;
+	font-size: 0.875rem;
+	display: inline-flex;
+	align-items: center;
+}
+
+.customTag {
+	margin-top: 0.625rem;
+	padding-right: 1rem;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	.textbox {
+		height: 2.5rem;
+		margin-top: 0;
+		font-size: 0.875rem;
+		border-color: rgb(var(--primary-400));
+		&:focus {
+			border-color: rgb(var(--purple-accent));
+		}
+	}
+}
+.customTagSubmit {
+	width: 0.875rem;
+	min-width: 0.875rem;
+	height: 0.875rem;
+	padding: 0.125rem;
+	box-sizing: content-box;
+	margin-left: 1rem;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	svg {
+		width: 100%;
+		height: 100%;
+		path {
+			fill: rgb(var(--primary));
+			transition: fill 0.16s;
+		}
+	}
+	&:hover svg path {
+		fill: rgb(var(--purple-accent));
+	}
+}
+
+.projectDescriptionContainer {
+	margin-top: 0.375rem;
+	border: 0.063rem solid rgb(var(--primary-600));
+	transition: border-color 0.16s;
+	&:focus-within {
+		border-color: rgb(var(--purple-accent));
+	}
+}
+.projectDescriptionEditor :global(.public-DraftEditor-content) {
+	min-height: min(35rem, 80vh);
+}
+
+.fileInput {
+	width: 100%;
+	height: 10rem;
+	margin-top: 0.375rem;
+	padding: 1rem;
+	background-color: rgb(var(--primary-700));
+	border: 0.063rem dashed transparent;
+	border-radius: 0.5rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+	transition: background-color 0.36s, border-color 0.36s;
+	svg {
+		width: 1.25rem;
+		height: 1.25rem;
+		margin-bottom: 0.75rem;
+		&,
+		path {
+			fill: rgb(var(--primary-400));
+		}
+	}
+	&.selectedFile {
+		background-color: transparent;
+		border-color: rgb(var(--primary-600));
+	}
+}
+.fileInputContent {
+	width: 100%;
+	height: 100%;
+	padding: 0.625rem;
+	color: rgb(var(--primary-400));
+	font-weight: 400;
+	font-size: 0.75rem;
+	cursor: pointer;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: center;
+	align-items: center;
+}
+.selectedFileContent {
+	height: 100%;
+	font-weight: 400;
+	font-size: 0.875rem;
+	color: rgb(var(--primary-200));
+	display: flex;
+	flex-flow: row nowrap;
+	p {
+		min-height: 0;
+		overflow: hidden;
+	}
+	button {
+		height: 2.375rem;
+		margin-top: 0.75rem;
+		padding: 0 1rem;
+		flex-shrink: 0;
+		font-weight: 400;
+		font-size: 0.75rem;
+		color: rgb(var(--primary-100));
+		border: 0.063rem solid rgb(var(--primary-600));
+		border-radius: 0.5rem;
+		cursor: pointer;
+		transition: background-color 0.16s;
+		&:hover {
+			background-color: rgb(var(--primary-600));
+		}
+	}
+}
+.selectedFileContentSecondColumn {
+	height: 100%;
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: flex-start;
+}
+.filePreview {
+	$size: 7rem;
+	width: $size;
+	height: $size;
+	margin-right: 2rem;
+	border-radius: 50%;
+	flex-shrink: 0;
+	position: relative;
+	overflow: hidden;
+}
+
+.receivedTokensContainer {
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	.label {
+		white-space: nowrap;
+	}
+	.textbox {
+		margin: 0 0.625rem 0 auto;
+		width: 12.5rem;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		justify-content: flex-end;
+	}
+}
+
+.sliderContainer {
+	margin-top: 0.5rem;
+}
+
+.sliderLabel {
+	margin-bottom: 0.125rem;
+	font-weight: 400;
+	font-size: 0.875rem;
+	display: inline-block;
+	position: relative;
+	text-align: center;
+}
+.sliderRangeLabels {
+	margin-top: 0.125rem;
+	font-weight: 400;
+	font-size: 0.875rem;
+	color: rgb(var(--primary-200));
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-between;
+}
+
+.slider {
+	$thumb-size: 1.25rem;
+	$thumb-color: rgb(var(--purple-accent));
+	$track-height: 0.25rem;
+	$track-color: rgb(var(--primary-600));
+	--thumb-size: #{$thumb-size};
+
+	@mixin track {
+		width: 100%;
+		height: $track-height;
+		cursor: default;
+		transition: background-color 0.16s;
+	}
+
+	@mixin thumb {
+		width: $thumb-size;
+		height: $thumb-size;
+		border-radius: 50%;
+		background-color: $thumb-color;
+		cursor: pointer;
+		transition: box-shadow 0.16s;
+		&:hover {
+			-webkit-box-shadow: 0 0 0 0.5rem rgba(var(--purple-accent), 0.32);
+			box-shadow: 0 0 0 0.5rem rgba(var(--purple-accent), 0.32);
+		}
+	}
+
+	width: 100%;
+	margin: math.div($thumb-size, 2) 0;
+	background-color: transparent;
+	-webkit-appearance: none;
+
+	&::-moz-focus-outer {
+		border: 0;
+	}
+
+	&::-webkit-slider-runnable-track {
+		@include track;
+		border-radius: 100vmax;
+		background-color: $track-color;
+	}
+	&::-moz-range-track {
+		@include track;
+		background-color: $track-color;
+		border-radius: 100vmax;
+		height: math.div($track-height, 2);
+	}
+	&::-ms-track {
+		@include track;
+		background-color: transparent;
+		border-color: transparent;
+		color: transparent;
+	}
+
+	&::-webkit-slider-thumb {
+		@include thumb;
+		-webkit-appearance: none;
+		margin-top: math.div($track-height, 2) - math.div($thumb-size, 2);
+	}
+	&::-moz-range-thumb {
+		@include thumb;
+	}
+	&::-ms-thumb {
+		@include thumb;
+		margin-top: math.div($track-height, 4);
+	}
+
+	&::-ms-fill-lower {
+		background-color: $track-color;
+		border-radius: 100vmax;
+	}
+	&::-ms-fill-upper {
+		background-color: $track-color;
+		border-radius: 100vmax;
+	}
+}
+
+.successContainer {
+	text-align: center;
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: center;
+}
+.successIcon {
+	$size: 2.625rem;
+	$svgSize: 1.25rem;
+	width: $size;
+	height: $size;
+	border-radius: 50%;
+	background-color: #75e49f;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	svg {
+		width: $svgSize;
+		height: $svgSize;
+		path {
+			fill: rgb(var(--background));
+		}
+	}
+}
+.successText {
+	@include text;
+	margin-top: 1.75rem;
+	max-width: 27.5rem;
+}
+.successActions {
+	margin-top: 2.625rem;
+}

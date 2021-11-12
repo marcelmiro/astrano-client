@@ -1,12 +1,28 @@
+import { AppProps } from 'next/app'
+
+import { AuthProvider } from '@/context/Auth.context'
+import Layout from '@/components/Layout'
+
 import '@/styles/globals.scss'
-import type { AppProps } from 'next/app'
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
-		<div className="wrapper">
-			<Component {...pageProps} />
-		</div>
+		<AuthProvider>
+			<Layout>
+				<Component {...pageProps} />
+			</Layout>
+		</AuthProvider>
 	)
 }
+
+/* MyApp.getInitialProps = async (appContext: AppContext) => {
+	// calls page's `getInitialProps` and fills `appProps.pageProps`
+	const appProps = await App.getInitialProps(appContext)
+
+	const response = await fetchApi('/users/me').catch(() => {})
+	const user = response?.data || null
+
+	return { ...appProps, user }
+} */
 
 export default MyApp

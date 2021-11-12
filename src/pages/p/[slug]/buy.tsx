@@ -1,6 +1,8 @@
 import { errorData, marketBaseUrl } from '@/constants'
 import Error from '@/pages/_error'
 
+import { IProject } from '@/types'
+import fetcher from '@/utils/fetcher'
 import projects from '@/public/projects.json'
 
 const { projectNotFound } = errorData
@@ -28,20 +30,25 @@ export async function getServerSideProps({
 	params: { slug: string }
 }) {
 	const { slug } = params
-	const project = projects?.find(
-		({ slug: projectSlug }) => projectSlug === slug
+
+	const { data: project, error } = await fetcher<IProject>(
+		'/projects/' + slug
 	)
 
-	if (!project) return { props: { errorCode: 404 } }
-	else if (project.type && project.type.toLowerCase() === 'live') {
+	if (error || !project) {
+		const errorCode = (error as any).status || 500
+		return { props: { errorCode } }
+	}
+
+	if (project.status?.name === 'live') {
 		return {
 			redirect: {
 				permanent: false,
-				destination: marketBaseUrl + project.contractAddress,
+				destination: marketBaseUrl + project.token.contractAddress,
 			},
 		}
-	} else {
-		// return { props: project }
-		return { props: { errorCode: 404 } }
 	}
+
+	// return { props: project }
+	return { props: { errorCode: 404 } }
 }

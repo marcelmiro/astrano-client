@@ -3,45 +3,148 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import classNames from 'classnames'
 
+import { IUser } from '@/types'
+import { useAuth } from '@/context/Auth.context'
 import { handleBlur } from '@/utils/element'
-// import Toggle from '@/components/Toggle'
-import AuthModal from '@/components/AuthModal'
+import Toggle from '@/components/Toggle'
+import Skeleton from '@/components/Skeleton'
+import LoadingSpinner from '@/components/LoadingSpinner'
+import SkeletonImage from '@/components/SkeletonImage'
+import fetcher from '@/utils/fetcher'
 
 import AstranoVector from '@/public/astrano.svg'
-import SearchVector from '@/public/search.svg'
+// import SearchVector from '@/public/search.svg'
 import HomeVector from '@/public/home.svg'
 import HomeFilledVector from '@/public/home-filled.svg'
 import CreateVector from '@/public/create.svg'
 import CreateFilledVector from '@/public/create-filled.svg'
 import UserVector from '@/public/user.svg'
 import LoginVector from '@/public/login.svg'
+import HeartVector from '@/public/heart.svg'
 
 import styles from '@/styles/Navbar.module.scss'
 
+interface AvatarProps {
+	loading: boolean
+	avatar?: string
+	toggleDropdown(): void
+}
+
+const Avatar = ({ loading, avatar, toggleDropdown }: AvatarProps) => {
+	if (loading) {
+		return (
+			<div className={styles.userButton}>
+				<Skeleton className={styles.userAvatar} />
+			</div>
+		)
+	}
+
+	return (
+		<button className={styles.userButton} onClick={toggleDropdown}>
+			{avatar ? (
+				<SkeletonImage
+					src={avatar}
+					alt="User avatar"
+					className={styles.userAvatar}
+				/>
+			) : (
+				<UserVector />
+			)}
+		</button>
+	)
+}
+
+interface UserDropdownProps {
+	show: boolean
+	loading: boolean
+	user: IUser | null
+	logOut(): Promise<void>
+	openAuthModal(): void
+}
+
+const UserDropdown = ({
+	show,
+	loading,
+	user,
+	logOut,
+	openAuthModal,
+}: UserDropdownProps) => {
+	const [isLoggingOut, setIsLoggingOut] = useState(false)
+	const [darkTheme, setDarkTheme] = useState(false)
+	const toggleTheme = () => setDarkTheme((prev) => !prev)
+
+	if (loading) return null
+
+	const handleLogOut = async () => {
+		if (isLoggingOut) return
+		setIsLoggingOut(true)
+		await logOut()
+		setIsLoggingOut(false)
+	}
+
+	return (
+		<div
+			className={classNames(styles.dropdownContainer, styles.rightAlign, {
+				[styles.open]: show,
+			})}
+		>
+			{user ? (
+				<>
+					<button className={styles.dropdownItem} onClick={() => {}}>
+						<HeartVector />
+						<span>Liked projects</span>
+					</button>
+					<button
+						className={styles.dropdownItem}
+						onClick={handleLogOut}
+					>
+						{isLoggingOut ? (
+							<LoadingSpinner />
+						) : (
+							<LoginVector
+								style={{ transform: 'rotate(180deg)' }}
+							/>
+						)}
+						<span>Log out</span>
+					</button>
+				</>
+			) : (
+				<button className={styles.dropdownItem} onClick={openAuthModal}>
+					<LoginVector />
+					<span>Log in / Sign up</span>
+				</button>
+			)}
+
+			<div className={classNames(styles.dropdownItem, styles.noHover)}>
+				<button className={styles.themeButton} onClick={toggleTheme}>
+					Dark theme
+				</button>
+				<Toggle value={darkTheme} onChange={toggleTheme} />
+			</div>
+		</div>
+	)
+}
+
 export default function Navbar() {
 	const { pathname } = useRouter()
-	const [showUserDropdown, setShowUserDropdown] = useState(false)
-	const [showAuthModal, setShowAuthModal] = useState(false)
+	const { loading, user, setUser, setShowAuthModal } = useAuth()
 
-	const toggleUserDropdown = () => {
-		setShowUserDropdown((prev) => !prev)
-	}
+	const [showUserDropdown, setShowUserDropdown] = useState(false)
+	const toggleUserDropdown = () => setShowUserDropdown((prev) => !prev)
 
 	const openAuthModal = () => {
 		setShowUserDropdown(false)
 		setShowAuthModal(true)
 	}
 
-	// const [darkTheme, setDarkTheme] = useState(true)
-	// const toggleDarkTheme = () => setDarkTheme((prev) => !prev)
+	const logOut = async () => {
+		const { error } = await fetcher('/auth/logout', { method: 'POST' })
+		setShowUserDropdown(false)
+		if (!error) setUser(null)
+	}
 
 	return (
 		<>
-			<AuthModal
-				show={showAuthModal}
-				onClose={() => setShowAuthModal(false)}
-			/>
-
 			<header className={styles.header}>
 				<div className={styles.container}>
 					<Link href="/">
@@ -51,7 +154,7 @@ export default function Navbar() {
 						</a>
 					</Link>
 
-					<div className={styles.search}>
+					{/* <div className={styles.search}>
 						<label className={styles.searchLabel}>
 							<SearchVector className={styles.searchIcon} />
 							<input
@@ -60,7 +163,7 @@ export default function Navbar() {
 								placeholder="Search"
 							/>
 						</label>
-					</div>
+					</div> */}
 
 					<nav className={styles.nav}>
 						{pathname === '/' ? (
@@ -79,6 +182,7 @@ export default function Navbar() {
 								</a>
 							</Link>
 						)}
+
 						{pathname === '/p/new' ? (
 							<div
 								className={classNames(
@@ -95,6 +199,7 @@ export default function Navbar() {
 								</a>
 							</Link>
 						)}
+
 						<div
 							className={classNames(
 								styles.navIcon,
@@ -104,47 +209,18 @@ export default function Navbar() {
 								handleBlur(e, () => setShowUserDropdown(false))
 							}
 						>
-							<button
-								className={styles.userButton}
-								onClick={toggleUserDropdown}
-							>
-								<UserVector />
-							</button>
-							<div
-								className={classNames(
-									styles.dropdownContainer,
-									styles.rightAlign,
-									{ [styles.open]: showUserDropdown }
-								)}
-							>
-								<button
-									className={styles.dropdownItem}
-									onClick={openAuthModal}
-								>
-									<LoginVector />
-									<span>Log in / Sign up</span>
-								</button>
-
-								{/* <div
-								className={classNames(
-									styles.dropdownItem,
-									styles.noHover
-								)}
-							>
-								<button
-									className={styles.themeButton}
-									onClick={toggleDarkTheme}
-								>
-									Dark theme
-								</button>
-								<Toggle
-									value={darkTheme}
-									onChange={() =>
-										setDarkTheme((prev) => !prev)
-									}
-								/>
-							</div> */}
-							</div>
+							<Avatar
+								loading={loading}
+								avatar={user?.avatar}
+								toggleDropdown={toggleUserDropdown}
+							/>
+							<UserDropdown
+								show={showUserDropdown}
+								loading={loading}
+								user={user}
+								logOut={logOut}
+								openAuthModal={openAuthModal}
+							/>
 						</div>
 					</nav>
 				</div>

@@ -349,7 +349,7 @@ FilterPanelProps) {
 					<a
 						href="https://astrano.io/#about"
 						target="_blank"
-						rel="noreferrer"
+						rel="noopener noreferrer"
 					>
 						About
 					</a>

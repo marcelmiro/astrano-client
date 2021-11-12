@@ -1,6 +1,15 @@
 module.exports = {
 	reactStrictMode: true,
 	poweredByHeader: false,
+
+	// TODO: Remove on next.js v12.1 as will become default
+	// swcMinify: true,
+
+	images: {
+		// formats: ['image/avif', 'image/webp'],
+		domains: ['s2.coinmarketcap.com', 'i.imgur.com'],
+	},
+
 	webpack(config) {
 		/* const rules = config.module.rules
 			.find((rule) => typeof rule.oneOf === 'object')
@@ -34,8 +43,5 @@ module.exports = {
 		})
 
 		return config
-	},
-	images: {
-		domains: ['s2.coinmarketcap.com', 'i.imgur.com'],
 	},
 }

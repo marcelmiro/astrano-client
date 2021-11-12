@@ -19,8 +19,6 @@ export default function Custom404() {
 				/>
 			</Meta>
 
-			<Navbar />
-
 			<div className={styles.container}>
 				<h1 className={styles.title}>Oops!</h1>
 				<p

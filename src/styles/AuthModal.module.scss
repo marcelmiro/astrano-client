@@ -1,8 +1,10 @@
+@use 'constants' as *;
+
 .container {
 	$resizeDuration: 0.1s;
 	width: 100%;
 	max-width: 24rem;
-	min-height: 27.625rem;
+	min-height: 25.25rem;
 	padding: 1.75rem 2.75rem;
 	border-radius: 1rem;
 	position: relative;
@@ -10,11 +12,14 @@
 		min-height $resizeDuration;
 }
 .registerContainer {
-	min-height: 48rem;
-	// max-height: 100vh;
+	min-height: 39.875rem;
 	$resizeDuration: 0.1s;
 	transition: transform $resizeDuration, max-width $resizeDuration,
 		min-height $resizeDuration;
+
+	.title {
+		margin-top: 0.375rem;
+	}
 }
 
 .closeButton {
@@ -23,7 +28,7 @@
 	width: $size;
 	height: $size;
 	border-radius: 50%;
-	border: 0.063rem solid rgb(var(--primary-600));
+	border: 0.125rem solid rgb(var(--primary-600));
 	position: absolute;
 	top: 1rem;
 	right: 1.25rem;
@@ -47,10 +52,13 @@
 			fill: rgb(var(--primary-100));
 		}
 	}
+	&:focus {
+		border-color: rgb(var(--primary-400));
+	}
 }
 
 .subTitle {
-	margin-top: 1rem;
+	margin-top: 0.375rem;
 	font-weight: 400;
 	font-size: 0.875rem;
 	color: rgb(var(--primary-400));
@@ -61,124 +69,133 @@
 	}
 }
 .title {
-	margin: 0.5rem 0 2.25rem;
+	margin: 0.5rem 0 1.75rem;
 	font-weight: 400;
 	font-size: 1.5rem;
 	text-align: center;
 }
 
-.inputGroup + .inputGroup {
-	margin-top: 1.5rem;
+.inputGroup {
+	@include inputGroup;
 }
 .label {
-	margin-bottom: 0.5rem;
+	@include label;
 	position: relative;
 	left: 0.125rem;
-	font-weight: 400;
-	font-size: 0.813rem;
-	color: rgb(var(--primary-200));
 }
-.input {
-	width: 100%;
-	height: 2.625rem;
-	border: 0.063rem solid rgb(var(--primary-600));
+.textbox {
+	@include textbox;
 	padding: 0 0.25rem 0 0.625rem;
-	border-radius: 0.5rem;
-	background: none;
-	font: inherit;
-	font-weight: 400;
-	font-size: 0.875rem;
-	color: rgb(var(--primary));
-	transition: border-color 0.16s;
-	&:focus {
-		outline: none;
-		border-color: rgb(var(--purple-accent));
-	}
-	&::placeholder {
-		color: rgb(var(--primary-400));
+}
+.error {
+	@include error;
+	font-size: 0.8125rem;
+	svg {
+		width: 0.75rem;
+		height: 0.75rem;
 	}
 }
 .passwordInput {
-    @extend .input;
-    padding-right: 2rem;
+	@extend .textbox;
+	padding-right: 2rem;
 }
 .passwordEye {
-    $size: 1.125rem;
-    width: $size;
-    height: $size;
-    margin-left: -1.75rem;
-    cursor: pointer;
-    position: relative;
-    top: 0.312rem;
-    path {
-        fill: rgb(var(--primary-400));
-    }
-}
-
-.labelContainer {
-	margin-bottom: 0.5rem;
-	display: flex;
-	flex-flow: row wrap;
-	justify-content: space-between;
-	align-items: flex-end;
-	.label {
-		margin-bottom: 0;
+	$size: 1.125rem;
+	width: $size;
+	height: $size;
+	margin-left: -1.75rem;
+	cursor: pointer;
+	position: relative;
+	top: 0.312rem;
+	path {
+		fill: rgb(var(--primary-400));
+		transition: fill 0.16s;
+	}
+	&:focus path {
+		fill: rgb(var(--primary-200));
+	}
+	&:hover path {
+		fill: rgb(var(--primary-100));
 	}
 }
-.labelButton {
+
+.forgotPassword {
+	margin-top: 0.563rem;
 	font-weight: 400;
 	font-size: 0.75rem;
 	color: rgb(var(--primary-400));
 	cursor: pointer;
 	transition: color 0.24s;
+	&:focus {
+		text-decoration: underline;
+	}
 	&:hover {
 		color: rgb(var(--primary-100));
 	}
 }
 
 .actions {
-	margin-top: 2rem;
+	margin-top: 1.625rem;
 	display: flex;
 	flex-flow: row wrap;
 	justify-content: space-between;
 	align-items: center;
 }
+
+$buttonWidth: 6.75rem;
 .button {
-	width: 6.75rem;
-	height: 2.625rem;
-	padding: 0 1.375rem;
-	font-weight: 400;
-	font-size: 0.875rem;
-	border-radius: 0.625rem;
-	cursor: pointer;
-	text-align: center;
-	&:not(.primaryButton) {
-		border: 0.063rem solid rgb(var(--primary-600));
-		transition: background-color 0.24s;
-		&:hover {
-			background-color: rgb(var(--primary-600));
-		}
-	}
+	@include button;
+	min-width: $buttonWidth;
 }
 .primaryButton {
-	@extend .button;
-	background-color: rgb(var(--purple-accent));
-	transition: box-shadow 0.24s;
-	&:hover {
-		-webkit-box-shadow: 0 0 2rem -0.438rem rgba(var(--purple-accent), 0.8);
-		box-shadow: 0 0 2rem -0.438rem rgba(var(--purple-accent), 0.8);
+	@include primaryButton;
+	min-width: $buttonWidth;
+	svg {
+		width: 1.125rem;
+		height: 1.125rem;
+		margin-right: 0.5rem;
 	}
 }
 
-.notRegistered {
-	margin-top: 1rem;
+.statusContainer {
+	min-height: auto;
+	max-width: 27rem;
+}
+
+.successContainer {
+	text-align: center;
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: center;
+}
+
+.successIcon {
+	$size: 2.625rem;
+	$svgSize: 1.25rem;
+	width: $size;
+	height: $size;
+	border-radius: 50%;
+	margin-bottom: $size;
+	background-color: #75e49f;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	svg {
+		width: $svgSize;
+		height: $svgSize;
+		path {
+			fill: rgb(var(--background));
+		}
+	}
+}
+
+.successText {
+	margin-bottom: 3rem;
 	font-weight: 400;
-	font-size: 0.75rem;
+	font-size: 0.875rem;
 	color: rgb(var(--primary-400));
-	position: relative;
-	left: 0.125rem;
-	button {
-		color: rgb(var(--primary-50));
+	.link {
+		color: rgb(var(--purple-accent));
 		cursor: pointer;
 	}
 }

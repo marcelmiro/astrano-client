@@ -1,13 +1,12 @@
-@use "project" as *;
+@use 'project' as p;
 
 .container {
-	@extend .container;
+	@include p.container;
 	position: relative;
 	overflow: hidden;
 }
 
 .content {
-	@extend .content;
 	max-width: 11.5rem;
 	margin: 0 auto;
 	display: flex;
@@ -16,27 +15,27 @@
 }
 
 .image {
-	@extend .image;
+	@include p.image;
 	margin: 0 auto;
 	z-index: 1;
 }
 
 .nameContainer {
-	@extend .nameContainer;
+	@include p.nameContainer;
 	margin-top: 1.25rem;
 }
 .name {
-	@extend .name;
+	@include p.name;
 }
 .symbol {
-	@extend .symbol;
+	@include p.symbol;
 }
 .author {
-	@extend .author;
+	@include p.author;
 }
 
 .tags {
-	@extend .tags;
+	@include p.tags;
 	margin-top: 0.625rem;
 	max-height: 4.375rem;
 	position: relative;
@@ -54,17 +53,17 @@
 	}
 }
 .tag {
-	@extend .tag;
+	@include p.tag;
 }
 
 .price {
-	@extend .price;
+	@include p.price;
 	margin-top: 0.625rem;
 	word-break: break-all;
 }
 
 .likes {
-	@extend .likes;
+	@include p.likes;
 	position: absolute;
 	top: 1.25rem;
 	right: 1.25rem;

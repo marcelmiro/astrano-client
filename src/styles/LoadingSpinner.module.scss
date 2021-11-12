@@ -6,7 +6,8 @@
 }
 
 .path {
-    stroke: white;
+    stroke: rgb(var(--primary));
+	stroke-width: 4.4px;
 	stroke-dasharray: 150, 200;
 	stroke-dashoffset: -10;
 	stroke-linecap: round;

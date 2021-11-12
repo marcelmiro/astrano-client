@@ -13,15 +13,17 @@ import styles from '@/styles/Editor.module.scss'
 interface ViewEditorProps {
 	rawState: RawDraftContentState
 	className?: string
-	notFoundComponent: any
+	NotFoundComponent: any
 }
 
 export default function ViewEditor({
 	rawState,
 	className,
-	notFoundComponent: NotFoundComponent,
+	NotFoundComponent,
 }: ViewEditorProps) {
-	const contentState = rawState ? convertFromRaw(rawState) : null
+	// console.log(rawState)
+	const contentState =
+		rawState?.blocks && rawState.entityMap ? convertFromRaw(rawState) : null
 	if (!contentState?.hasText()) {
 		return <NotFoundComponent className={className} />
 	}
