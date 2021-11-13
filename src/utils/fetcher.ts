@@ -3,7 +3,7 @@ import { UseFormSetError, Path } from 'react-hook-form'
 import useSWRImmutable from 'swr/immutable'
 import useSWR, { SWRConfiguration } from 'swr'
 
-const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL
+const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/*$/, '')
 
 const _timeout = process.env.NEXT_PUBLIC_API_TIMEOUT
 const timeout = (_timeout && parseInt(_timeout)) || 10 * 1000

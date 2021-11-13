@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import classNames from 'classnames'
+import Big from 'big.js'
+import { AxiosRequestHeaders } from 'axios'
 
 import {
 	blockchainExplorerUrl,
@@ -10,18 +12,19 @@ import {
 	reportStatuses,
 } from '@/constants'
 import { IProject } from '@/types'
-import { addThousandSeparator, safeMultiplication } from '@/utils/number'
+import { addThousandSeparator } from '@/utils/number'
 import { copyToClipboard } from '@/utils/element'
 import fetcher from '@/utils/fetcher'
+import { useAuth } from '@/context/Auth.context'
 
 import Error from '@/pages/_error'
 import Meta from '@/components/Meta'
 import SkeletonImage from '@/components/SkeletonImage'
 import ViewEditor from '@/components/ViewEditor'
 import Report from '@/components/Report'
-import { useAuth } from '@/context/Auth.context'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
-import HeartVector from '@/public/heart.svg'
+import HeartVector from '@/public/heart-filled.svg'
 import FlagVector from '@/public/flag.svg'
 import CopyVector from '@/public/copy.svg'
 import LinkVector from '@/public/link.svg'
@@ -36,6 +39,12 @@ interface ProjectProps extends IProject {
 	errorCode?: number
 }
 
+interface CountdownProps {
+	status: string
+	date: Date
+	placeholder: string
+}
+
 const getDomainFromUrl = (url: string): string | undefined => {
 	if (!url || typeof url !== 'string') return
 	try {
@@ -48,20 +57,14 @@ const getDomainFromUrl = (url: string): string | undefined => {
 	}
 }
 
-const emptyTimeLeft = [
-	{ label: 'days' },
-	{ label: 'hours' },
-	{ label: 'minutes' },
-	{ label: 'seconds' },
-]
 const calculateTimeLeft = (
 	endDate: Date
-): { label: string; value?: number }[] => {
+): { label: string; value?: number }[] | null => {
 	const date = endDate ? new Date(endDate) : null
-	if (!date) return emptyTimeLeft
+	if (!date) return null
 
 	const difference = +date - +new Date()
-	if (difference <= 0) return emptyTimeLeft
+	if (difference <= 0) return null
 
 	const timeLeft = [
 		{
@@ -94,30 +97,37 @@ const calculateTimeLeft = (
 	return processedTimeLeft
 }
 
-const IcoCountdown = ({ endDate }: { endDate: Date }) => {
-	const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(endDate))
+const Countdown = ({ status, date, placeholder }: CountdownProps) => {
+	const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(date))
 
 	useEffect(() => {
 		const timer = setTimeout(
-			() => setTimeLeft(calculateTimeLeft(endDate)),
+			() => setTimeLeft(calculateTimeLeft(date)),
 			1000
 		)
 		return () => clearTimeout(timer)
 	})
 
+	if (!timeLeft) return null
+
 	return (
-		<>
-			{timeLeft.map((interval, index) => (
-				<p
-					className={styles.countdownTime}
-					suppressHydrationWarning
-					key={index}
-				>
-					{interval.value || 0}
-					<small>{interval.label}</small>
-				</p>
-			))}
-		</>
+		<div className={styles.datum}>
+			<h6 className={styles.datumTitle}>
+				{status} {placeholder}
+			</h6>
+			<div className={styles.datumCountdown}>
+				{timeLeft.map((interval, index) => (
+					<p
+						className={styles.countdownTime}
+						suppressHydrationWarning
+						key={index}
+					>
+						{interval.value || 0}
+						<small>{interval.label}</small>
+					</p>
+				))}
+			</div>
+		</div>
 	)
 }
 
@@ -129,6 +139,7 @@ const DescriptionNotFound = ({ className }: { className?: string }) => (
 
 export default function Project({
 	errorCode,
+	_id: id,
 	name,
 	slug,
 	logoUri,
@@ -140,28 +151,33 @@ export default function Project({
 	status: statusObject,
 	website,
 	socialUrls,
-	likes,
+	likes: _likes,
 }: ProjectProps) {
-	const { user: authenticatedUser, setShowAuthModal } = useAuth()
+	const {
+		user: contextUser,
+		setUser: setContextUser,
+		setShowAuthModal,
+	} = useAuth()
 	const [showReportModal, setShowReportModal] = useState(false)
 	const [reportStatus, setReportStatus] = useState<ReportStatus | null>(null)
+	const [likes, setLikes] = useState(_likes)
+	const [isLikeLoading, setIsLikeLoading] = useState(false)
 
-	if (errorCode) {
+	if (errorCode)
 		return (
 			<Error
 				statusCode={errorCode}
 				{...(errorCode === 404 ? projectNotFound : {})}
 			/>
 		)
-	}
 
 	const {
-		symbol: tokenSymbol,
-		totalSupply: tokenSupply,
-		decimals: tokenDecimals,
-		distributionTax: tokenDistributionTax,
 		contractAddress,
-		price,
+		symbol: tokenSymbol,
+		totalSupply: _tokenSupply,
+		// decimals: tokenDecimals,
+		distributionTax: tokenDistributionTax,
+		price: _price,
 	} = token
 
 	const {
@@ -170,11 +186,37 @@ export default function Project({
 		endsAt: statusEndsAt,
 	} = statusObject
 
-	const formattedPrice = addThousandSeparator(price)
-	const marketCap = safeMultiplication(
-		parseInt(tokenSupply),
-		parseFloat(price)
-	)
+	let price: Big | undefined
+	try {
+		price = Big(_price)
+	} catch (e) {}
+
+	let formattedPrice = '-'
+	if (price) {
+		const stringifyPrice = price.lt(1) ? price.toFixed(4) : price.toFixed(2)
+		formattedPrice = '$' + addThousandSeparator(stringifyPrice)
+	}
+
+	let tokenSupply: Big | undefined
+	try {
+		tokenSupply = Big(_tokenSupply)
+	} catch (e) {}
+
+	const formattedTokenSupply =
+		tokenSupply && addThousandSeparator(tokenSupply.toString())
+
+	let marketCap: string | undefined
+	if (tokenSupply && price) {
+		try {
+			marketCap = tokenSupply.mul(price)?.toFixed(0)
+		} catch (e) {}
+	}
+
+	const formattedMarketCap = marketCap && addThousandSeparator(marketCap)
+
+	const formattedStatus =
+		status === 'ico' ? 'ICO' : status[0].toUpperCase() + status.slice(1)
+
 	const splitContractAddress = [
 		contractAddress.slice(
 			0,
@@ -185,6 +227,7 @@ export default function Project({
 			contractAddress.length
 		),
 	]
+
 	const websiteDomain = getDomainFromUrl(website) || 'website'
 
 	const copyContractAddress = () => copyToClipboard(contractAddress)
@@ -195,9 +238,29 @@ export default function Project({
 		setReportStatus('success')
 	}
 
+	const isProjectLiked = contextUser?.likedProjects.includes(id) || false
+
 	const likeProject = async () => {
-		if (!authenticatedUser) return setShowAuthModal(true)
-		alert('Like')
+		if (isLikeLoading) return
+		if (!contextUser) return setShowAuthModal(true)
+
+		setIsLikeLoading(true)
+		const fetchOptions: AxiosRequestHeaders = {
+			method: isProjectLiked ? 'DELETE' : 'PUT',
+		}
+		const { data } = await fetcher(`/projects/${slug}/likes`, fetchOptions)
+
+		if (data) {
+			// Update liked projects list
+			const newLikedProjects = isProjectLiked
+				? contextUser.likedProjects.filter((pId) => pId !== id)
+				: [...contextUser.likedProjects, id]
+			setContextUser({ ...contextUser, likedProjects: newLikedProjects })
+
+			// Update project likes
+			setLikes((prev) => (isProjectLiked ? prev - 1 : prev + 1))
+		}
+		setIsLikeLoading(false)
 	}
 
 	return (
@@ -257,7 +320,7 @@ export default function Project({
 						</div>
 						<div className={styles.priceContainer}>
 							<div className={styles.price}>
-								{formattedPrice ? `$${formattedPrice}` : '-'}
+								{formattedPrice}
 								<small>USD</small>
 							</div>
 						</div>
@@ -272,11 +335,16 @@ export default function Project({
 							<button
 								className={classNames(
 									styles.overviewActionButtons,
-									styles.likes
+									styles.likes,
+									{ [styles.active]: isProjectLiked }
 								)}
 								onClick={likeProject}
 							>
-								<HeartVector />
+								{isLikeLoading ? (
+									<LoadingSpinner />
+								) : (
+									<HeartVector />
+								)}
 								{likes}
 							</button>
 							<button
@@ -311,28 +379,36 @@ export default function Project({
 							{status === 'ico' ? 'ICO' : status || 'Live'}
 						</p>
 					</div>
-					{status === 'ico' && statusEndsAt && (
-						<div className={styles.datum}>
-							<h6 className={styles.datumTitle}>ICO ending in</h6>
-							<div className={styles.datumCountdown}>
-								<IcoCountdown endDate={statusEndsAt} />
-							</div>
-						</div>
+					{!!statusEndsAt && status !== 'live' && (
+						<Countdown
+							status={formattedStatus}
+							date={statusEndsAt}
+							placeholder="ending in"
+						/>
 					)}
-					{marketCap && (
+					{!!statusStartsAt && !statusEndsAt && (
+						<Countdown
+							status={formattedStatus}
+							date={statusStartsAt}
+							placeholder="starting in"
+						/>
+					)}
+					{!!formattedMarketCap && (
 						<div className={styles.datum}>
 							<h6 className={styles.datumTitle}>Market cap</h6>
 							<p className={styles.datumText}>
-								${addThousandSeparator(Math.round(marketCap))}
+								${addThousandSeparator(formattedMarketCap)}
 							</p>
 						</div>
 					)}
-					<div className={styles.datum}>
-						<h6 className={styles.datumTitle}>Total supply</h6>
-						<p className={styles.datumText}>
-							{addThousandSeparator(tokenSupply)}
-						</p>
-					</div>
+					{!!formattedTokenSupply && (
+						<div className={styles.datum}>
+							<h6 className={styles.datumTitle}>Total supply</h6>
+							<p className={styles.datumText}>
+								{formattedTokenSupply}
+							</p>
+						</div>
+					)}
 					{!!tokenDistributionTax && (
 						<div className={styles.datum}>
 							<h6 className={styles.datumTitle}>

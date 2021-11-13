@@ -1,5 +1,3 @@
-import { useEffect } from 'react'
-import { useRouter } from 'next/router'
 import Link from 'next/link'
 
 import { pagesMetaData } from '@/constants'
@@ -20,10 +18,7 @@ export default function VerifyUser() {
 
 				<p className={styles.message}>
 					Sorry, this verification URL is incorrect or has already
-					expired. To generate a new URL, email us at{' '}
-					<Link href="mailto:support@astrano.io">
-						<a className={styles.link}>support@astrano.io</a>
-					</Link>
+					expired. To generate a new verification URL, register again.
 				</p>
 
 				<div className={styles.actions}>

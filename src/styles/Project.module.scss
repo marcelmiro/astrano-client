@@ -163,6 +163,13 @@
 		path {
 			fill: rgb(var(--primary));
 		}
+		path:global(#fill) {
+			fill: transparent;
+			transition: all 0.24s;
+		}
+	}
+	&.active svg path:global(#fill) {
+		fill: rgb(var(--primary));
 	}
 }
 .overviewIconButton {
@@ -201,7 +208,7 @@
 	margin-top: 4rem;
 	display: flex;
 	flex-flow: row wrap;
-	gap: 5.25rem;
+	gap: 1.5rem 5.25rem;
 }
 .datum {
 	padding: 0.125rem 0;

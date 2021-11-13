@@ -6,14 +6,11 @@ import {
 	UseFormWatch,
 } from 'react-hook-form'
 import classNames from 'classnames'
+import Big from 'big.js'
 
 import { NewForm as IForm } from '@/types'
 import { token as tokenConstants, tokenCreationTax } from '@/constants'
-import {
-	addThousandSeparator,
-	expToNumber,
-	safeMultiplication,
-} from '@/utils/number'
+import { addThousandSeparator } from '@/utils/number'
 import InputGroup from '@/components/InputGroup'
 import SkeletonImage from '@/components/SkeletonImage'
 
@@ -80,20 +77,19 @@ export default function TokenStep({
 	}
 
 	useEffect(() => {
-		const numericSupply = parseInt(totalSupply)
-		if (
-			!numericSupply ||
-			totalSupply.length > tokenConstants.totalSupply.maxLength
-		) {
-			return setReceivedSupply('0')
+		try {
+			const supply = Big(totalSupply)
+			if (
+				supply.toString().length > tokenConstants.totalSupply.maxLength
+			) {
+				return setReceivedSupply('0')
+			}
+
+			const receivedSupply = supply.mul(1 - tokenCreationTax)
+			setReceivedSupply(receivedSupply.toString() || '0')
+		} catch (e) {
+			setReceivedSupply('0')
 		}
-		const receivedSupply =
-			!!numericSupply &&
-			safeMultiplication(numericSupply, 1 - tokenCreationTax)
-		const processedReceivedSupply = receivedSupply
-			? expToNumber(receivedSupply) || ''
-			: totalSupply
-		setReceivedSupply(processedReceivedSupply)
 	}, [totalSupply])
 
 	useEffect(() => {

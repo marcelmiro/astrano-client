@@ -85,7 +85,7 @@ export default function Dropdown({
 				onChange(tempDefaultItem.value)
 			}
 		}
-	}, [value])
+	}, [value, items, onChange])
 
 	// On component mount
 	useEffect(() => {

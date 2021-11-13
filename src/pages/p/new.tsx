@@ -93,7 +93,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export default function New() {
 	const { user, setShowAuthModal } = useAuth()
-	const [activeStep, setActiveStep] = useState(0)
+	const [activeStep, setActiveStep] = useState(1)
 	const isLastStep = activeStep === steps.length - 1
 	const {
 		register,
@@ -110,7 +110,7 @@ export default function New() {
 	// On component mount check if user logged in
 	useEffect(() => {
 		if (!user) setShowAuthModal(true)
-	}, [])
+	}, [user, setShowAuthModal])
 
 	if (isSubmitSuccessful) {
 		return (
