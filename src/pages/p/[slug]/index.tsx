@@ -5,7 +5,6 @@ import Big from 'big.js'
 import { AxiosRequestHeaders } from 'axios'
 
 import {
-	blockchainExplorerUrl,
 	pagesMetaData,
 	errorData,
 	contractAddressLastCharactersLength,
@@ -173,6 +172,7 @@ export default function Project({
 
 	const {
 		contractAddress,
+		blockchainExplorerUrl,
 		symbol: tokenSymbol,
 		totalSupply: _tokenSupply,
 		// decimals: tokenDecimals,
@@ -230,9 +230,17 @@ export default function Project({
 
 	const websiteDomain = getDomainFromUrl(website) || 'website'
 
+	const blockchainExplorerDomain =
+		getDomainFromUrl(blockchainExplorerUrl) || 'website'
+
 	const copyContractAddress = () => copyToClipboard(contractAddress)
 
 	// const addToMetamask = () => alert('Add token to MetaMask...')
+
+	const openReportModal = () => {
+		if (!contextUser) return setShowAuthModal(true)
+		setShowReportModal(true)
+	}
 
 	const sendReport = async (message: string) => {
 		setReportStatus('success')
@@ -248,9 +256,9 @@ export default function Project({
 		const fetchOptions: AxiosRequestHeaders = {
 			method: isProjectLiked ? 'DELETE' : 'PUT',
 		}
-		const { data } = await fetcher(`/projects/${slug}/likes`, fetchOptions)
+		const { error } = await fetcher(`/projects/${slug}/likes`, fetchOptions)
 
-		if (data) {
+		if (!error) {
 			// Update liked projects list
 			const newLikedProjects = isProjectLiked
 				? contextUser.likedProjects.filter((pId) => pId !== id)
@@ -352,7 +360,7 @@ export default function Project({
 									styles.overviewActionButtons,
 									styles.overviewIconButton
 								)}
-								onClick={() => setShowReportModal(true)}
+								onClick={openReportModal}
 							>
 								<FlagVector />
 							</button>
@@ -376,7 +384,7 @@ export default function Project({
 							className={styles.datumText}
 							style={{ textTransform: 'capitalize' }}
 						>
-							{status === 'ico' ? 'ICO' : status || 'Live'}
+							{formattedStatus}
 						</p>
 					</div>
 					{!!statusEndsAt && status !== 'live' && (
@@ -469,16 +477,16 @@ export default function Project({
 							</div>
 						</div>
 						<div className={styles.sidebarDetail}>
-							<p className={styles.sidebarTitle}>BSC explorer</p>
-							<Link
-								href={blockchainExplorerUrl + contractAddress}
-							>
+							<p className={styles.sidebarTitle}>
+								Blockchain explorer
+							</p>
+							<Link href={blockchainExplorerUrl}>
 								<a
 									className={styles.sidebarText}
 									target="_blank"
 									rel="noopener noreferrer"
 								>
-									<span>bscscan.com</span>
+									<span>{blockchainExplorerDomain}</span>
 									<LinkVector />
 								</a>
 							</Link>

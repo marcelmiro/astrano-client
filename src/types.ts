@@ -33,6 +33,7 @@ interface IProjectToken {
 	decimals: number
 	distributionTax: number
 	contractAddress: string
+	blockchainExplorerUrl: string
 	price: string
 }
 

@@ -87,6 +87,7 @@ const UserDropdown = ({
 			className={classNames(styles.dropdownContainer, styles.rightAlign, {
 				[styles.open]: show,
 			})}
+			tabIndex={0}
 		>
 			{user ? (
 				<>

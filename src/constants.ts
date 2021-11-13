@@ -9,8 +9,6 @@ import NumberListVector from '@/public/numbered-list.svg'
 
 export const baseUrl = 'https://app.astrano.io'
 
-export const blockchainExplorerUrl = 'https://bscscan.com/token/'
-
 export const marketBaseUrl = 'https://pancakeswap.finance/swap?outputCurrency='
 
 export const metaDefaults = {
@@ -34,7 +32,7 @@ export const pagesMetaData = {
 			`${projectName} project information, live price and more  | Astrano`,
 	},
 	verifyUser: {
-		title: 'User verification | Astrano'
+		title: 'User verification | Astrano',
 	},
 }
 
