@@ -69,13 +69,19 @@ const ProjectContainer = ({ view, projects }: ProjectContainerProps) => {
 
 	return (
 		<>
-			{projects.map((project) =>
-				view === 'card' ? (
+			{projects.map((project) => {
+				const status = project.status.name
+				project.status.name =
+					status === 'ico'
+						? 'ICO'
+						: status[0].toUpperCase() + status.slice(1)
+
+				return view === 'card' ? (
 					<ProjectCard {...project} key={project.slug} />
 				) : (
 					<ProjectListing {...project} key={project.slug} />
 				)
-			)}
+			})}
 		</>
 	)
 }

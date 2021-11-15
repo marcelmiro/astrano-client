@@ -26,7 +26,8 @@
 			}
 		}
 	}
-	&:hover .checkbox {
+	&:hover .checkbox,
+	input[type='checkbox']:focus + .checkbox {
 		border-color: rgb(var(--primary-200));
 	}
 	& + & {

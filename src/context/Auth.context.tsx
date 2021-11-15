@@ -1,4 +1,11 @@
-import { useState, createContext, useContext, useEffect, useRef } from 'react'
+import {
+	useState,
+	createContext,
+	useContext,
+	useEffect,
+	useRef,
+	useCallback,
+} from 'react'
 
 import { IUser } from '@/types'
 import { useSwrImmutable } from '@/utils/fetcher'
@@ -45,8 +52,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		loading,
 		user,
 		showAuthModal,
-		setUser: (data: AuthContextProps['user']) => setUser(data),
-		setShowAuthModal: (value: boolean) => setShowAuthModal(value),
+		setUser: useCallback(
+			(data: AuthContextProps['user']) => setUser(data),
+			[]
+		),
+		setShowAuthModal: useCallback(
+			(value: boolean) => setShowAuthModal(value),
+			[]
+		),
 	}
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

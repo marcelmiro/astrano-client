@@ -1,6 +1,5 @@
 .container {
 	width: 16rem;
-	margin-right: 6.25rem;
 }
 
 .action + .action {
@@ -232,6 +231,38 @@
 		transition: color 0.16s;
 		&:hover {
 			color: rgb(var(--primary-200));
+		}
+	}
+}
+
+@media screen and (max-width: 840px) {
+	.container {
+		display: flex;
+		flex-flow: row wrap;
+		width: auto;
+	}
+	.action {
+		width: 16rem;
+		& + & {
+			margin-top: 0;
+			margin-left: 1.5rem;
+		}
+	}
+	.footer {
+		display: none;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.container {
+		flex-flow: column nowrap;
+		width: 100%;
+	}
+	.action {
+		width: 100%;
+		& + & {
+			margin-left: 0;
+			margin-top: 1.5rem;
 		}
 	}
 }

@@ -527,16 +527,11 @@ export default function Project({
 
 					<div className={styles.overviewContent}>
 						{description ? (
-							<>
-								<h2 className={styles.overviewTitle}>
-									Project Description
-								</h2>
-								<ViewEditor
-									rawState={description}
-									className={styles.description}
-									NotFoundComponent={DescriptionNotFound}
-								/>
-							</>
+							<ViewEditor
+								rawState={description}
+								className={styles.description}
+								NotFoundComponent={DescriptionNotFound}
+							/>
 						) : (
 							<DescriptionNotFound />
 						)}

@@ -11,6 +11,7 @@ import TokenStep from '@/components/NewForm/TokenStep'
 import SuccessStep from '@/components/NewForm/SuccessStep'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import { useAuth } from '@/context/Auth.context'
+import fetcher, { parseFormError } from '@/utils/fetcher'
 
 import styles from '@/styles/new.module.scss'
 import stepStyles from '@/styles/FormStep.module.scss'
@@ -32,7 +33,7 @@ const steps: Step[] = [
 		fields: [
 			'tokenName',
 			'tokenSymbol',
-			'tokenLogo',
+			'logo',
 			'tokenSupply',
 			'tokenDecimals',
 			'tokenDistributionTax',
@@ -89,19 +90,21 @@ const SubmitButtonContent = () => (
 	</div>
 )
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
 export default function New() {
 	const { user, setShowAuthModal } = useAuth()
-	const [activeStep, setActiveStep] = useState(1)
+	const [activeStep, setActiveStep] = useState(0)
 	const isLastStep = activeStep === steps.length - 1
+	const [generalError, setGeneralError] = useState('')
+	const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false)
+
 	const {
 		register,
 		handleSubmit,
 		trigger,
 		watch,
 		setValue,
-		formState: { errors, isSubmitting, isSubmitSuccessful },
+		setError,
+		formState: { errors, isSubmitting },
 	} = useForm<IForm>({ defaultValues, mode: 'onChange' })
 
 	// On step change
@@ -122,9 +125,23 @@ export default function New() {
 	}
 
 	const submitProject = handleSubmit(async (data: IForm) => {
-		await sleep(4000)
-		console.log('Submit project:')
-		console.log(data)
+		const { error } = await fetcher('/projects', { method: 'POST', data })
+
+		if (error) {
+			const fields = steps.map(({ fields }) => fields).flat()
+			parseFormError(error, setError, setGeneralError, fields)
+
+			const errorFields = Object.keys(errors)
+			for (let i = 0; i < steps.length; i++) {
+				if (steps[i].fields.some((r) => errorFields.indexOf(r) > -1)) {
+					return setActiveStep(i)
+				}
+			}
+			return
+		}
+
+		setIsSubmitSuccessful(true)
+		setGeneralError('')
 	})
 
 	const handleNextStep = async () => {
@@ -143,6 +160,7 @@ export default function New() {
 		setValue,
 		watch,
 		inputGroupDefaults,
+		generalError,
 	}
 
 	const renderActiveStep = () => {

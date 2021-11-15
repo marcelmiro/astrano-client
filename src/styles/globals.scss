@@ -30,7 +30,14 @@ body {
 }
 
 .wrapper {
-	width: 100%;
 	max-width: 75rem;
 	margin: 0 auto 5rem;
+	padding: 0 20px;
+	box-sizing: content-box;
+}
+
+@media screen and (max-width: 360px) {
+	.wrapper {
+		padding: 0 10px;
+	}
 }

@@ -3,7 +3,6 @@ import Error from '@/pages/_error'
 
 import { IProject } from '@/types'
 import fetcher from '@/utils/fetcher'
-import projects from '@/public/projects.json'
 
 const { projectNotFound } = errorData
 
@@ -12,14 +11,13 @@ interface BuyProjectProps {
 }
 
 export default function BuyProject({ errorCode }: BuyProjectProps) {
-	if (errorCode) {
+	if (errorCode)
 		return (
 			<Error
 				statusCode={errorCode}
 				{...(errorCode === 404 ? projectNotFound : {})}
 			/>
 		)
-	}
 
 	return null
 }

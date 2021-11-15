@@ -29,7 +29,7 @@ const swrFetcher = async (url: string) => {
 }
 
 const swrDefaults: SWRConfiguration = {
-	onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
+	onErrorRetry: (error, _key, _config, revalidate, { retryCount }) => {
 		// Never retry on 401
 		if (error.status === 401) return
 

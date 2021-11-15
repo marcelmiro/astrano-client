@@ -13,6 +13,7 @@ import { token as tokenConstants, tokenCreationTax } from '@/constants'
 import { addThousandSeparator } from '@/utils/number'
 import InputGroup from '@/components/InputGroup'
 import SkeletonImage from '@/components/SkeletonImage'
+import ErrorMessage from '@/components/ErrorMessage'
 
 import UploadVector from '@/public/upload.svg'
 import ArrowHead from '@/public/arrowhead.svg'
@@ -23,6 +24,7 @@ interface TokenStepProps {
 	errors: FieldErrors
 	setValue: UseFormSetValue<IForm>
 	watch: UseFormWatch<IForm>
+	generalError?: string
 	inputGroupDefaults: Record<string, string>
 }
 
@@ -40,6 +42,7 @@ export default function TokenStep({
 	errors,
 	setValue,
 	watch,
+	generalError,
 	inputGroupDefaults,
 }: TokenStepProps) {
 	const [showAdvanced, setShowAdvanced] = useState(false)
@@ -50,7 +53,7 @@ export default function TokenStep({
 	const logoRef = useRef<HTMLInputElement>(null)
 	const distributionValueRef = useRef<HTMLSpanElement>(null)
 	const distributionSliderRef = useRef<HTMLInputElement | null>(null)
-	const [logo, distributionTax] = watch(['tokenLogo', 'tokenDistributionTax'])
+	const [logo, distributionTax] = watch(['logo', 'tokenDistributionTax'])
 
 	const registerDistributionTax = register('tokenDistributionTax', {
 		valueAsNumber: true,
@@ -66,7 +69,7 @@ export default function TokenStep({
 	const onLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0]
 		if (!file?.name) return
-		setValue('tokenLogo', file, { shouldValidate: true })
+		setValue('logo', file, { shouldValidate: true })
 		setLogoPreview(generateImageBlob(file))
 	}
 
@@ -118,7 +121,7 @@ export default function TokenStep({
 	}, [distributionTax, showAdvanced])
 
 	useEffect(() => {
-		register('tokenLogo', tokenConstants.logo.schema)
+		register('logo', tokenConstants.logo.schema)
 		register('tokenSupply', tokenConstants.totalSupply.schema)
 	}, [register])
 
@@ -173,14 +176,14 @@ export default function TokenStep({
 			<InputGroup
 				label="Logo"
 				description="Choose the image to upload."
-				id="tokenLogo"
-				error={errors.tokenLogo?.message}
+				id="logo"
+				error={errors.logo?.message}
 				{...inputGroupDefaults}
 			>
 				<input
 					type="file"
 					accept="image/png, image/svg+xml, image/jpeg, image/webp"
-					id="tokenLogo"
+					id="logo"
 					onChange={onLogoChange}
 					ref={logoRef}
 				/>
@@ -323,6 +326,8 @@ export default function TokenStep({
 					</div>
 				</InputGroup>
 			</div>
+
+			<ErrorMessage message={generalError} className={styles.error} />
 		</>
 	)
 }

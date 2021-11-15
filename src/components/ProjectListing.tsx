@@ -59,13 +59,7 @@ export default function ProjectListing({
 
 				<div className={styles.lowerRow}>
 					<div className={styles.tags}>
-						<div className={styles.tag}>
-							{status === 'ico'
-								? 'ICO'
-								: status === 'live'
-								? 'Live'
-								: status}
-						</div>
+						<div className={styles.tag}>{status}</div>
 						{tags.map((tag, index) => (
 							<div className={styles.tag} key={index}>
 								{tag}

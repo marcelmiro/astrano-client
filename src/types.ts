@@ -71,7 +71,7 @@ export interface NewForm {
 	relationship: string
 	tokenName: string
 	tokenSymbol: string
-	tokenLogo: File
+	logo: File
 	tokenSupply: string
 	tokenDecimals: number
 	tokenDistributionTax: number

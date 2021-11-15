@@ -3,11 +3,11 @@ module.exports = {
 	poweredByHeader: false,
 
 	// TODO: Remove on next.js v12.1 as will become default
-	// swcMinify: true,
+	swcMinify: true,
 
 	images: {
-		// formats: ['image/avif', 'image/webp'],
-		domains: ['s2.coinmarketcap.com', 'i.imgur.com'],
+		formats: ['image/avif', 'image/webp'],
+		domains: ['cdn.astrano.io', 's2.coinmarketcap.com', 'i.imgur.com'],
 	},
 
 	webpack(config) {

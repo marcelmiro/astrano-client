@@ -2,6 +2,7 @@
 
 .container {
 	@include p.container;
+	min-width: 11.25rem;
 	position: relative;
 	overflow: hidden;
 }

@@ -356,7 +356,7 @@ export const project = {
 		minLength: 3,
 		// maxLength: 42,
 		schema: {
-			required: 'Please provide a project name',
+			required: 'Project name is required',
 			pattern: {
 				value: /^[a-zA-Z0-9 !@#$%&()?\-_.,]+$/,
 				message:
@@ -364,11 +364,13 @@ export const project = {
 			},
 			minLength: {
 				value: 3,
-				message: 'Project name must be at least 3 characters long',
+				message:
+					'Project name is too short - Should be 3 characters minimum',
 			},
 			maxLength: {
 				value: 42,
-				message: 'Project name must not exceed 42 characters',
+				message:
+					'Project name is too long - Should be 42 characters maximum',
 			},
 		},
 	},
@@ -388,38 +390,50 @@ export const project = {
 	summary: {
 		// maxLength: 160,
 		schema: {
+			minLength: {
+				value: 10,
+				message:
+					'Project summary is too short - Should be 10 characters minimum',
+			},
 			maxLength: {
 				value: 160,
-				message: 'Project summary must not exceed 160 characters',
+				message:
+					'Project summary is too long - Should be 160 characters maximum',
 			},
 		},
 	},
 	description: {
 		minLength: 200,
-		maxLength: 3200,
+		maxLength: 8000,
 		schema: {
 			validate: {
 				required: (value: RawDraftContentState) =>
 					value?.blocks?.map(({ text }) => text).join('').length >
-						0 || 'Please provide a project description',
+						0 || 'Project description is required',
 				minLength: (value: RawDraftContentState) =>
-					value.blocks.map(({ text }) => text).join('').length >
+					value.blocks.map(({ text }) => text).join('').length >=
 						200 ||
-					'Project description must be at least 200 characters long',
+					'Project description is too short - Should be 200 characters minimum',
 				maxLength: (value: RawDraftContentState) =>
-					value.blocks.map(({ text }) => text).join('').length <
-						3200 ||
-					'Project description must not exceed 3,200 characters',
+					value.blocks.map(({ text }) => text).join('').length <=
+						8000 ||
+					'Project description is too long - Should be 8000 characters maximum',
 			},
 		},
 	},
 	relationship: {
 		// maxLength: 400,
 		schema: {
-			required: 'Please provide a project relationship',
+			required: 'Project relationship is required',
+			minLength: {
+				value: 20,
+				message:
+					'Project relationship is too short - Should be 20 characters minimum',
+			},
 			maxLength: {
 				value: 400,
-				message: 'Project relationship must not exceed 400 characters',
+				message:
+					'Project relationship is too long - Should be 400 characters maximum',
 			},
 		},
 	},
@@ -430,19 +444,21 @@ export const token = {
 		minLength: 3,
 		maxLength: 42,
 		schema: {
-			required: 'Please provide a token name',
-			pattern: {
+			required: 'Token name is required',
+			/* pattern: {
 				value: /^[a-zA-Z0-9 ]+$/,
 				message:
 					'Sorry, only alphanumeric characters and spaces are allowed',
-			},
+			}, */
 			minLength: {
 				value: 3,
-				message: 'Token name must be at least 3 characters long',
+				message:
+					'Token name is too short - Should be 3 characters minimum',
 			},
 			maxLength: {
 				value: 42,
-				message: 'Token name must not exceed 42 characters',
+				message:
+					'Token name is too long - Should be 42 characters maximum',
 			},
 		},
 	},
@@ -450,7 +466,7 @@ export const token = {
 		minLength: 2,
 		maxLength: 5,
 		schema: {
-			required: 'Please provide a token ticker/symbol',
+			required: 'Ticker/symbol is required',
 			pattern: {
 				value: /^[a-zA-Z0-9]+$/,
 				message: 'Sorry, only alphanumeric characters are allowed',
@@ -458,11 +474,12 @@ export const token = {
 			minLength: {
 				value: 2,
 				message:
-					'Token ticker/symbol must be at least 2 characters long',
+					'Token ticker/symbol is too short - Should be 2 characters minimum',
 			},
 			maxLength: {
 				value: 5,
-				message: 'Token name must not exceed 5 characters',
+				message:
+					'Token name is too long - Should be 5 characters maximum',
 			},
 		},
 	},
@@ -470,8 +487,7 @@ export const token = {
 		schema: {
 			validate: {
 				required: (file: File) =>
-					Boolean(file?.name) ||
-					'Please provide a logo for your project and token',
+					Boolean(file?.name) || 'Project logo is required',
 			},
 		},
 	},
@@ -482,7 +498,7 @@ export const token = {
 		maxLength: 12,
 		default: 21000000,
 		schema: {
-			required: "Please provide the token's supply",
+			required: 'Token supply is required',
 			pattern: {
 				value: /^[0-9]+$/,
 				message: 'Sorry, only numbers are allowed',
@@ -506,7 +522,7 @@ export const token = {
 		maxLength: 2,
 		default: 18,
 		schema: {
-			required: "Please provide the token's decimals",
+			required: 'Token decimals is required',
 			pattern: {
 				value: /^[0-9]+$/,
 				message: 'Sorry, only numbers are allowed',
@@ -527,7 +543,7 @@ export const token = {
 		step: 0.1,
 		default: 2,
 		schema: {
-			required: "Please provide the token's distribution tax",
+			required: 'Token distribution tax is required',
 			min: {
 				value: 0,
 				message: 'Token distribution tax must be a positive number',

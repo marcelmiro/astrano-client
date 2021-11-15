@@ -102,7 +102,6 @@ const LoginContent = ({
 		}
 		if (!data) return
 
-		console.log(data)
 		setUser(data)
 		setGeneralError('')
 		onClose()
@@ -204,13 +203,12 @@ const RegisterContent = ({
 
 	const onSubmit = async (formData: ILogin) => {
 		const options: AxiosRequestConfig = { method: 'POST', data: formData }
-		const { data, error } = await fetcher('/auth/signup', options)
+		const { error } = await fetcher('/auth/signup', options)
 
 		if (error) {
 			parseFormError(error, setError, setGeneralError, registerPaths)
 			return
 		}
-		if (!data) return
 
 		setShowStatus(true)
 		setGeneralError('')
