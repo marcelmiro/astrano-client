@@ -21,12 +21,14 @@ export default function ViewEditor({
 	className,
 	NotFoundComponent,
 }: ViewEditorProps) {
-	// console.log(rawState)
-	const contentState =
-		rawState?.blocks && rawState.entityMap ? convertFromRaw(rawState) : null
+	// Set entityMap if doesn't exist
+	if (rawState && !rawState.entityMap) rawState.entityMap = {}
+
+	const contentState = rawState?.blocks ? convertFromRaw(rawState) : null
 	if (!contentState?.hasText()) {
 		return <NotFoundComponent className={className} />
 	}
+
 	const editorState = EditorState.createWithContent(contentState)
 
 	return (
