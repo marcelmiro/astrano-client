@@ -4,7 +4,7 @@ export interface IUser {
 	email: string
 	username: string
 	name: string
-	avatar: string
+	logoUrl: string
 	likedProjects: string[]
 }
 
@@ -23,7 +23,7 @@ export interface IRegister {
 
 interface IProjectUser {
 	username: string
-	avatar: string
+	logoUrl: string
 }
 
 interface IProjectToken {
@@ -48,7 +48,7 @@ export interface IProject {
 	_id: string
 	name: string
 	slug: string
-	logoUri: string
+	logoUrl: string
 	user: IProjectUser
 	tags: string[]
 	summary?: string

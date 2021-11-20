@@ -16,21 +16,32 @@ interface SkeletonImageProps {
 export default function SkeletonImage({
 	src,
 	alt,
-	objectFit = 'contain',
+	objectFit = 'cover',
 	className,
 }: SkeletonImageProps) {
 	const [isLoaded, setIsLoaded] = useState(false)
+	const [notFound, setNotFound] = useState(false)
 
 	return (
 		<div className={classNames(styles.container, className)}>
-			{!isLoaded && <div className={styles.placeholder} />}
-			<Image
-				src={src}
-				alt={alt}
-				layout="fill"
-				objectFit={objectFit}
-				onLoad={() => setIsLoaded(true)}
-			/>
+			{(!isLoaded || notFound) && (
+				<div
+					className={classNames(styles.placeholder, {
+						[styles.noAnimation]: notFound,
+					})}
+				/>
+			)}
+
+			{!notFound && (
+				<Image
+					src={src}
+					alt={alt}
+					layout="fill"
+					objectFit={objectFit}
+					onLoadingComplete={() => setIsLoaded(true)}
+					onError={() => setNotFound(true)}
+				/>
+			)}
 		</div>
 	)
 }

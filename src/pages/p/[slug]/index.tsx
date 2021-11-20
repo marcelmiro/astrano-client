@@ -141,7 +141,7 @@ export default function Project({
 	_id: id,
 	name,
 	slug,
-	logoUri,
+	logoUrl,
 	user,
 	tags,
 	summary,
@@ -276,7 +276,7 @@ export default function Project({
 			<Meta
 				title={pagesMetaData.project.title(name)}
 				description={summary}
-				image={logoUri}
+				image={logoUrl}
 			/>
 
 			<Report
@@ -290,7 +290,7 @@ export default function Project({
 			<div className={styles.container}>
 				<div className={styles.header}>
 					<SkeletonImage
-						src={logoUri}
+						src={logoUrl}
 						alt={name + ' logo'}
 						className={styles.image}
 					/>
@@ -306,9 +306,9 @@ export default function Project({
 						<div className={styles.author}>
 							{user?.username ? (
 								<>
-									{user?.avatar ? (
+									{user?.logoUrl ? (
 										<SkeletonImage
-											src={user.avatar}
+											src={user.logoUrl}
 											alt={
 												(user.username || 'User') +
 												' icon'

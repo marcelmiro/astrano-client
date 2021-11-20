@@ -14,7 +14,7 @@ interface ProjectProps extends IProject {}
 export default function ProjectListing({
 	name,
 	slug,
-	logoUri,
+	logoUrl,
 	user: { username },
 	tags,
 	token: { symbol, price },
@@ -30,7 +30,7 @@ export default function ProjectListing({
 	return (
 		<button className={styles.container} onClick={redirectToProjectPage}>
 			<SkeletonImage
-				src={logoUri}
+				src={logoUrl}
 				alt={name + ' logo'}
 				className={styles.image}
 			/>

@@ -7,7 +7,7 @@ module.exports = {
 
 	images: {
 		formats: ['image/avif', 'image/webp'],
-		domains: ['cdn.astrano.io', 's2.coinmarketcap.com', 'i.imgur.com'],
+		domains: ['cdn.astrano.io'],
 	},
 
 	webpack(config) {

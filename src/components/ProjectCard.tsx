@@ -13,7 +13,7 @@ interface ProjectProps extends IProject {}
 export default function ProjectCard({
 	name,
 	slug,
-	logoUri,
+	logoUrl,
 	user: { username },
 	tags,
 	token: { symbol, price },
@@ -30,7 +30,7 @@ export default function ProjectCard({
 		<button className={styles.container} onClick={redirectToProjectPage}>
 			<div className={styles.content}>
 				<SkeletonImage
-					src={logoUri}
+					src={logoUrl}
 					alt={name + ' logo'}
 					className={styles.image}
 				/>
