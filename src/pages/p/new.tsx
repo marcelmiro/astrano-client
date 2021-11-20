@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useForm, FieldErrors } from 'react-hook-form'
 import classNames from 'classnames'
+import { AxiosRequestConfig } from 'axios'
 
 import { NewForm as IForm } from '@/types'
 import { pagesMetaData, token as tokenConstants } from '@/constants'
@@ -125,7 +126,17 @@ export default function New() {
 	}
 
 	const submitProject = handleSubmit(async (data: IForm) => {
-		const { error } = await fetcher('/projects', { method: 'POST', data })
+		const formData = new FormData()
+		const { logo, ...restData } = data
+		formData.append('data', JSON.stringify(restData))
+		formData.append('logo', logo)
+
+		const fetchParams: AxiosRequestConfig = {
+			method: 'POST',
+			data: formData,
+			headers: { 'content-type': 'multipart/form-data' },
+		}
+		const { error } = await fetcher('/projects', fetchParams)
 
 		if (error) {
 			const fields = steps.map(({ fields }) => fields).flat()
