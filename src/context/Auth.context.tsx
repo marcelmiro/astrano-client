@@ -8,12 +8,13 @@ import {
 } from 'react'
 
 import { IUser } from '@/types'
-import { useSwrImmutable } from '@/utils/fetcher'
+import fetch, { useSwrImmutable } from '@/utils/fetch'
 
 interface AuthContextProps {
 	loading: boolean
 	user: IUser | null
 	setUser(data: AuthContextProps['user']): void
+	logOut(): Promise<void>
 	showAuthModal: boolean
 	setShowAuthModal(value: boolean): void
 }
@@ -21,8 +22,9 @@ interface AuthContextProps {
 const defaultValues: AuthContextProps = {
 	loading: true,
 	user: null,
-	showAuthModal: false,
 	setUser: () => {},
+	logOut: async () => {},
+	showAuthModal: false,
 	setShowAuthModal: () => {},
 }
 
@@ -48,18 +50,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		isMounted.current = true
 	}, [])
 
+	const _setUser = useCallback(
+		(data: AuthContextProps['user']) => setUser(data),
+		[]
+	)
+
+	const logOut = useCallback(async () => {
+		const { error } = await fetch('/auth/logOut', { method: 'POST' })
+		if (!error) setUser(null)
+	}, [])
+
+	const _setShowAuthModal = useCallback(
+		(value: boolean) => setShowAuthModal(value),
+		[]
+	)
+
 	const value = {
 		loading,
 		user,
 		showAuthModal,
-		setUser: useCallback(
-			(data: AuthContextProps['user']) => setUser(data),
-			[]
-		),
-		setShowAuthModal: useCallback(
-			(value: boolean) => setShowAuthModal(value),
-			[]
-		),
+		setUser: _setUser,
+		logOut,
+		setShowAuthModal: _setShowAuthModal,
 	}
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

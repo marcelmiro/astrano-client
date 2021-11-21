@@ -17,7 +17,7 @@ import Skeleton from '@/components/Skeleton'
 import Modal from '@/components/Modal'
 
 import { getItem } from '@/helpers/localStorage'
-import { useSwr } from '@/utils/fetcher'
+import { useSwr } from '@/utils/fetch'
 
 import CheckVector from '@/public/check.svg'
 import styles from '@/styles/index.module.scss'

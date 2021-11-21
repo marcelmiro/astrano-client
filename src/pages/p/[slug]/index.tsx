@@ -13,7 +13,7 @@ import {
 import { IProject } from '@/types'
 import { addThousandSeparator } from '@/utils/number'
 import { copyToClipboard } from '@/utils/element'
-import fetcher from '@/utils/fetcher'
+import fetch from '@/utils/fetch'
 import { useAuth } from '@/context/Auth.context'
 
 import Error from '@/pages/_error'
@@ -155,6 +155,7 @@ export default function Project({
 	const {
 		user: contextUser,
 		setUser: setContextUser,
+		logOut: contextLogOut,
 		setShowAuthModal,
 	} = useAuth()
 	const [showReportModal, setShowReportModal] = useState(false)
@@ -253,10 +254,16 @@ export default function Project({
 		if (!contextUser) return setShowAuthModal(true)
 
 		setIsLikeLoading(true)
+
 		const fetchOptions: AxiosRequestHeaders = {
 			method: isProjectLiked ? 'DELETE' : 'PUT',
 		}
-		const { error } = await fetcher(`/projects/${slug}/likes`, fetchOptions)
+
+		const { error } = await fetch(
+			`/projects/${slug}/likes`,
+			fetchOptions,
+			contextLogOut
+		)
 
 		if (!error) {
 			// Update liked projects list
@@ -549,7 +556,7 @@ export async function getServerSideProps({
 }) {
 	const { slug } = params
 
-	const { data: project, error } = await fetcher('/projects/' + slug)
+	const { data: project, error } = await fetch('/projects/' + slug)
 
 	if (error || !project) {
 		const errorCode = error?.status || 500

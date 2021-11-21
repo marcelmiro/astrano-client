@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { UseFormSetError, Path } from 'react-hook-form'
 import useSWRImmutable from 'swr/immutable'
-import useSWR, { SWRConfiguration } from 'swr'
+import useSWR, { SWRConfiguration, SWRResponse } from 'swr'
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/*$/, '')
 
@@ -17,21 +17,28 @@ const fetchApi = axios.create({
 	xsrfCookieName: csrfCookie,
 })
 
-const swrFetcher = async (url: string) => {
+const swrFetch = async (url: string /* , onLogout?: () => void */) => {
 	console.log('Swr fetch: ' + url)
 	try {
-		// await new Promise((resolve) => setTimeout(resolve, 3000))
 		const { data } = await fetchApi.get(url)
 		return data
 	} catch (e) {
+		/* // Check response status === 401 (invalid user)
+		// and run onLogout if exists
+		if (axios.isAxiosError(e) && e.response?.status === 401 && onLogout) {
+			try {
+				onLogout()
+			} catch (e) {}
+		} */
+
 		throw (e as any)?.response || e
 	}
 }
 
 const swrDefaults: SWRConfiguration = {
 	onErrorRetry: (error, _key, _config, revalidate, { retryCount }) => {
-		// Never retry on 401
-		if (error.status === 401) return
+		// Never retry on 401 or 404
+		if (error.status === 401 || error.status === 404) return
 
 		// Only retry up to 10 times
 		if (retryCount >= 10) return
@@ -41,13 +48,12 @@ const swrDefaults: SWRConfiguration = {
 	},
 }
 
-export const useSwr = <T = any, K = any>(url: string | null) => {
-	return useSWR<T, K>(url, swrFetcher, swrDefaults)
-}
+type UseSwr = <T = any, K = any>(url: string | null) => SWRResponse<T, K>
 
-export const useSwrImmutable = <T = any, K = any>(url: string | null) => {
-	return useSWRImmutable<T, K>(url, swrFetcher, swrDefaults)
-}
+export const useSwr: UseSwr = (url) => useSWR(url, swrFetch, swrDefaults)
+
+export const useSwrImmutable: UseSwr = (url) =>
+	useSWRImmutable(url, swrFetch, swrDefaults)
 
 interface FetchError {
 	status?: number
@@ -60,23 +66,24 @@ interface FetchError {
 	}>
 }
 
-const fetcher = async <T>(
+const fetch = async <T>(
 	url: string,
-	options: AxiosRequestConfig = {}
+	options: AxiosRequestConfig = {},
+	onLogout?: () => void
 ): Promise<{ data: T; error: null } | { error: FetchError; data: null }> => {
 	try {
-		console.log('Fetcher: ' + url)
-		// await new Promise((resolve) => setTimeout(resolve, 3000))
+		console.log('Fetch: ' + url)
 		const { data } = await fetchApi(url, options)
 		return { data, error: null }
 	} catch (e) {
 		const error: FetchError = {}
 
 		if (axios.isAxiosError(e)) {
-			// Delete user object if API response === 401 (invalid user)
-			if (e.response?.status === 401) {
-				console.log('Invalid user')
-				// deleteUser()
+			// Call onLogout if API response === 401 (invalid user)
+			if (e.response?.status === 401 && onLogout) {
+				try {
+					onLogout()
+				} catch (e) {}
 			}
 
 			error.status = e.response?.status
@@ -121,4 +128,4 @@ export const parseFormError = <T>(
 	}
 }
 
-export default fetcher
+export default fetch

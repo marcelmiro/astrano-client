@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 import { pagesMetaData } from '@/constants'
 import Meta from '@/components/Meta'
-import fetcher from '@/utils/fetcher'
+import fetch from '@/utils/fetch'
 
 import styles from '@/styles/UserVerification.module.scss'
 
@@ -38,7 +38,7 @@ export async function getServerSideProps({
 }) {
 	const token = params.token
 
-	const { data, error } = await fetcher('/auth/verify/' + token)
+	const { data, error } = await fetch('/auth/verify/' + token)
 
 	if (error && error.status !== 404) {
 		const errorCode = error.status || 500

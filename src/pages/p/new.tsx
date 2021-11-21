@@ -12,7 +12,7 @@ import TokenStep from '@/components/NewForm/TokenStep'
 import SuccessStep from '@/components/NewForm/SuccessStep'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import { useAuth } from '@/context/Auth.context'
-import fetcher, { parseFormError } from '@/utils/fetcher'
+import fetch, { parseFormError } from '@/utils/fetch'
 
 import styles from '@/styles/new.module.scss'
 import stepStyles from '@/styles/FormStep.module.scss'
@@ -92,7 +92,7 @@ const SubmitButtonContent = () => (
 )
 
 export default function New() {
-	const { user, setShowAuthModal } = useAuth()
+	const { user, logOut, setShowAuthModal } = useAuth()
 	const [activeStep, setActiveStep] = useState(0)
 	const isLastStep = activeStep === steps.length - 1
 	const [generalError, setGeneralError] = useState('')
@@ -136,7 +136,8 @@ export default function New() {
 			data: formData,
 			headers: { 'content-type': 'multipart/form-data' },
 		}
-		const { error } = await fetcher('/projects', fetchParams)
+
+		const { error } = await fetch('/projects', fetchParams, logOut)
 
 		if (error) {
 			const fields = steps.map(({ fields }) => fields).flat()

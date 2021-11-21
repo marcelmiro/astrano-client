@@ -2,7 +2,7 @@ import { errorData, marketBaseUrl } from '@/constants'
 import Error from '@/pages/_error'
 
 import { IProject } from '@/types'
-import fetcher from '@/utils/fetcher'
+import fetch from '@/utils/fetch'
 
 const { projectNotFound } = errorData
 
@@ -29,7 +29,7 @@ export async function getServerSideProps({
 }) {
 	const { slug } = params
 
-	const { data: project, error } = await fetcher<IProject>(
+	const { data: project, error } = await fetch<IProject>(
 		'/projects/' + slug
 	)
 

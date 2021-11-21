@@ -15,7 +15,7 @@ import Modal from '@/components/Modal'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import InputGroup from '@/components/InputGroup'
 import ErrorMessage from '@/components/ErrorMessage'
-import fetcher, { parseFormError } from '@/utils/fetcher'
+import fetch, { parseFormError } from '@/utils/fetch'
 
 import CrossVector from '@/public/cross.svg'
 import EyeVector from '@/public/eye.svg'
@@ -93,7 +93,7 @@ const LoginContent = ({
 
 	const onSubmit = async (formData: ILogin) => {
 		const options: AxiosRequestConfig = { method: 'POST', data: formData }
-		const { data, error } = await fetcher<IUser>('/auth/login', options)
+		const { data, error } = await fetch<IUser>('/auth/login', options)
 
 		if (error) {
 			const paths: (keyof ILogin)[] = ['email', 'password']
@@ -203,7 +203,7 @@ const RegisterContent = ({
 
 	const onSubmit = async (formData: ILogin) => {
 		const options: AxiosRequestConfig = { method: 'POST', data: formData }
-		const { error } = await fetcher('/auth/signup', options)
+		const { error } = await fetch('/auth/signup', options)
 
 		if (error) {
 			parseFormError(error, setError, setGeneralError, registerPaths)

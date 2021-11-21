@@ -10,7 +10,7 @@ import Toggle from '@/components/Toggle'
 import Skeleton from '@/components/Skeleton'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import SkeletonImage from '@/components/SkeletonImage'
-import fetcher from '@/utils/fetcher'
+import fetch from '@/utils/fetch'
 
 import AstranoVector from '@/public/astrano.svg'
 // import SearchVector from '@/public/search.svg'
@@ -128,7 +128,7 @@ const UserDropdown = ({
 
 export default function Navbar() {
 	const { pathname } = useRouter()
-	const { loading, user, setUser, setShowAuthModal } = useAuth()
+	const { loading, user, logOut: contextLogOut, setShowAuthModal } = useAuth()
 
 	const [showUserDropdown, setShowUserDropdown] = useState(false)
 	const toggleUserDropdown = () => setShowUserDropdown((prev) => !prev)
@@ -139,9 +139,8 @@ export default function Navbar() {
 	}
 
 	const logOut = async () => {
-		const { error } = await fetcher('/auth/logout', { method: 'POST' })
 		setShowUserDropdown(false)
-		if (!error) setUser(null)
+		await contextLogOut()
 	}
 
 	return (
