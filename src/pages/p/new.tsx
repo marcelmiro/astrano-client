@@ -42,7 +42,7 @@ const steps: Step[] = [
 	},
 ]
 
-const defaultValues = {
+const defaultValues: Partial<IForm> = {
 	tags: [],
 	tokenSupply: tokenConstants.totalSupply.default.toString(),
 	tokenDecimals: tokenConstants.decimals.default,
@@ -137,7 +137,12 @@ export default function New() {
 			headers: { 'content-type': 'multipart/form-data' },
 		}
 
-		const { error } = await fetch('/projects', fetchParams, logOut)
+		const { data: _data, error } = await fetch(
+			'/projects',
+			fetchParams,
+			logOut
+		)
+		console.log({ data: _data, error })
 
 		if (error) {
 			const fields = steps.map(({ fields }) => fields).flat()
@@ -153,7 +158,6 @@ export default function New() {
 		}
 
 		setIsSubmitSuccessful(true)
-		setGeneralError('')
 	})
 
 	const handleNextStep = async () => {

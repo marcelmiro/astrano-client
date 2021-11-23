@@ -110,22 +110,25 @@ export const parseFormError = <T>(
 	error: FetchError,
 	setError: UseFormSetError<T>,
 	setGeneralError: (message: string) => void,
-	paths?: Array<keyof T>
+	paths: Array<keyof T>
 ) => {
-	const { message, errors } = error
+	let generalError = ''
+	const { status, message, errors } = error
 
-	if (message) setGeneralError(message)
+	if (message && status !== 401) generalError = message
 
 	if (errors) {
 		errors.map(({ code, message, path }) => {
-			if (paths && paths.includes(path as keyof T)) {
+			if (paths.includes(path as keyof T)) {
 				const error = { type: code, message }
 				setError(path as Path<T>, error, { shouldFocus: true })
-			} else {
-				setGeneralError(message)
+			} else if (!generalError) {
+				generalError = message
 			}
 		})
 	}
+
+	setGeneralError(generalError)
 }
 
 export default fetch

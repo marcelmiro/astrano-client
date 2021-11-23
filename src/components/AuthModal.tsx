@@ -103,7 +103,6 @@ const LoginContent = ({
 		if (!data) return
 
 		setUser(data)
-		setGeneralError('')
 		onClose()
 	}
 
@@ -211,7 +210,6 @@ const RegisterContent = ({
 		}
 
 		setShowStatus(true)
-		setGeneralError('')
 	}
 
 	if (showStatus) return <VerifyEmail onClose={onClose} />
