@@ -1,4 +1,4 @@
-import React, { /* useState, useEffect */ } from 'react'
+import React /* useState, useEffect */ from 'react'
 // import { useRouter, NextRouter } from 'next/router'
 import Link from 'next/link'
 
@@ -14,7 +14,7 @@ import styles from '@/styles/FilterPanel.module.scss'
 
 interface IDropdown {
 	value?: string
-	setter(value: any): void
+	setter(value: unknown): void
 	items: Array<{
 		label: string
 		value: string
@@ -108,10 +108,10 @@ const addPriceQuery = (router: NextRouter, { min, max }: IPriceRange) => {
 export default function FilterPanel({
 	sort,
 	view,
-	// priceFilter,
-	// tokenFilter,
-	// projectFilter,
-}: // otherFilter,
+}: // priceFilter,
+// tokenFilter,
+// projectFilter,
+// otherFilter,
 FilterPanelProps) {
 	/* const router = useRouter()
 	const [selectedPriceIndex, setSelectedPriceIndex] = useState(-1)
@@ -346,24 +346,24 @@ FilterPanelProps) {
 			</div> */}
 
 			<div className={styles.footer}>
-					<a
-						href="https://astrano.io/#about"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						About
-					</a>
-					<Link href="/">
-						<a>Terms of Service</a>
-					</Link>
-					<Link href="/">
-						<a>Privacy Policy</a>
-					</Link>
-					<Link href="/">
-						<a>Cookie Policy</a>
-					</Link>
-					<p>© 2021 ASTRANO</p>
-				</div>
+				<a
+					href="https://astrano.io/#about"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					About
+				</a>
+				<Link href="/">
+					<a>Terms of Service</a>
+				</Link>
+				<Link href="/">
+					<a>Privacy Policy</a>
+				</Link>
+				<Link href="/">
+					<a>Cookie Policy</a>
+				</Link>
+				<p>© 2021 ASTRANO</p>
+			</div>
 		</div>
 	)
 }

@@ -1,1 +1,3 @@
-export default function IcoStep() {}
+export default function IcoStep() {
+    return null
+}

@@ -10,7 +10,6 @@ import Toggle from '@/components/Toggle'
 import Skeleton from '@/components/Skeleton'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import SkeletonImage from '@/components/SkeletonImage'
-import fetch from '@/utils/fetch'
 
 import AstranoVector from '@/public/astrano.svg'
 // import SearchVector from '@/public/search.svg'
@@ -70,7 +69,7 @@ const UserDropdown = ({
 	openAuthModal,
 }: UserDropdownProps) => {
 	const [isLoggingOut, setIsLoggingOut] = useState(false)
-	const [darkTheme, setDarkTheme] = useState(false)
+	const [darkTheme, setDarkTheme] = useState(true)
 	const toggleTheme = () => setDarkTheme((prev) => !prev)
 
 	if (loading) return null
@@ -91,6 +90,7 @@ const UserDropdown = ({
 		>
 			{user ? (
 				<>
+					{/* eslint-disable @typescript-eslint/no-empty-function */}
 					<button className={styles.dropdownItem} onClick={() => {}}>
 						<HeartVector />
 						<span>Liked projects</span>

@@ -51,6 +51,7 @@ interface ButtonWithLabel extends ButtonBase {
 	icon?: never
 }
 interface ButtonWithImage extends ButtonBase {
+	/* eslint-disable @typescript-eslint/no-explicit-any */
 	icon: any
 	label?: never
 }

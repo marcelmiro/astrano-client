@@ -39,11 +39,15 @@ export default function Modal({
 	containerClassName,
 	onCloseComplete,
 }: ModalProps) {
-	const handleClose = useCallback((e?: any) => {
-		e?.preventDefault()
-		e?.stopPropagation()
-		onClose()
-	}, [onClose])
+	/* eslint-disable @typescript-eslint/no-explicit-any */
+	const handleClose = useCallback(
+		(e?: any) => {
+			e?.preventDefault()
+			e?.stopPropagation()
+			onClose()
+		},
+		[onClose]
+	)
 
 	useEffect(() => {
 		const close = (e: KeyboardEvent) => {

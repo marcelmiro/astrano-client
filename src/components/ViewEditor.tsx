@@ -13,7 +13,7 @@ import styles from '@/styles/Editor.module.scss'
 interface ViewEditorProps {
 	rawState: RawDraftContentState
 	className?: string
-	NotFoundComponent: any
+	NotFoundComponent: (params: Record<string, unknown>) => JSX.Element
 }
 
 export default function ViewEditor({
@@ -49,6 +49,7 @@ export default function ViewEditor({
 				{process.browser && (
 					<Editor
 						editorState={editorState}
+						/* eslint-disable @typescript-eslint/no-empty-function */
 						onChange={() => {}}
 						readOnly
 						spellCheck={false}

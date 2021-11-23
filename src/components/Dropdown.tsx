@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import classNames from 'classnames'
 
-import { getItem, setItem } from '@/helpers/localStorage'
+import { setItem } from '@/helpers/localStorage'
 import { handleBlur } from '@/utils/element'
 
 import ArrowHead from '@/public/arrowhead.svg'
@@ -10,6 +10,7 @@ import styles from '@/styles/Dropdown.module.scss'
 interface IItem {
 	label: string
 	value: string
+	/* eslint-disable @typescript-eslint/no-explicit-any */
 	labelIcon?: any
 }
 
@@ -21,18 +22,18 @@ interface DropdownProps {
 	className?: string
 }
 
-interface IGetDefaultItem {
-	storageKey?: string
-	defaultValue?: IItem['value']
-	itemsList: IItem[]
-}
-
 const getItemFromValue = (
 	value: IItem['value'] | undefined,
 	items: IItem[]
 ): IItem | void => {
 	if (!value || !items || items.length === 0) return
 	return items.find((item) => item.value === value)
+}
+
+/* interface IGetDefaultItem {
+	storageKey?: string
+	defaultValue?: IItem['value']
+	itemsList: IItem[]
 }
 
 const getDefaultItem = ({
@@ -53,7 +54,7 @@ const getDefaultItem = ({
 
 	// Get item from value prop or first item in items list
 	return getItemFromValue(defaultValue, itemsList) || itemsList[0]
-}
+} */
 
 export default function Dropdown({
 	value,

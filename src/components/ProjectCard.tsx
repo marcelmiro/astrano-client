@@ -8,8 +8,6 @@ import SkeletonImage from '@/components/SkeletonImage'
 import HeartVector from '@/public/heart.svg'
 import styles from '@/styles/ProjectCard.module.scss'
 
-interface ProjectProps extends IProject {}
-
 export default function ProjectCard({
 	name,
 	slug,
@@ -19,7 +17,7 @@ export default function ProjectCard({
 	token: { symbol, price },
 	status: { name: status },
 	likes,
-}: ProjectProps) {
+}: IProject) {
 	const router = useRouter()
 	const projectPageLink = `/p/${slug}`
 	const redirectToProjectPage = () => router.push(projectPageLink)

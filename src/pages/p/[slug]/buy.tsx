@@ -29,16 +29,14 @@ export async function getServerSideProps({
 }) {
 	const { slug } = params
 
-	const { data: project, error } = await fetch<IProject>(
-		'/projects/' + slug
-	)
+	const { data: project, error } = await fetch<IProject>('/projects/' + slug)
 
-	if (error || !project) {
-		const errorCode = (error as any).status || 500
+	if (error) {
+		const errorCode = error.status || 500
 		return { props: { errorCode } }
 	}
 
-	if (project.status?.name === 'live') {
+	if (project?.status?.name === 'live') {
 		return {
 			redirect: {
 				permanent: false,

@@ -4,12 +4,9 @@ import { useRouter } from 'next/router'
 import { IProject } from '@/types'
 import { addThousandSeparator } from '@/utils/number'
 import SkeletonImage from '@/components/SkeletonImage'
-import Skeleton from './Skeleton'
 
 import HeartVector from '@/public/heart.svg'
 import styles from '@/styles/ProjectListing.module.scss'
-
-interface ProjectProps extends IProject {}
 
 export default function ProjectListing({
 	name,
@@ -20,7 +17,7 @@ export default function ProjectListing({
 	token: { symbol, price },
 	status: { name: status },
 	likes,
-}: ProjectProps) {
+}: IProject) {
 	const router = useRouter()
 	const projectPageLink = `/p/${slug}`
 	const redirectToProjectPage = () => router.push(projectPageLink)

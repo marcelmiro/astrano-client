@@ -244,6 +244,7 @@ export default function Project({
 	}
 
 	const sendReport = async (message: string) => {
+		console.log(message)
 		setReportStatus('success')
 	}
 

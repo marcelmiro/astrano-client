@@ -2,7 +2,6 @@ import Link from 'next/link'
 
 import { errorData } from '@/constants'
 import Meta from '@/components/Meta'
-import Navbar from '@/components/Navbar'
 
 import styles from '@/styles/error.module.scss'
 
