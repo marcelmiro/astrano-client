@@ -36,6 +36,16 @@ body {
 	box-sizing: content-box;
 }
 
+#nprogress {
+	$color: rgb(var(--purple-accent));
+	.bar {
+		background-color: $color !important;
+	}
+	.peg {
+		box-shadow: 0 0 10px $color, 0 0 5px $color !important;
+	}
+}
+
 @media screen and (max-width: 360px) {
 	.wrapper {
 		padding: 0 0.625rem;

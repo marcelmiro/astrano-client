@@ -40,7 +40,11 @@ const Avatar = ({ loading, logoUrl, toggleDropdown }: AvatarProps) => {
 	}
 
 	return (
-		<button className={styles.userButton} onClick={toggleDropdown}>
+		<button
+			className={styles.userButton}
+			onClick={toggleDropdown}
+			title="User"
+		>
 			{logoUrl ? (
 				<SkeletonImage
 					src={logoUrl}
@@ -196,39 +200,35 @@ export default function Navbar() {
 					</div> */}
 
 					<nav className={styles.nav}>
-						{pathname === '/' ? (
-							<div
-								className={classNames(
-									styles.navIcon,
-									styles.navActive
-								)}
+						<Link href="/">
+							<a
+								className={classNames(styles.navIcon, {
+									[styles.disabled]: pathname === '/',
+								})}
+								title="Home"
 							>
-								<HomeFilledVector />
-							</div>
-						) : (
-							<Link href="/">
-								<a className={styles.navIcon}>
+								{pathname === '/' ? (
+									<HomeFilledVector />
+								) : (
 									<HomeVector />
-								</a>
-							</Link>
-						)}
-
-						{pathname === '/p/new' ? (
-							<div
-								className={classNames(
-									styles.navIcon,
-									styles.navActive
 								)}
+							</a>
+						</Link>
+
+						<Link href="/p/new">
+							<a
+								className={classNames(styles.navIcon, {
+									[styles.disabled]: pathname === '/p/new',
+								})}
+								title="New project"
 							>
-								<CreateFilledVector />
-							</div>
-						) : (
-							<Link href="/p/new">
-								<a className={styles.navIcon}>
+								{pathname === '/p/new' ? (
+									<CreateFilledVector />
+								) : (
 									<CreateVector />
-								</a>
-							</Link>
-						)}
+								)}
+							</a>
+						</Link>
 
 						<div
 							className={classNames(

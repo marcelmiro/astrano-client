@@ -94,8 +94,11 @@
 		fill: rgb(var(--primary));
 		transition: fill 0.16s ease-in-out;
 	}
-	&:not(.navActive):hover path {
+	&:hover path {
 		fill: rgb(var(--primary-200));
+	}
+	&.disabled {
+		pointer-events: none;
 	}
 }
 

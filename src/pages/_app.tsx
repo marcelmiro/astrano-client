@@ -1,4 +1,5 @@
 import { AppProps } from 'next/app'
+import NextNProgress from 'nextjs-progressbar'
 
 import { AuthProvider } from '@/context/Auth.context'
 import Layout from '@/components/Layout'
@@ -9,6 +10,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<AuthProvider>
 			<Layout>
+				<NextNProgress
+					height={3}
+					showOnShallow={true}
+					options={{ showSpinner: false }}
+				/>
 				<Component {...pageProps} />
 			</Layout>
 		</AuthProvider>
