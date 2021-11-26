@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/router'
+import { useRouter, NextRouter } from 'next/router'
 import classNames from 'classnames'
 
 import { IProject } from '@/types'
@@ -30,6 +30,7 @@ interface UserVerifiedProps {
 interface ProjectContainerProps {
 	view: string
 	projects?: IProject[]
+	router: NextRouter
 }
 
 const UserVerified = ({ show, onClose }: UserVerifiedProps) => (
@@ -48,7 +49,11 @@ const UserVerified = ({ show, onClose }: UserVerifiedProps) => (
 	</Modal>
 )
 
-const ProjectContainer = ({ view, projects }: ProjectContainerProps) => {
+const ProjectContainer = ({
+	view,
+	projects,
+	router,
+}: ProjectContainerProps) => {
 	if (!projects) {
 		const skeletons = [...new Array(12)].map((_, index) => (
 			<Skeleton
@@ -66,16 +71,27 @@ const ProjectContainer = ({ view, projects }: ProjectContainerProps) => {
 	return (
 		<>
 			{projects.map((project) => {
+				const redirectUrl = `/p/${project.slug}`
+				const redirect = () =>
+					router.push(redirectUrl, undefined, { shallow: true })
+
 				const status = project.status.name
 				project.status.name =
 					status === 'ico'
 						? 'ICO'
 						: status[0].toUpperCase() + status.slice(1)
 
+				const props = {
+					...project,
+					redirectUrl,
+					redirect,
+					key: project.slug,
+				}
+
 				return view === 'card' ? (
-					<ProjectCard {...project} key={project.slug} />
+					<ProjectCard {...props} />
 				) : (
-					<ProjectListing {...project} key={project.slug} />
+					<ProjectListing {...props} />
 				)
 			})}
 		</>
@@ -148,7 +164,11 @@ export default function Index() {
 					})}
 				>
 					{isMounted.current && (
-						<ProjectContainer view={view} projects={projects} />
+						<ProjectContainer
+							view={view}
+							projects={projects}
+							router={router}
+						/>
 					)}
 				</div>
 			</div>

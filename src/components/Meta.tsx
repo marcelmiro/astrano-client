@@ -21,9 +21,9 @@ export default function Meta({
 	hideSeo,
 	children,
 }: MetaProps) {
-	const router = useRouter()
+	const { asPath } = useRouter()
 
-	const processedCanonical = canonical || metaDefaults.baseUrl + router.asPath
+	const processedCanonical = canonical || metaDefaults.baseUrl + asPath
 	const processedImage = image || metaDefaults.image
 
 	return (

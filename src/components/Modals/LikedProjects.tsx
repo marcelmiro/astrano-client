@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/router'
+import Router from 'next/router'
 
 import { IProject } from '@/types'
 import { useSwrImmutable } from '@/utils/fetch'
@@ -55,7 +55,6 @@ const Content = ({ isLoading, projects, redirectToProject }: ContentProps) => {
 }
 
 export default function LikedProjects({ show, onClose }: LikedProjectsProps) {
-	const Router = useRouter()
 	const { logOut } = useAuth()
 	const [projects, setProjects] = useState<LikedProject[]>([])
 	const isMounted = useRef(false)

@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 
 import { IProject } from '@/types'
 import { addThousandSeparator } from '@/utils/number'
@@ -8,24 +7,27 @@ import SkeletonImage from '@/components/SkeletonImage'
 import HeartVector from '@/public/heart.svg'
 import styles from '@/styles/ProjectListing.module.scss'
 
+interface ProjectProps extends IProject {
+	redirectUrl: string
+	redirect(): void
+}
+
 export default function ProjectListing({
 	name,
-	slug,
 	logoUrl,
 	user: { username },
 	tags,
 	token: { symbol, price },
 	status: { name: status },
 	likes,
-}: IProject) {
-	const router = useRouter()
-	const projectPageLink = `/p/${slug}`
-	const redirectToProjectPage = () => router.push(projectPageLink)
+	redirectUrl,
+	redirect,
+}: ProjectProps) {
 	const _formattedPrice = addThousandSeparator(price)
 	const formattedPrice = _formattedPrice ? '$' + _formattedPrice : '-'
 
 	return (
-		<button className={styles.container} onClick={redirectToProjectPage}>
+		<button className={styles.container} onClick={redirect}>
 			<SkeletonImage
 				src={logoUrl}
 				alt={name + ' logo'}
@@ -36,7 +38,7 @@ export default function ProjectListing({
 				<div className={styles.upperRow}>
 					<div className={styles.info}>
 						<div className={styles.nameContainer}>
-							<Link href={projectPageLink}>
+							<Link href={redirectUrl}>
 								<a className={styles.name}>{name}</a>
 							</Link>
 							<div className={styles.symbol}>
