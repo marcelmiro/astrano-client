@@ -10,6 +10,7 @@ import Toggle from '@/components/Toggle'
 import Skeleton from '@/components/Skeleton'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import SkeletonImage from '@/components/SkeletonImage'
+import LikedProjects from '@/components/Modals/LikedProjects'
 
 import AstranoVector from '@/public/astrano.svg'
 // import SearchVector from '@/public/search.svg'
@@ -59,6 +60,7 @@ interface UserDropdownProps {
 	user: IUser | null
 	logOut(): Promise<void>
 	openAuthModal(): void
+	closeUserDropdown(): void
 }
 
 const UserDropdown = ({
@@ -67,7 +69,9 @@ const UserDropdown = ({
 	user,
 	logOut,
 	openAuthModal,
+	closeUserDropdown,
 }: UserDropdownProps) => {
+	const [showLikedProjects, setShowLikedProjects] = useState(false)
 	const [isLoggingOut, setIsLoggingOut] = useState(false)
 	const [darkTheme, setDarkTheme] = useState(true)
 	const toggleTheme = () => setDarkTheme((prev) => !prev)
@@ -81,48 +85,74 @@ const UserDropdown = ({
 		setIsLoggingOut(false)
 	}
 
+	const openLikedProjects = () => {
+		closeUserDropdown()
+		setShowLikedProjects(true)
+	}
+
 	return (
-		<div
-			className={classNames(styles.dropdownContainer, styles.rightAlign, {
-				[styles.open]: show,
-			})}
-			tabIndex={0}
-		>
-			{user ? (
-				<>
-					{/* eslint-disable @typescript-eslint/no-empty-function */}
-					<button className={styles.dropdownItem} onClick={() => {}}>
-						<HeartVector />
-						<span>Liked projects</span>
-					</button>
+		<>
+			<LikedProjects
+				show={showLikedProjects}
+				onClose={() => setShowLikedProjects(false)}
+			/>
+
+			<div
+				className={classNames(
+					styles.dropdownContainer,
+					styles.rightAlign,
+					{
+						[styles.open]: show,
+					}
+				)}
+				tabIndex={0}
+			>
+				{user ? (
+					<>
+						<button
+							className={styles.dropdownItem}
+							onClick={openLikedProjects}
+						>
+							<HeartVector />
+							<span>Liked projects</span>
+						</button>
+						<button
+							className={styles.dropdownItem}
+							onClick={handleLogOut}
+						>
+							{isLoggingOut ? (
+								<LoadingSpinner />
+							) : (
+								<LoginVector
+									style={{ transform: 'rotate(180deg)' }}
+								/>
+							)}
+							<span>Log out</span>
+						</button>
+					</>
+				) : (
 					<button
 						className={styles.dropdownItem}
-						onClick={handleLogOut}
+						onClick={openAuthModal}
 					>
-						{isLoggingOut ? (
-							<LoadingSpinner />
-						) : (
-							<LoginVector
-								style={{ transform: 'rotate(180deg)' }}
-							/>
-						)}
-						<span>Log out</span>
+						<LoginVector />
+						<span>Log in / Sign up</span>
 					</button>
-				</>
-			) : (
-				<button className={styles.dropdownItem} onClick={openAuthModal}>
-					<LoginVector />
-					<span>Log in / Sign up</span>
-				</button>
-			)}
+				)}
 
-			<div className={classNames(styles.dropdownItem, styles.noHover)}>
-				<button className={styles.themeButton} onClick={toggleTheme}>
-					Dark theme
-				</button>
-				<Toggle value={darkTheme} onChange={toggleTheme} />
+				<div
+					className={classNames(styles.dropdownItem, styles.noHover)}
+				>
+					<button
+						className={styles.themeButton}
+						onClick={toggleTheme}
+					>
+						Dark theme
+					</button>
+					<Toggle value={darkTheme} onChange={toggleTheme} />
+				</div>
 			</div>
-		</div>
+		</>
 	)
 }
 
@@ -220,6 +250,9 @@ export default function Navbar() {
 								user={user}
 								logOut={logOut}
 								openAuthModal={openAuthModal}
+								closeUserDropdown={() =>
+									setShowUserDropdown(false)
+								}
 							/>
 						</div>
 					</nav>

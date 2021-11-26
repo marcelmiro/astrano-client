@@ -14,7 +14,7 @@ import FilterPanel from '@/components/FilterPanel'
 import ProjectListing from '@/components/ProjectListing'
 import ProjectCard from '@/components/ProjectCard'
 import Skeleton from '@/components/Skeleton'
-import Modal from '@/components/Modal'
+import Modal from '@/components/Modals/Modal'
 
 import { getItem } from '@/helpers/localStorage'
 import { useSwr } from '@/utils/fetch'
@@ -33,11 +33,7 @@ interface ProjectContainerProps {
 }
 
 const UserVerified = ({ show, onClose }: UserVerifiedProps) => (
-	<Modal
-		show={show}
-		onClose={onClose}
-		containerClassName={styles.verifiedContainer}
-	>
+	<Modal show={show} onClose={onClose} className={styles.verifiedContainer}>
 		<div className={styles.verifiedContent}>
 			<div className={styles.verifiedIcon}>
 				<CheckVector />
@@ -93,9 +89,8 @@ export default function Index() {
 	const [verifiedModal, setVerifiedModal] = useState(false)
 	const isMounted = useRef(false)
 
-	const { data: projects } = useSwr(
-		isMounted.current ? `/projects?sort=${sort}` : null
-	)
+	const projectFetchUrl = isMounted.current ? `/projects?sort=${sort}` : null
+	const { data: projects } = useSwr(projectFetchUrl)
 
 	useEffect(() => {
 		const sortLocalStorage = getItem(sortObject.storage)

@@ -19,11 +19,11 @@
 		transition: background-color 0.25s;
 		&::after {
 			content: '';
-			width: 0.875rem;
-			height: 0.875rem;
+			width: 0.9375rem;
+			height: 0.9375rem;
 			position: absolute;
 			top: 50%;
-			left: 0.313rem;
+			left: 0.25rem;
 			transform: translateY(-50%);
 			border-radius: 100vmax;
 			background-color: rgb(var(--primary-200));
@@ -38,7 +38,7 @@
 		label {
 			background-color: transparent;
 			&::after {
-				left: calc(100% - 0.313rem);
+				left: calc(100% - 0.25rem);
 				transform: translate(-100%, -50%);
 				background-color: white;
 			}

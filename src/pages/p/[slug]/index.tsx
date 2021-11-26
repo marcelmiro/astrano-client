@@ -20,7 +20,7 @@ import Error from '@/pages/_error'
 import Meta from '@/components/Meta'
 import SkeletonImage from '@/components/SkeletonImage'
 import ViewEditor from '@/components/ViewEditor'
-import Report from '@/components/Report'
+import Report from '@/components/Modals/Report'
 import LoadingSpinner from '@/components/LoadingSpinner'
 
 import HeartVector from '@/public/heart-filled.svg'
@@ -355,6 +355,7 @@ export default function Project({
 									{ [styles.active]: isProjectLiked }
 								)}
 								onClick={likeProject}
+								title={isProjectLiked ? 'Dislike' : 'Like'}
 							>
 								{isLikeLoading ? (
 									<LoadingSpinner />
@@ -369,6 +370,7 @@ export default function Project({
 									styles.overviewIconButton
 								)}
 								onClick={openReportModal}
+								title="Report"
 							>
 								<FlagVector />
 							</button>

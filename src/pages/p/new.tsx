@@ -86,7 +86,7 @@ const StepStatus = ({ activeStep }: { activeStep: number }) => (
 
 const SubmitButtonContent = () => (
 	<div className={styles.submitButtonContent}>
-		<LoadingSpinner containerClassName={styles.loading} />
+		<LoadingSpinner className={styles.loading} />
 		<span>Submitting...</span>
 	</div>
 )

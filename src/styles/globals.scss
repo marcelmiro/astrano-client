@@ -32,12 +32,12 @@ body {
 .wrapper {
 	max-width: 75rem;
 	margin: 0 auto 5rem;
-	padding: 0 20px;
+	padding: 0 1.25rem;
 	box-sizing: content-box;
 }
 
 @media screen and (max-width: 360px) {
 	.wrapper {
-		padding: 0 10px;
+		padding: 0 0.625rem;
 	}
 }

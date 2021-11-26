@@ -17,19 +17,18 @@ const fetchApi = axios.create({
 	xsrfCookieName: csrfCookie,
 })
 
-const swrFetch = async (url: string /* , onLogout?: () => void */) => {
+const swrFetch = async (url: string, onLogout?: () => void) => {
 	console.log('Swr fetch: ' + url)
 	try {
 		const { data } = await fetchApi.get(url)
 		return data
 	} catch (e) {
-		/* // Check response status === 401 (invalid user)
-		// and run onLogout if exists
-		if (axios.isAxiosError(e) && e.response?.status === 401 && onLogout) {
+		// Check response status === 401 (invalid user) and run onLogout if exists
+		if (onLogout && axios.isAxiosError(e) && e.response?.status === 401) {
 			try {
 				onLogout()
 			} catch (e) {}
-		} */
+		}
 
 		throw (e as any)?.response || e
 	}
@@ -48,12 +47,16 @@ const swrDefaults: SWRConfiguration = {
 	},
 }
 
-type UseSwr = <T = any, K = any>(url: string | null) => SWRResponse<T, K>
+type UseSwr = <T = any, K = any>(
+	url: string | null,
+	onLogout?: () => void
+) => SWRResponse<T, K>
 
-export const useSwr: UseSwr = (url) => useSWR(url, swrFetch, swrDefaults)
+export const useSwr: UseSwr = (url, onLogout) =>
+	useSWR(url, (url) => swrFetch(url, onLogout), swrDefaults)
 
-export const useSwrImmutable: UseSwr = (url) =>
-	useSWRImmutable(url, swrFetch, swrDefaults)
+export const useSwrImmutable: UseSwr = (url, onLogout) =>
+	useSWRImmutable(url, (url) => swrFetch(url, onLogout), swrDefaults)
 
 interface FetchError {
 	status?: number

@@ -2,7 +2,7 @@ import { pagesMetaData } from '@/constants'
 import { useAuth } from '@/context/Auth.context'
 import Meta from '@/components/Meta'
 import Navbar from '@/components/Navbar'
-import AuthModal from '@/components/AuthModal'
+import AuthModal from '@/components/Modals/AuthModal'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const { showAuthModal, setShowAuthModal } = useAuth()

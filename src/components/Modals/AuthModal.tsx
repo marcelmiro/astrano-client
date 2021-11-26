@@ -11,7 +11,7 @@ import {
 	register as registerConstants,
 } from '@/constants'
 import { useAuth } from '@/context/Auth.context'
-import Modal from '@/components/Modal'
+import Modal from '@/components/Modals/Modal'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import InputGroup from '@/components/InputGroup'
 import ErrorMessage from '@/components/ErrorMessage'
@@ -21,7 +21,7 @@ import CrossVector from '@/public/cross.svg'
 import EyeVector from '@/public/eye.svg'
 import EyeDashVector from '@/public/eye-dash.svg'
 import CheckVector from '@/public/check.svg'
-import styles from '@/styles/AuthModal.module.scss'
+import styles from '@/styles/Modals/AuthModal.module.scss'
 
 interface AuthModalProps {
 	show: boolean
@@ -358,7 +358,7 @@ export default function AuthModal({ show, onClose }: AuthModalProps) {
 		<Modal
 			show={show}
 			onClose={handleClose}
-			containerClassName={classNames(styles.container, {
+			className={classNames(styles.container, {
 				[styles.registerContainer]: showRegister,
 				[styles.statusContainer]: showStatus,
 			})}

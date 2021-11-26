@@ -3,17 +3,17 @@ import classNames from 'classnames'
 import styles from '@/styles/LoadingSpinner.module.scss'
 
 interface LoadingSpinnerProps {
-	containerClassName?: string
+	className?: string
 	pathClassName?: string
 }
 
 export default function LoadingSpinner({
-	containerClassName,
+	className,
 	pathClassName,
 }: LoadingSpinnerProps) {
 	return (
 		<svg
-			className={classNames(styles.spinner, containerClassName)}
+			className={classNames(styles.spinner, className)}
 			viewBox="25 25 50 50"
 		>
 			<circle

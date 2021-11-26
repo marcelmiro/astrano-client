@@ -1,4 +1,5 @@
-@use 'constants' as *;
+@use '../constants' as *;
+@use 'index.module';
 
 .container {
 	$resizeDuration: 0.1s;
@@ -23,38 +24,7 @@
 }
 
 .closeButton {
-	$size: 2rem;
-	$hoverDuration: 0.24s;
-	width: $size;
-	height: $size;
-	border-radius: 50%;
-	border: 0.125rem solid rgb(var(--primary-600));
-	position: absolute;
-	top: 1rem;
-	right: 1.25rem;
-	cursor: pointer;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	transition: background-color $hoverDuration;
-	svg {
-		$size: 0.875rem;
-		width: $size;
-		height: $size;
-		path {
-			fill: rgb(var(--primary-400));
-			transition: fill $hoverDuration;
-		}
-	}
-	&:hover {
-		background-color: rgb(var(--primary-600));
-		svg path {
-			fill: rgb(var(--primary-100));
-		}
-	}
-	&:focus {
-		border-color: rgb(var(--primary-400));
-	}
+	@include index.closeButton;
 }
 
 .subTitle {

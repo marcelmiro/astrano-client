@@ -2,19 +2,19 @@ import { useState, useRef } from 'react'
 import classNames from 'classnames'
 
 import { reportStatuses, reportMessageMaxLength } from '@/constants'
-import Modal from '@/components/Modal'
+import Modal from '@/components/Modals/Modal'
 import LoadingSpinner from '@/components/LoadingSpinner'
 
 import CheckVector from '@/public/check.svg'
 import CrossVector from '@/public/cross.svg'
-import styles from '@/styles/Report.module.scss'
+import styles from '@/styles/Modals/Report.module.scss'
 
 type Status = typeof reportStatuses[number]
 
 interface ReportProps {
 	show: boolean
 	onClose(): void
-	onSend(message: string): void
+	onSend(message: string): Promise<void>
 	status: Status | null
 	onCloseComplete?(): void
 }
@@ -37,7 +37,7 @@ interface RenderContentProps {
 
 const LoadingContent = () => (
 	<div className={styles.loadingContent}>
-		<LoadingSpinner containerClassName={styles.loadingSpinner} />
+		<LoadingSpinner className={styles.loadingSpinner} />
 	</div>
 )
 
@@ -145,7 +145,7 @@ export default function Report({
 		<Modal
 			show={show}
 			onClose={onClose}
-			containerClassName={classNames(styles.container, {
+			className={classNames(styles.container, {
 				[styles.statusContainer]: hasStatus,
 			})}
 			{...(onCloseComplete ? { onCloseComplete } : {})}

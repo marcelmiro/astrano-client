@@ -2,14 +2,15 @@ import React, { useEffect, useCallback } from 'react'
 import classNames from 'classnames'
 import { motion, AnimatePresence } from 'framer-motion'
 
-import styles from '@/styles/Modal.module.scss'
+import styles from '@/styles/Modals/Modal.module.scss'
 
 interface ModalProps {
 	show: boolean
 	onClose(): void
 	children: React.ReactNode
-	containerClassName?: string
+	className?: string
 	onCloseComplete?(): void
+	centered?: boolean
 }
 
 const ANIMATION_DURATION = 0.1
@@ -36,8 +37,9 @@ export default function Modal({
 	show,
 	onClose,
 	children,
-	containerClassName,
+	className,
 	onCloseComplete,
+	centered = true,
 }: ModalProps) {
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	const handleClose = useCallback(
@@ -75,10 +77,7 @@ export default function Modal({
 					transition={{ duration: ANIMATION_DURATION }}
 				>
 					<motion.div
-						className={classNames(
-							styles.content,
-							containerClassName
-						)}
+						className={classNames(styles.content, className)}
 						onClick={(e) => e.stopPropagation()}
 						onMouseDown={(e) => e.stopPropagation()}
 						variants={contentAnimations}
@@ -87,7 +86,13 @@ export default function Modal({
 							type: 'spring',
 						}}
 					>
-						<div className={styles.verticalAlign}>
+						<div
+							className={
+								centered
+									? styles.verticalAlign
+									: styles.fullWidth
+							}
+						>
 							<div className={styles.horizontalAlign}>
 								<div className={styles.innerContent}>
 									{children}

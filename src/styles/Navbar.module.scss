@@ -85,6 +85,7 @@
 .nav {
 	display: flex;
 	flex-flow: row nowrap;
+	gap: 0 1.5rem;
 }
 .navIcon {
 	width: 1.375rem;
@@ -92,9 +93,6 @@
 	path {
 		fill: rgb(var(--primary));
 		transition: fill 0.16s ease-in-out;
-	}
-	& + & {
-		margin-left: 1.5rem;
 	}
 	&:not(.navActive):hover path {
 		fill: rgb(var(--primary-200));
@@ -180,4 +178,13 @@
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+}
+
+@media screen and (max-width: 360px) {
+	.nav {
+		flex-flow: row wrap;
+	}
+	.logoName {
+		display: none;
+	}
 }

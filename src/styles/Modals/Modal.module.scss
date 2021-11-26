@@ -1,4 +1,4 @@
-@use 'constants' as *;
+@use '../constants' as *;
 
 .container {
 	width: 100%;
@@ -32,4 +32,8 @@
 
 .horizontalAlign {
 	margin: 0 auto;
+}
+
+.fullWidth {
+	width: 100%;
 }
