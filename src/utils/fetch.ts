@@ -47,16 +47,26 @@ const swrDefaults: SWRConfiguration = {
 	},
 }
 
+export interface UseSwrOptions extends SWRConfiguration {
+	onLogout?: () => void
+}
+
 type UseSwr = <T = any, K = any>(
 	url: string | null,
-	onLogout?: () => void
+	options: UseSwrOptions
 ) => SWRResponse<T, K>
 
-export const useSwr: UseSwr = (url, onLogout) =>
-	useSWR(url, (url) => swrFetch(url, onLogout), swrDefaults)
+export const useSwr: UseSwr = (url, options = {}) => {
+	const { onLogout, ...swrOptions } = options
+	const useSwrOptions = { ...swrDefaults, ...swrOptions }
+	return useSWR(url, (url) => swrFetch(url, onLogout), useSwrOptions)
+}
 
-export const useSwrImmutable: UseSwr = (url, onLogout) =>
-	useSWRImmutable(url, (url) => swrFetch(url, onLogout), swrDefaults)
+export const useSwrImmutable: UseSwr = (url, options = {}) => {
+	const { onLogout, ...swrOptions } = options
+	const useSwrOptions = { ...swrDefaults, ...swrOptions }
+	return useSWRImmutable(url, (url) => swrFetch(url, onLogout), useSwrOptions)
+}
 
 interface FetchError {
 	status?: number
@@ -101,8 +111,7 @@ const fetch = async <T>(
 		}
 
 		if (!error.message && !error.errors) {
-			error.message =
-				'An unexpected error occurred. Please try again later'
+			error.message = 'An unexpected error occurred. Please try again later'
 		}
 
 		return { error, data: null }

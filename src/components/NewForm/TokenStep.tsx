@@ -13,7 +13,6 @@ import { token as tokenConstants, tokenCreationTax } from '@/constants'
 import { addThousandSeparator } from '@/utils/number'
 import InputGroup from '@/components/InputGroup'
 import SkeletonImage from '@/components/SkeletonImage'
-import ErrorMessage from '@/components/ErrorMessage'
 
 import UploadVector from '@/public/upload.svg'
 import ArrowHead from '@/public/arrowhead.svg'
@@ -24,7 +23,6 @@ interface TokenStepProps {
 	errors: FieldErrors
 	setValue: UseFormSetValue<IForm>
 	watch: UseFormWatch<IForm>
-	generalError?: string
 	inputGroupDefaults: Record<string, string>
 }
 
@@ -42,7 +40,6 @@ export default function TokenStep({
 	errors,
 	setValue,
 	watch,
-	generalError,
 	inputGroupDefaults,
 }: TokenStepProps) {
 	const [showAdvanced, setShowAdvanced] = useState(false)
@@ -326,8 +323,6 @@ export default function TokenStep({
 					</div>
 				</InputGroup>
 			</div>
-
-			<ErrorMessage message={generalError} className={styles.error} />
 		</>
 	)
 }

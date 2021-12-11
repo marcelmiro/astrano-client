@@ -9,6 +9,7 @@ import { pagesMetaData, token as tokenConstants } from '@/constants'
 import Meta from '@/components/Meta'
 import ProjectStep from '@/components/NewForm/ProjectStep'
 import TokenStep from '@/components/NewForm/TokenStep'
+import SocialStep from '@/components/NewForm/SocialStep'
 import SuccessStep from '@/components/NewForm/SuccessStep'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import { useAuth } from '@/context/Auth.context'
@@ -27,7 +28,7 @@ interface Step {
 const steps: Step[] = [
 	{
 		name: 'Project',
-		fields: ['name', 'tags', 'summary', 'description', 'relationship'],
+		fields: ['name', 'tags', 'description', 'relationship'],
 	},
 	{
 		name: 'Token',
@@ -39,6 +40,10 @@ const steps: Step[] = [
 			'tokenDecimals',
 			'tokenDistributionTax',
 		],
+	},
+	{
+		name: 'Social',
+		fields: ['website', 'socialUrls'],
 	},
 ]
 
@@ -93,7 +98,7 @@ const SubmitButtonContent = () => (
 
 export default function New() {
 	const { user, logOut, setShowAuthModal } = useAuth()
-	const [activeStep, setActiveStep] = useState(0)
+	const [activeStep, setActiveStep] = useState(2)
 	const isLastStep = activeStep === steps.length - 1
 	const [generalError, setGeneralError] = useState('')
 	const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false)
@@ -105,6 +110,7 @@ export default function New() {
 		watch,
 		setValue,
 		setError,
+		control,
 		formState: { errors, isSubmitting },
 	} = useForm<IForm>({ defaultValues, mode: 'onChange' })
 
@@ -126,6 +132,7 @@ export default function New() {
 	}
 
 	const submitProject = handleSubmit(async (data: IForm) => {
+		return console.log(data)
 		const formData = new FormData()
 		const { logo, ...restData } = data
 		formData.append('data', JSON.stringify(restData))
@@ -137,16 +144,12 @@ export default function New() {
 			headers: { 'content-type': 'multipart/form-data' },
 		}
 
-		const { data: _data, error } = await fetch(
-			'/projects',
-			fetchParams,
-			logOut
-		)
+		const { data: _data, error } = await fetch('/projects', fetchParams, logOut)
 		console.log({ data: _data, error })
 
 		if (error) {
 			const fields = steps.map(({ fields }) => fields).flat()
-			parseFormError(error, setError, setGeneralError, fields)
+			// parseFormError(error, setError, setGeneralError, fields)
 
 			const errorFields = Object.keys(errors)
 			for (let i = 0; i < steps.length; i++) {
@@ -175,6 +178,7 @@ export default function New() {
 		errors,
 		setValue,
 		watch,
+		control,
 		inputGroupDefaults,
 		generalError,
 	}
@@ -182,6 +186,7 @@ export default function New() {
 	const renderActiveStep = () => {
 		if (activeStep === 0) return <ProjectStep {...defaultStepProps} />
 		if (activeStep === 1) return <TokenStep {...defaultStepProps} />
+		if (activeStep === 2) return <SocialStep {...defaultStepProps} />
 		setActiveStep(0)
 	}
 
@@ -192,9 +197,8 @@ export default function New() {
 			<div className={styles.container}>
 				<h1 className={styles.title}>Create a project</h1>
 				<h2 className={styles.subtitle}>
-					Fund your project by creating your own cryptocurrency token.
-					Fields with a default value are not required to be filled
-					in.
+					Fund your project by creating your own cryptocurrency token. Fields
+					with a default value are not required to be filled in.
 				</h2>
 
 				<StepStatus activeStep={activeStep} />

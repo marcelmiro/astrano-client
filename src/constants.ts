@@ -14,6 +14,7 @@ export const marketBaseUrl = 'https://pancakeswap.finance/swap?outputCurrency='
 export const metaDefaults = {
 	baseUrl,
 	image: 'https://i.imgur.com/Bhu0XkA.png',
+	summaryLength: 160,
 }
 
 export const pagesMetaData = {
@@ -387,23 +388,8 @@ export const project = {
 			},
 		},
 	},
-	summary: {
-		// maxLength: 160,
-		schema: {
-			minLength: {
-				value: 10,
-				message:
-					'Project summary is too short - Should be 10 characters minimum',
-			},
-			maxLength: {
-				value: 160,
-				message:
-					'Project summary is too long - Should be 160 characters maximum',
-			},
-		},
-	},
 	description: {
-		minLength: 200,
+		minLength: 20, // 0,
 		maxLength: 8000,
 		schema: {
 			validate: {
@@ -412,8 +398,8 @@ export const project = {
 						0 || 'Project description is required',
 				minLength: (value: RawDraftContentState) =>
 					value.blocks.map(({ text }) => text).join('').length >=
-						200 ||
-					'Project description is too short - Should be 200 characters minimum',
+						20 ||
+					'Project description is too short - Should be 20 characters minimum',
 				maxLength: (value: RawDraftContentState) =>
 					value.blocks.map(({ text }) => text).join('').length <=
 						8000 ||
@@ -554,6 +540,30 @@ export const token = {
 			},
 		},
 	},
+}
+
+export const social = {
+	website: {
+		minLength: 4,
+		maxLength: 128,
+		schema: {
+			required: 'Website is required',
+			minLength: {
+				value: 4,
+				message:
+					'Website is too short - Should be 4 characters minimum',
+			},
+			maxLength: {
+				value: 128,
+				message:
+					'Website is too long - Should be 128 characters maximum',
+			},
+			pattern: {
+				value: /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
+				message: 'Please enter a valid URL',
+			},
+		},
+	}
 }
 
 export const editorConstants = {

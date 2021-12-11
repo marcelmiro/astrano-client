@@ -5,6 +5,7 @@ import Big from 'big.js'
 import { AxiosRequestHeaders } from 'axios'
 
 import {
+	metaDefaults,
 	pagesMetaData,
 	errorData,
 	contractAddressLastCharactersLength,
@@ -29,6 +30,8 @@ import CopyVector from '@/public/copy.svg'
 import LinkVector from '@/public/link.svg'
 // import MetamaskVector from '@/public/metamask.svg'
 import styles from '@/styles/Project.module.scss'
+
+const { summaryLength } = metaDefaults
 
 const { projectNotFound } = errorData
 
@@ -144,7 +147,6 @@ export default function Project({
 	logoUrl,
 	user,
 	tags,
-	summary,
 	description,
 	token,
 	status: statusObject,
@@ -237,6 +239,11 @@ export default function Project({
 	const copyContractAddress = () => copyToClipboard(contractAddress)
 
 	// const addToMetamask = () => alert('Add token to MetaMask...')
+
+	const summary = description.blocks
+		.map(({ text }) => text)
+		.join(' ')
+		.slice(0, summaryLength)
 
 	const openReportModal = () => {
 		if (!contextUser) return setShowAuthModal(true)

@@ -197,23 +197,6 @@ export default function ProjectStep({
 			</InputGroup>
 
 			<InputGroup
-				label="One-line description"
-				id="summary"
-				error={errors.summary?.message}
-				{...inputGroupDefaults}
-			>
-				<TextareaAutoHeight
-					{...register('summary', projectConstants.summary.schema)}
-					// maxLength={projectConstants.summary.maxLength}
-					placeholder="One-line description"
-					name="summary"
-					id="summary"
-					className={styles.textbox}
-					style={{ minHeight: '4rem' }}
-				/>
-			</InputGroup>
-
-			<InputGroup
 				label="Detailed description"
 				id="description"
 				error={errors.description?.message}
@@ -241,7 +224,7 @@ export default function ProjectStep({
 						'relationship',
 						projectConstants.relationship.schema
 					)}
-					// maxLength={projectConstants.summary.maxLength}
+					// maxLength={projectConstants.relationship.maxLength}
 					placeholder="Project relationship (e.g. CEO, founder or employee)"
 					name="relationship"
 					id="relationship"

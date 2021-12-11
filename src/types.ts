@@ -51,8 +51,7 @@ export interface IProject {
 	logoUrl: string
 	user: IProjectUser
 	tags: string[]
-	summary?: string
-	description?: RawDraftContentState
+	description: RawDraftContentState
 	relationship?: string
 	token: IProjectToken
 	status: IProjectStatus
@@ -66,7 +65,6 @@ export interface IProject {
 export interface NewForm {
 	name: string
 	tags: string[]
-	summary: string
 	description: RawDraftContentState
 	relationship: string
 	tokenName: string
@@ -75,4 +73,6 @@ export interface NewForm {
 	tokenSupply: string
 	tokenDecimals: number
 	tokenDistributionTax: number
+	website: string
+	socialUrls: Array<{ name: string, url: string }>
 }

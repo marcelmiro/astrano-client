@@ -17,7 +17,7 @@ import Skeleton from '@/components/Skeleton'
 import Modal from '@/components/Modals/Modal'
 
 import { getItem } from '@/helpers/localStorage'
-import { useSwr } from '@/utils/fetch'
+import { useSwr, UseSwrOptions } from '@/utils/fetch'
 
 import CheckVector from '@/public/check.svg'
 import styles from '@/styles/index.module.scss'
@@ -68,6 +68,9 @@ const ProjectContainer = ({
 		return <>{skeletons}</>
 	}
 
+	if (projects.length === 0)
+		return <p className={styles.noProjectsFound}>No projects found</p>
+
 	return (
 		<>
 			{projects.map((project) => {
@@ -77,9 +80,7 @@ const ProjectContainer = ({
 
 				const status = project.status.name
 				project.status.name =
-					status === 'ico'
-						? 'ICO'
-						: status[0].toUpperCase() + status.slice(1)
+					status === 'ico' ? 'ICO' : status[0].toUpperCase() + status.slice(1)
 
 				const props = {
 					...project,
@@ -106,7 +107,8 @@ export default function Index() {
 	const isMounted = useRef(false)
 
 	const projectFetchUrl = isMounted.current ? `/projects?sort=${sort}` : null
-	const { data: projects } = useSwr(projectFetchUrl)
+	const projectFetchOptions: UseSwrOptions = { refreshInterval: 120000 }
+	const { data: projects } = useSwr(projectFetchUrl, projectFetchOptions)
 
 	useEffect(() => {
 		const sortLocalStorage = getItem(sortObject.storage)
@@ -164,11 +166,7 @@ export default function Index() {
 					})}
 				>
 					{isMounted.current && (
-						<ProjectContainer
-							view={view}
-							projects={projects}
-							router={router}
-						/>
+						<ProjectContainer view={view} projects={projects} router={router} />
 					)}
 				</div>
 			</div>

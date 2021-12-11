@@ -11,6 +11,7 @@
 	flex-flow: row wrap;
 	align-items: center;
 }
+
 .toolboxButton {
 	width: 2.625rem;
 	height: 2.625rem;
@@ -46,6 +47,7 @@
 	}
 	@extend .editorStyles;
 }
+
 .editorStyles {
 	font-weight: 400;
 	font-size: 0.875rem;

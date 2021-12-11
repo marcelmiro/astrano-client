@@ -48,6 +48,13 @@
 	}
 }
 
+.noProjectsFound {
+	color: rgb(var(--primary));
+	font-weight: 400;
+	font-size: 1.125rem;
+	text-align: center;
+}
+
 .verifiedContainer {
 	padding: 1.75rem 2.75rem;
 	border-radius: 1rem;
