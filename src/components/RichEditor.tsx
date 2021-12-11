@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, forwardRef } from 'react'
+import { useState, useRef, useEffect, forwardRef } from 'react'
 import Head from 'next/head'
 import {
 	Editor,

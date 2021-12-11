@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import classNames from 'classnames'
 
 import { setItem } from '@/helpers/localStorage'

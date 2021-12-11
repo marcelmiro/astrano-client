@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import classNames from 'classnames'
 
@@ -21,6 +21,14 @@ export default function SkeletonImage({
 }: SkeletonImageProps) {
 	const [isLoaded, setIsLoaded] = useState(false)
 	const [notFound, setNotFound] = useState(false)
+	const isMounted = useRef(true)
+
+	useEffect(
+		() => () => {
+			isMounted.current = false
+		},
+		[]
+	)
 
 	return (
 		<div className={classNames(styles.container, className)}>
@@ -38,8 +46,10 @@ export default function SkeletonImage({
 					alt={alt}
 					layout="fill"
 					objectFit={objectFit}
-					onLoadingComplete={() => setIsLoaded(true)}
-					onError={() => setNotFound(true)}
+					onLoadingComplete={() =>
+						isMounted.current && setIsLoaded(true)
+					}
+					onError={() => isMounted.current && setNotFound(true)}
 				/>
 			)}
 		</div>

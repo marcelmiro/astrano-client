@@ -1,4 +1,4 @@
-import React, { forwardRef, RefCallback, useRef } from 'react'
+import { forwardRef, RefCallback, useRef } from 'react'
 
 interface TextareaAutoHeightProps {
 	onChange?(e: React.ChangeEvent<HTMLTextAreaElement>): void
