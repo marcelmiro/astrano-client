@@ -6,7 +6,7 @@ import classNames from 'classnames'
 import { IUser } from '@/types'
 import { useAuth } from '@/context/Auth.context'
 import { handleBlur } from '@/utils/element'
-import Toggle from '@/components/Toggle'
+// import Toggle from '@/components/Toggle'
 import Skeleton from '@/components/Skeleton'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import SkeletonImage from '@/components/SkeletonImage'
@@ -77,8 +77,8 @@ const UserDropdown = ({
 }: UserDropdownProps) => {
 	const [showLikedProjects, setShowLikedProjects] = useState(false)
 	const [isLoggingOut, setIsLoggingOut] = useState(false)
-	const [darkTheme, setDarkTheme] = useState(true)
-	const toggleTheme = () => setDarkTheme((prev) => !prev)
+	// const [darkTheme, setDarkTheme] = useState(true)
+	// const toggleTheme = () => setDarkTheme((prev) => !prev)
 
 	if (loading) return null
 
@@ -144,7 +144,7 @@ const UserDropdown = ({
 					</button>
 				)}
 
-				<div
+				{/* <div
 					className={classNames(styles.dropdownItem, styles.noHover)}
 				>
 					<button
@@ -154,7 +154,7 @@ const UserDropdown = ({
 						Dark theme
 					</button>
 					<Toggle value={darkTheme} onChange={toggleTheme} />
-				</div>
+				</div> */}
 			</div>
 		</>
 	)

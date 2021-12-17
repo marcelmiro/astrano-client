@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const relative = require('path').relative
 const loaderUtils = require('loader-utils')
 
@@ -8,9 +9,7 @@ function getCssModuleLocalIdent(context, _, exportName, options) {
 		context.resourcePath
 	).replace(/\\+/g, '/')
 
-	const buffer = Buffer.from(
-		`filePath:${relativePath}#className:${exportName}`
-	)
+	const buffer = Buffer.from(`filePath:${relativePath}#className:${exportName}`)
 
 	const hash = loaderUtils.getHashDigest(buffer, 'md5', 'base64', 6)
 
@@ -27,13 +26,18 @@ function getCssModuleLocalIdent(context, _, exportName, options) {
 
 const nextConfig = {
 	reactStrictMode: true,
+
 	poweredByHeader: false,
+
 	swcMinify: true, // TODO: Remove after next js v12.1 as will become default
+
 	images: {
 		formats: ['image/avif', 'image/webp'],
 		domains: ['cdn.astrano.io'],
 	},
+
 	webpack(config, { dev }) {
+		// SVGR config
 		config.module.rules.push({
 			test: /\.svg$/,
 			use: [
@@ -43,8 +47,13 @@ const nextConfig = {
 						svgoConfig: {
 							plugins: [
 								{
-									cleanupIDs: false,
-									prefixIds: false,
+									name: 'preset-default',
+									params: {
+										overrides: {
+											cleanupIDs: false,
+											prefixIds: false,
+										},
+									},
 								},
 							],
 						},
@@ -53,6 +62,7 @@ const nextConfig = {
 			],
 		})
 
+		// Hash class names in production
 		if (!dev) {
 			const rules = config.module.rules
 				.find((rule) => typeof rule.oneOf === 'object')
@@ -64,8 +74,7 @@ const nextConfig = {
 						moduleLoader.loader?.includes('css-loader') &&
 						!moduleLoader.loader.includes('postcss-loader')
 					) {
-						moduleLoader.options.modules.getLocalIdent =
-							getCssModuleLocalIdent
+						moduleLoader.options.modules.getLocalIdent = getCssModuleLocalIdent
 					}
 				})
 			})

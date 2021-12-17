@@ -30,6 +30,7 @@ const swrFetch = async (url: string, onLogout?: () => void) => {
 			} catch (e) {}
 		}
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		throw (e as any)?.response || e
 	}
 }
@@ -51,6 +52,7 @@ export interface UseSwrOptions extends SWRConfiguration {
 	onLogout?: () => void
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type UseSwr = <T = any, K = any>(
 	url: string | null,
 	options: UseSwrOptions
@@ -79,11 +81,13 @@ interface FetchError {
 	}>
 }
 
-const fetch = async <T>(
+type Fetch = <T>(
 	url: string,
-	options: AxiosRequestConfig = {},
+	options?: AxiosRequestConfig,
 	onLogout?: () => void
-): Promise<{ data: T; error: null } | { error: FetchError; data: null }> => {
+) => Promise<{ data: T; error: null } | { error: FetchError; data: null }>
+
+const fetch: Fetch = async (url, options = {}, onLogout) => {
 	try {
 		console.log('Fetch: ' + url)
 		const { data } = await fetchApi(url, options)
@@ -110,37 +114,66 @@ const fetch = async <T>(
 			}
 		}
 
-		if (!error.message && !error.errors) {
+		if (!error.message && !error.errors)
 			error.message = 'An unexpected error occurred. Please try again later'
-		}
 
 		return { error, data: null }
 	}
 }
 
-export const parseFormError = <T>(
-	error: FetchError,
-	setError: UseFormSetError<T>,
-	setGeneralError: (message: string) => void,
-	paths: Array<keyof T>
-) => {
-	let generalError = ''
-	const { status, message, errors } = error
+export interface FetchAndParseParams<K> {
+	fetchOptions: AxiosRequestConfig & { url: string; onLogout?: () => void }
+	setError: UseFormSetError<K>
+	setGeneralError: (message: string) => void
+	paths: Array<keyof K>
+	onError?: (errors: Record<string, string>) => void
+}
 
-	if (message && status !== 401) generalError = message
+const show401ErrorExceptions = ['/auth/login']
 
-	if (errors) {
-		errors.map(({ code, message, path }) => {
-			if (paths.includes(path as keyof T)) {
-				const error = { type: code, message }
-				setError(path as Path<T>, error, { shouldFocus: true })
-			} else if (!generalError) {
-				generalError = message
-			}
-		})
+// Generic type K defaults to any to prevent errors from UseFormSetError as it uses literal string union type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const fetchAndParse = async <T, K = any>({
+	fetchOptions,
+	setError,
+	setGeneralError,
+	paths,
+	onError,
+}: FetchAndParseParams<K>): Promise<T | null> => {
+	const { url, onLogout, ...restFetchOptions } = fetchOptions
+
+	const { data, error } = await fetch<T>(url, restFetchOptions, onLogout)
+
+	// Parse error if exists
+	if (error) {
+		let generalError = ''
+		const { status, message, errors } = error
+
+		// Set general error if message exists and error is not a 401 error
+		if (message && (status !== 401 || show401ErrorExceptions.includes(url)))
+			generalError = message
+
+		// Set field errors
+		const tempErrors: Record<string, string> = {}
+
+		if (errors) {
+			errors.map(({ code, message, path }) => {
+				if (paths.includes(path as keyof K)) {
+					const error = { type: code, message }
+					setError(path as Path<K>, error, { shouldFocus: true })
+					tempErrors[path] = message
+				} else if (!generalError) {
+					generalError = message
+				}
+			})
+		}
+
+		setGeneralError(generalError)
+
+		onError?.(tempErrors)
 	}
 
-	setGeneralError(generalError)
+	return data
 }
 
 export default fetch

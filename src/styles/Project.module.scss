@@ -302,6 +302,7 @@
 }
 .overviewContent {
 	flex: 1 0 0;
+	overflow: hidden; // Prevents long words not breaking and overflowing screen horizontally
 }
 .description {
 	margin-top: 1.5rem;

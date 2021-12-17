@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useForm, FieldErrors } from 'react-hook-form'
 import classNames from 'classnames'
-import { AxiosRequestConfig } from 'axios'
 
 import { NewForm as IForm } from '@/types'
 import { pagesMetaData, token as tokenConstants } from '@/constants'
@@ -13,7 +12,7 @@ import SocialStep from '@/components/NewForm/SocialStep'
 import SuccessStep from '@/components/NewForm/SuccessStep'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import { useAuth } from '@/context/Auth.context'
-import fetch, { parseFormError } from '@/utils/fetch'
+import { fetchAndParse, FetchAndParseParams } from '@/utils/fetch'
 
 import styles from '@/styles/new.module.scss'
 import stepStyles from '@/styles/FormStep.module.scss'
@@ -47,6 +46,8 @@ const steps: Step[] = [
 	},
 ]
 
+const stepFields = steps.map(({ fields }) => fields).flat()
+
 const defaultValues: Partial<IForm> = {
 	tags: [],
 	tokenSupply: tokenConstants.totalSupply.default.toString(),
@@ -67,6 +68,26 @@ const isStepValid = (activeStep: number, errors: FieldErrors) => {
 	const stepFields = steps[activeStep].fields
 	const stepErrors = stepFields.filter((field) => errors[field])
 	return stepErrors.length === 0
+}
+
+// Redirect to minimum step number on list of errors
+const redirectStepOnError = (
+	errors: Record<string, string>,
+	redirect: (step: number) => void
+) => {
+	let stepRedirect = -1
+
+	const errorFields = Object.keys(errors)
+
+	for (let i = 0; i < steps.length; i++) {
+		if (
+			steps[i].fields.some((field) => errorFields.indexOf(field) > -1) &&
+			(stepRedirect > i || stepRedirect === -1)
+		)
+			stepRedirect = i
+	}
+
+	if (stepRedirect >= 0) redirect(stepRedirect)
 }
 
 const DefaultRender = () => (
@@ -133,34 +154,32 @@ export default function New() {
 
 	const submitProject = handleSubmit(async (data: IForm) => {
 		return console.log(data)
+
+		// FIXME Test fetchAndParseOptions onError as its never been tested
 		const formData = new FormData()
 		const { logo, ...restData } = data
 		formData.append('data', JSON.stringify(restData))
 		formData.append('logo', logo)
 
-		const fetchParams: AxiosRequestConfig = {
-			method: 'POST',
-			data: formData,
-			headers: { 'content-type': 'multipart/form-data' },
+		const fetchAndParseOptions: FetchAndParseParams<IForm> = {
+			setError,
+			setGeneralError,
+			fetchOptions: {
+				url: '/projects',
+				method: 'POST',
+				headers: { 'content-type': 'multipart/form-data' },
+				data: formData,
+				onLogout: logOut,
+			},
+			paths: stepFields,
+			onError: (errors) => redirectStepOnError(errors, setActiveStep),
 		}
 
-		const { data: _data, error } = await fetch('/projects', fetchParams, logOut)
-		console.log({ data: _data, error })
+		const fetchData = await fetchAndParse(fetchAndParseOptions)
 
-		if (error) {
-			const fields = steps.map(({ fields }) => fields).flat()
-			// parseFormError(error, setError, setGeneralError, fields)
-
-			const errorFields = Object.keys(errors)
-			for (let i = 0; i < steps.length; i++) {
-				if (steps[i].fields.some((r) => errorFields.indexOf(r) > -1)) {
-					return setActiveStep(i)
-				}
-			}
-			return
+		if (fetchData) {
+			setIsSubmitSuccessful(true)
 		}
-
-		setIsSubmitSuccessful(true)
 	})
 
 	const handleNextStep = async () => {

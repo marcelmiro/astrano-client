@@ -103,10 +103,7 @@ const Countdown = ({ status, date, placeholder }: CountdownProps) => {
 	const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(date))
 
 	useEffect(() => {
-		const timer = setTimeout(
-			() => setTimeLeft(calculateTimeLeft(date)),
-			1000
-		)
+		const timer = setTimeout(() => setTimeLeft(calculateTimeLeft(date)), 1000)
 		return () => clearTimeout(timer)
 	})
 
@@ -164,6 +161,12 @@ export default function Project({
 	const [reportStatus, setReportStatus] = useState<ReportStatus | null>(null)
 	const [likes, setLikes] = useState(_likes)
 	const [isLikeLoading, setIsLikeLoading] = useState(false)
+	const [isProjectLiked, setIsProjectLiked] = useState(false)
+
+	useEffect(() => {
+		setIsProjectLiked(contextUser?.likedProjects.includes(id) || false)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [contextUser])
 
 	if (errorCode)
 		return (
@@ -255,8 +258,6 @@ export default function Project({
 		setReportStatus('success')
 	}
 
-	const isProjectLiked = contextUser?.likedProjects.includes(id) || false
-
 	const likeProject = async () => {
 		if (isLikeLoading) return
 		if (!contextUser) return setShowAuthModal(true)
@@ -278,11 +279,13 @@ export default function Project({
 			const newLikedProjects = isProjectLiked
 				? contextUser.likedProjects.filter((pId) => pId !== id)
 				: [...contextUser.likedProjects, id]
+
 			setContextUser({ ...contextUser, likedProjects: newLikedProjects })
 
 			// Update project likes
 			setLikes((prev) => (isProjectLiked ? prev - 1 : prev + 1))
 		}
+
 		setIsLikeLoading(false)
 	}
 
@@ -313,9 +316,7 @@ export default function Project({
 						<div className={styles.title}>
 							<h1 className={styles.name}>{name}</h1>
 							<div className={styles.symbol}>
-								<h3 className={styles.symbolText}>
-									{tokenSymbol}
-								</h3>
+								<h3 className={styles.symbolText}>{tokenSymbol}</h3>
 							</div>
 						</div>
 						<div className={styles.author}>
@@ -324,21 +325,14 @@ export default function Project({
 									{user?.logoUrl ? (
 										<SkeletonImage
 											src={user.logoUrl}
-											alt={
-												(user.username || 'User') +
-												' icon'
-											}
+											alt={(user.username || 'User') + ' icon'}
 											className={styles.authorImage}
 										/>
 									) : null}
-									<p className={styles.authorName}>
-										@{user.username}
-									</p>
+									<p className={styles.authorName}>@{user.username}</p>
 								</>
 							) : (
-								<p className={styles.authorName}>
-									user not found
-								</p>
+								<p className={styles.authorName}>user not found</p>
 							)}
 						</div>
 						<div className={styles.priceContainer}>
@@ -364,11 +358,7 @@ export default function Project({
 								onClick={likeProject}
 								title={isProjectLiked ? 'Dislike' : 'Like'}
 							>
-								{isLikeLoading ? (
-									<LoadingSpinner />
-								) : (
-									<HeartVector />
-								)}
+								{isLikeLoading ? <LoadingSpinner /> : <HeartVector />}
 								{likes}
 							</button>
 							<button
@@ -429,19 +419,13 @@ export default function Project({
 					{!!formattedTokenSupply && (
 						<div className={styles.datum}>
 							<h6 className={styles.datumTitle}>Total supply</h6>
-							<p className={styles.datumText}>
-								{formattedTokenSupply}
-							</p>
+							<p className={styles.datumText}>{formattedTokenSupply}</p>
 						</div>
 					)}
 					{!!tokenDistributionTax && (
 						<div className={styles.datum}>
-							<h6 className={styles.datumTitle}>
-								Distribution tax
-							</h6>
-							<p className={styles.datumText}>
-								{tokenDistributionTax}%
-							</p>
+							<h6 className={styles.datumTitle}>Distribution tax</h6>
+							<p className={styles.datumText}>{tokenDistributionTax}%</p>
 						</div>
 					)}
 				</div>
@@ -459,9 +443,7 @@ export default function Project({
 				<div className={styles.overview}>
 					<div className={styles.overviewSidebar}>
 						<div className={styles.sidebarDetail}>
-							<p className={styles.sidebarTitle}>
-								Contract address
-							</p>
+							<p className={styles.sidebarTitle}>Contract address</p>
 							<div
 								className={classNames(
 									styles.sidebarText,
@@ -494,9 +476,7 @@ export default function Project({
 							</div>
 						</div>
 						<div className={styles.sidebarDetail}>
-							<p className={styles.sidebarTitle}>
-								Blockchain explorer
-							</p>
+							<p className={styles.sidebarTitle}>Blockchain explorer</p>
 							<Link href={blockchainExplorerUrl}>
 								<a
 									className={styles.sidebarText}
@@ -523,9 +503,7 @@ export default function Project({
 						</div>
 						{socialUrls?.length > 0 && (
 							<div className={styles.sidebarDetail}>
-								<p className={styles.sidebarTitle}>
-									Social media
-								</p>
+								<p className={styles.sidebarTitle}>Social media</p>
 								{socialUrls.map((socialMedia, index) => (
 									<Link href={socialMedia.url} key={index}>
 										<a

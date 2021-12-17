@@ -25,8 +25,7 @@ export const pagesMetaData = {
 	},
 	new: {
 		title: 'Create a project | Astrano',
-		description:
-			'Fund your project by creating your own cryptocurrency token.',
+		description: 'Fund your project by creating your own cryptocurrency token.',
 	},
 	project: {
 		title: (projectName: string) =>
@@ -70,7 +69,8 @@ export const login = {
 		schema: {
 			required: 'Email is required',
 			pattern: {
-				value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+				value:
+					/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
 				message: 'Please enter a valid email address',
 			},
 		},
@@ -82,13 +82,11 @@ export const login = {
 			required: 'Password is required',
 			minLength: {
 				value: 8,
-				message:
-					'Password is too short - Should be 8 characters minimum',
+				message: 'Password is too short - Should be 8 characters minimum',
 			},
 			maxLength: {
 				value: 100,
-				message:
-					'Password is too long - Should be 100 characters maximum',
+				message: 'Password is too long - Should be 100 characters maximum',
 			},
 		},
 	},
@@ -101,7 +99,8 @@ export const register = {
 		schema: {
 			required: 'Email is required',
 			pattern: {
-				value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+				value:
+					/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
 				message: 'Please enter a valid email address',
 			},
 		},
@@ -113,13 +112,11 @@ export const register = {
 			required: 'Username is required',
 			minLength: {
 				value: 3,
-				message:
-					'Username is too short - Should be 3 characters minimum',
+				message: 'Username is too short - Should be 3 characters minimum',
 			},
 			maxLength: {
 				value: 32,
-				message:
-					'Username is too long - Should be 32 characters maximum',
+				message: 'Username is too long - Should be 32 characters maximum',
 			},
 			pattern: {
 				value: /^(?!.*[._]{2})(?!.*\.$)(?!\..*$)[a-zA-Z0-9._]+$/,
@@ -135,13 +132,11 @@ export const register = {
 			required: 'Full name is required',
 			minLength: {
 				value: 2,
-				message:
-					'Full name is too short - Should be 2 characters minimum',
+				message: 'Full name is too short - Should be 2 characters minimum',
 			},
 			maxLength: {
 				value: 32,
-				message:
-					'Full name is too long - Should be 32 characters maximum',
+				message: 'Full name is too long - Should be 32 characters maximum',
 			},
 			pattern: {
 				value: /^(?!.*[  ]{2})[a-zA-Z0-9 ]+$/,
@@ -156,16 +151,15 @@ export const register = {
 			required: 'Password is required',
 			minLength: {
 				value: 8,
-				message:
-					'Password is too short - Should be 8 characters minimum',
+				message: 'Password is too short - Should be 8 characters minimum',
 			},
 			maxLength: {
 				value: 100,
-				message:
-					'Password is too long - Should be 100 characters maximum',
+				message: 'Password is too long - Should be 100 characters maximum',
 			},
 			pattern: {
-				value: /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[~!@#$%^&*()_\-+=[\]{}:;"'|\\<>,./?€]).*$/,
+				value:
+					/^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[~!@#$%^&*()_\-+=[\]{}:;"'|\\<>,./?€]).*$/,
 				message: 'Please use a mix of letters, numbers and symbols',
 			},
 		},
@@ -365,13 +359,11 @@ export const project = {
 			},
 			minLength: {
 				value: 3,
-				message:
-					'Project name is too short - Should be 3 characters minimum',
+				message: 'Project name is too short - Should be 3 characters minimum',
 			},
 			maxLength: {
 				value: 42,
-				message:
-					'Project name is too long - Should be 42 characters maximum',
+				message: 'Project name is too long - Should be 42 characters maximum',
 			},
 		},
 	},
@@ -388,21 +380,20 @@ export const project = {
 			},
 		},
 	},
+	// TODO: Change min length to 200
 	description: {
-		minLength: 20, // 0,
+		minLength: 20,
 		maxLength: 8000,
 		schema: {
 			validate: {
 				required: (value: RawDraftContentState) =>
-					value?.blocks?.map(({ text }) => text).join('').length >
-						0 || 'Project description is required',
+					value?.blocks?.map(({ text }) => text).join('').length > 0 ||
+					'Project description is required',
 				minLength: (value: RawDraftContentState) =>
-					value.blocks.map(({ text }) => text).join('').length >=
-						20 ||
+					value.blocks.map(({ text }) => text).join('').length >= 20 ||
 					'Project description is too short - Should be 20 characters minimum',
 				maxLength: (value: RawDraftContentState) =>
-					value.blocks.map(({ text }) => text).join('').length <=
-						8000 ||
+					value.blocks.map(({ text }) => text).join('').length <= 8000 ||
 					'Project description is too long - Should be 8000 characters maximum',
 			},
 		},
@@ -438,13 +429,11 @@ export const token = {
 			}, */
 			minLength: {
 				value: 3,
-				message:
-					'Token name is too short - Should be 3 characters minimum',
+				message: 'Token name is too short - Should be 3 characters minimum',
 			},
 			maxLength: {
 				value: 42,
-				message:
-					'Token name is too long - Should be 42 characters maximum',
+				message: 'Token name is too long - Should be 42 characters maximum',
 			},
 		},
 	},
@@ -464,8 +453,7 @@ export const token = {
 			},
 			maxLength: {
 				value: 5,
-				message:
-					'Token name is too long - Should be 5 characters maximum',
+				message: 'Token name is too long - Should be 5 characters maximum',
 			},
 		},
 	},
@@ -493,8 +481,7 @@ export const token = {
 				format: (value: string) =>
 					Boolean(parseInt(value)) || 'Please provide a valid number',
 				min: (value: string) =>
-					parseInt(value) >= 100 ||
-					'Token supply must be at least 100',
+					parseInt(value) >= 100 || 'Token supply must be at least 100',
 				max: (value: string) =>
 					parseInt(value) <= 999999999999 ||
 					'Token supply must not exceed 999,999,999,999 (999B)',
@@ -550,20 +537,19 @@ export const social = {
 			required: 'Website is required',
 			minLength: {
 				value: 4,
-				message:
-					'Website is too short - Should be 4 characters minimum',
+				message: 'Website is too short - Should be 4 characters minimum',
 			},
 			maxLength: {
 				value: 128,
-				message:
-					'Website is too long - Should be 128 characters maximum',
+				message: 'Website is too long - Should be 128 characters maximum',
 			},
 			pattern: {
-				value: /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
+				value:
+					/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
 				message: 'Please enter a valid URL',
 			},
 		},
-	}
+	},
 }
 
 export const editorConstants = {

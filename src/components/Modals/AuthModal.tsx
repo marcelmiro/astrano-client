@@ -3,7 +3,6 @@ import Link from 'next/link'
 import classNames from 'classnames'
 import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
-import { AxiosRequestConfig } from 'axios'
 
 import { ILogin, IRegister, IUser } from '@/types'
 import {
@@ -15,7 +14,7 @@ import Modal from '@/components/Modals/Modal'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import InputGroup from '@/components/InputGroup'
 import ErrorMessage from '@/components/ErrorMessage'
-import fetch, { parseFormError } from '@/utils/fetch'
+import { fetchAndParse, FetchAndParseParams } from '@/utils/fetch'
 
 import CrossVector from '@/public/cross.svg'
 import EyeVector from '@/public/eye.svg'
@@ -40,6 +39,8 @@ interface RegisterContentProps {
 	showStatus: boolean
 	setShowStatus(value: boolean): void
 }
+
+const loginPaths: (keyof ILogin)[] = ['email', 'password']
 
 const registerPaths: (keyof IRegister)[] = [
 	'email',
@@ -92,18 +93,23 @@ const LoginContent = ({
 	const toggleShowPassword = () => setShowPassword((prev) => !prev)
 
 	const onSubmit = async (formData: ILogin) => {
-		const options: AxiosRequestConfig = { method: 'POST', data: formData }
-		const { data, error } = await fetch<IUser>('/auth/login', options)
-
-		if (error) {
-			const paths: (keyof ILogin)[] = ['email', 'password']
-			parseFormError(error, setError, setGeneralError, paths)
-			return
+		const fetchAndParseOptions: FetchAndParseParams<ILogin> = {
+			setError,
+			setGeneralError,
+			fetchOptions: {
+				url: '/auth/login',
+				method: 'POST',
+				data: formData,
+			},
+			paths: loginPaths,
 		}
-		if (!data) return
 
-		setUser(data)
-		onClose()
+		const data = await fetchAndParse<IUser>(fetchAndParseOptions)
+
+		if (data) {
+			setUser(data)
+			onClose()
+		}
 	}
 
 	return (
@@ -158,11 +164,7 @@ const LoginContent = ({
 			<ErrorMessage message={generalError} className={styles.error} />
 
 			<div className={styles.actions}>
-				<button
-					type="button"
-					className={styles.button}
-					onClick={showRegister}
-				>
+				<button type="button" className={styles.button} onClick={showRegister}>
 					Sign up
 				</button>
 				<button
@@ -201,15 +203,20 @@ const RegisterContent = ({
 	}
 
 	const onSubmit = async (formData: ILogin) => {
-		const options: AxiosRequestConfig = { method: 'POST', data: formData }
-		const { error } = await fetch('/auth/signup', options)
-
-		if (error) {
-			parseFormError(error, setError, setGeneralError, registerPaths)
-			return
+		const fetchAndParseOptions: FetchAndParseParams<IRegister> = {
+			setError,
+			setGeneralError,
+			fetchOptions: {
+				url: '/auth/signup',
+				method: 'POST',
+				data: formData,
+			},
+			paths: registerPaths,
 		}
 
-		setShowStatus(true)
+		const data = await fetchAndParse(fetchAndParseOptions)
+
+		if (data) setShowStatus(true)
 	}
 
 	if (showStatus) return <VerifyEmail onClose={onClose} />
@@ -304,8 +311,7 @@ const RegisterContent = ({
 					{...register('passwordConfirmation', {
 						...registerConstants.passwordConfirmation.schema,
 						validate: (value: string) =>
-							value === watch('password') ||
-							'Passwords do not match',
+							value === watch('password') || 'Passwords do not match',
 					})}
 					placeholder="Confirm password"
 					id="passwordConfirmation"
@@ -324,11 +330,7 @@ const RegisterContent = ({
 			<ErrorMessage message={generalError} className={styles.error} />
 
 			<div className={styles.actions}>
-				<button
-					type="button"
-					className={styles.button}
-					onClick={showLogin}
-				>
+				<button type="button" className={styles.button} onClick={showLogin}>
 					Login
 				</button>
 				<button

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+// import { useState } from 'react'
 import {
 	UseFormRegister,
 	FieldErrors,
@@ -30,8 +30,8 @@ export default function SocialStep({
 }: SocialStepProps) {
 	const socialUrls = useFieldArray({ control, name: 'socialUrls' })
 
-	const newSocialUrl = (field: string, value: string) =>
-		socialUrls.append({ [field]: value })
+	// const newSocialUrl = (field: string, value: string) =>
+	// 	socialUrls.append({ [field]: value })
 
 	return (
 		<>
