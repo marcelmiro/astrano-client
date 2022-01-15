@@ -5,7 +5,6 @@ import Big from 'big.js'
 import { AxiosRequestHeaders } from 'axios'
 
 import {
-	metaDefaults,
 	pagesMetaData,
 	errorData,
 	contractAddressLastCharactersLength,
@@ -16,6 +15,7 @@ import { addThousandSeparator } from '@/utils/number'
 import { copyToClipboard } from '@/utils/element'
 import fetch from '@/utils/fetch'
 import { useAuth } from '@/context/Auth.context'
+import useCountdown from '@/hooks/useCountdown'
 
 import Error from '@/pages/_error'
 import Meta from '@/components/Meta'
@@ -30,8 +30,6 @@ import CopyVector from '@/public/copy.svg'
 import LinkVector from '@/public/link.svg'
 // import MetamaskVector from '@/public/metamask.svg'
 import styles from '@/styles/Project.module.scss'
-
-const { summaryLength } = metaDefaults
 
 const { projectNotFound } = errorData
 
@@ -59,53 +57,8 @@ const getDomainFromUrl = (url: string): string | undefined => {
 	}
 }
 
-const calculateTimeLeft = (
-	endDate: Date
-): { label: string; value?: number }[] | null => {
-	const date = endDate ? new Date(endDate) : null
-	if (!date) return null
-
-	const difference = +date - +new Date()
-	if (difference <= 0) return null
-
-	const timeLeft = [
-		{
-			label: 'days',
-			value: Math.floor(difference / (1000 * 60 * 60 * 24)),
-		},
-		{
-			label: 'hours',
-			value: Math.floor((difference / (1000 * 60 * 60)) % 24),
-		},
-		{
-			label: 'minutes',
-			value: Math.floor((difference / 1000 / 60) % 60),
-		},
-		{
-			label: 'seconds',
-			value: Math.floor((difference / 1000) % 60),
-		},
-	]
-
-	const processedTimeLeft: { label: string; value: number }[] = []
-
-	let breakFlag = true
-	timeLeft.forEach((interval) => {
-		if (breakFlag && !interval.value) return
-		breakFlag = false
-		processedTimeLeft.push(interval)
-	})
-
-	return processedTimeLeft
-}
-
 const Countdown = ({ status, date, placeholder }: CountdownProps) => {
-	const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(date))
-
-	useEffect(() => {
-		const timer = setTimeout(() => setTimeLeft(calculateTimeLeft(date)), 1000)
-		return () => clearTimeout(timer)
-	})
+	const timeLeft = useCountdown(date)
 
 	if (!timeLeft) return null
 
@@ -192,6 +145,7 @@ export default function Project({
 		endsAt: statusEndsAt,
 	} = statusObject
 
+	// Process and format token price
 	let price: Big | undefined
 	try {
 		price = Big(_price)
@@ -203,6 +157,7 @@ export default function Project({
 		formattedPrice = '$' + addThousandSeparator(stringifyPrice)
 	}
 
+	// Process and format token total supply
 	let tokenSupply: Big | undefined
 	try {
 		tokenSupply = Big(_tokenSupply)
@@ -211,6 +166,7 @@ export default function Project({
 	const formattedTokenSupply =
 		tokenSupply && addThousandSeparator(tokenSupply.toString())
 
+	// Process and format market cap
 	let marketCap: string | undefined
 	if (tokenSupply && price) {
 		try {
@@ -243,10 +199,7 @@ export default function Project({
 
 	// const addToMetamask = () => alert('Add token to MetaMask...')
 
-	const summary = description.blocks
-		.map(({ text }) => text)
-		.join(' ')
-		.slice(0, summaryLength)
+	const summary = description.blocks.map(({ text }) => text).join(' ')
 
 	const openReportModal = () => {
 		if (!contextUser) return setShowAuthModal(true)

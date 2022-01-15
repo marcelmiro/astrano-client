@@ -76,7 +76,7 @@
 	opacity: 0;
 	visibility: hidden;
 	transform: translateY(1rem);
-	box-shadow: 0 1rem 2rem 0.5rem rgba(var(--primary-800), 0.9);
+	box-shadow: 0 0.25rem 0.5rem rgba(var(--primary-800), 0.8);
 	transition: all 0.36s;
 }
 .open .content {

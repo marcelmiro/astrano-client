@@ -9,8 +9,6 @@ import NumberListVector from '@/public/numbered-list.svg'
 
 export const baseUrl = 'https://app.astrano.io'
 
-export const marketBaseUrl = 'https://pancakeswap.finance/swap?outputCurrency='
-
 export const metaDefaults = {
 	baseUrl,
 	image: 'https://i.imgur.com/Bhu0XkA.png',
@@ -29,7 +27,11 @@ export const pagesMetaData = {
 	},
 	project: {
 		title: (projectName: string) =>
-			`${projectName} project information, live price and more  | Astrano`,
+			`${projectName} project information, live price, tokenomics and more | Astrano`,
+	},
+	buyToken: {
+		title: (projectName: string, tokenName: string, tokenSymbol: string) =>
+			`${projectName} Initial Coin Offering (ICO). Invest in ${tokenName} (${tokenSymbol}) | Astrano`,
 	},
 	verifyUser: {
 		title: 'User verification | Astrano',
@@ -577,3 +579,11 @@ export const editorConstants = {
 
 export const reportStatuses = ['success', 'error'] as const
 export const reportMessageMaxLength = 400
+
+export const chartColors = [
+	'#8DA6F2',
+	'#6B98F2',
+	'#435BF9',
+	'#C291F2',
+	'#B679F2',
+]

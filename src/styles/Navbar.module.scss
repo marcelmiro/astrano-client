@@ -131,7 +131,7 @@
 	visibility: hidden;
 	transform: translateY(1rem);
 	transition: all 0.3s;
-	box-shadow: 0 1rem 2rem 0.5rem rgba(var(--primary-800), 0.9);
+	box-shadow: 0 0.25rem 0.5rem rgba(var(--primary-800), 0.8);
 	&.open {
 		visibility: visible;
 		opacity: 1;
@@ -189,5 +189,17 @@
 	}
 	.logoName {
 		display: none;
+	}
+}
+
+@media screen and (max-width: 240px) {
+	.container {
+		justify-content: center;
+	}
+	.logo {
+		display: none;
+	}
+	.nav {
+		justify-content: center;
 	}
 }

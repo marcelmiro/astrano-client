@@ -34,6 +34,7 @@ interface IProjectToken {
 	distributionTax: number
 	contractAddress: string
 	blockchainExplorerUrl: string
+	marketUrl?: string
 	price: string
 }
 

@@ -39,6 +39,11 @@
 	font-size: 1.75rem;
 	padding-right: 1.5rem;
 	letter-spacing: 0.02rem;
+
+	// Break long words
+	word-break: normal;
+	overflow-wrap: anywhere;
+	word-break: break-word;
 }
 .symbol {
 	flex-shrink: 0;
@@ -101,6 +106,11 @@
 	color: rgb(var(--primary-400));
 	position: relative;
 	top: -0.063rem;
+
+	// Break long words
+	word-break: normal;
+	overflow-wrap: anywhere;
+	word-break: break-word;
 }
 .authorNameSkeleton {
 	@extend .authorName;
@@ -341,6 +351,7 @@
 	color: rgb(var(--primary-400));
 }
 .sidebarText {
+	width: 100%;
 	font-weight: 400;
 	font-size: 1rem;
 	display: flex;
@@ -395,7 +406,6 @@ a.sidebarText:hover svg path {
 .socialLink {
 	@extend .sidebarText;
 	font-size: 0.875rem;
-	display: inline-block;
 	svg {
 		margin-left: 0.5rem;
 		width: 0.813rem;

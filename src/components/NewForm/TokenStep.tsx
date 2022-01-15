@@ -79,13 +79,13 @@ export default function TokenStep({
 	useEffect(() => {
 		try {
 			const supply = Big(totalSupply)
-			if (
-				supply.toString().length > tokenConstants.totalSupply.maxLength
-			) {
+			if (supply.toString().length > tokenConstants.totalSupply.maxLength)
 				return setReceivedSupply('0')
-			}
 
-			const receivedSupply = supply.mul(1 - tokenCreationTax)
+			const receivedSupply = supply
+				.mul(1 - tokenCreationTax)
+				.round(0, Big.roundDown)
+
 			setReceivedSupply(receivedSupply.toString() || '0')
 		} catch (e) {
 			setReceivedSupply('0')

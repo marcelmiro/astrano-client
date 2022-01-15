@@ -134,6 +134,9 @@
 	@at-root div#{&} {
 		display: flex;
 		align-items: center;
+		span {
+			cursor: text;
+		}
 	}
 	@at-root textarea#{&} {
 		width: 100%;

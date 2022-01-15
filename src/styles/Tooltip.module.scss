@@ -1,0 +1,16 @@
+.container {
+	$bg: rgb(var(--primary-700));
+
+	color: rgb(var(--primary-400));
+	font-size: 0.75rem;
+	background-color: $bg;
+	border-radius: 0.3125rem;
+	box-shadow: 0 0.25rem 0.5rem rgba(var(--background), 0.6);
+
+	:global(.tippy-arrow) {
+		color: $bg;
+	}
+	:global(.tippy-content) {
+		padding: 0.675rem 0.875rem;
+	}
+}

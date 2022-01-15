@@ -30,6 +30,11 @@
 	font-weight: 400;
 	font-size: 1rem;
 	margin-right: 0.625rem;
+
+	// Break long words
+	word-break: normal;
+	overflow-wrap: anywhere;
+	word-break: break-word;
 }
 @mixin symbol {
 	min-height: 1.25rem;
@@ -56,9 +61,15 @@
 	color: rgb(var(--primary-400));
 	margin-top: 0.25rem;
 	display: inline-block;
+
+	// Break long words
+	word-break: normal;
+	overflow-wrap: anywhere;
+	word-break: break-word;
 }
 
 @mixin tags {
+	width: 100%;
 	display: flex;
 	flex-flow: row wrap;
 	gap: 0.3125rem;
@@ -70,6 +81,8 @@
 	padding: 0.063rem 0.5rem;
 	border-radius: 100vmax;
 	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 @mixin price {
