@@ -169,3 +169,9 @@ $buttonWidth: 6.75rem;
 		cursor: pointer;
 	}
 }
+
+@media screen and (max-width: 380px) {
+	.container {
+		padding: 1.75rem 2rem;
+	}
+}

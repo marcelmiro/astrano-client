@@ -25,11 +25,11 @@
 	display: flex;
 	flex-flow: row wrap;
 	align-items: center;
+	gap: 0.375rem 0.625rem;
 }
 @mixin name {
 	font-weight: 400;
 	font-size: 1rem;
-	margin-right: 0.625rem;
 
 	// Break long words
 	word-break: normal;

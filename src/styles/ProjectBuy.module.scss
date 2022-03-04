@@ -263,18 +263,45 @@
 }
 
 @media screen and (max-width: 900px) {
-	.mainContainer {
-		gap: 2rem;
+	.header {
+		max-width: 28rem;
+		margin: 0 auto;
 	}
-}
-
-@media screen and (max-width: 800px) {
 	.mainContainer {
+		max-width: 28rem;
+		margin: 2rem auto 0;
 		flex-flow: column nowrap;
 		gap: 4rem;
 	}
 	.traderContainer {
 		align-self: center;
+	}
+}
+
+@media screen and (max-width: 550px) {
+	.header {
+		flex-flow: column nowrap;
+		align-items: center;
+		gap: 1.5rem;
+	}
+	.image {
+		margin-right: 0;
+		width: 5rem;
+		min-width: 5rem;
+		height: 5rem;
+	}
+	.headerContent {
+		max-width: 25rem;
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: center;
+		text-align: center;
+	}
+	.name {
+		padding-right: 0;
+	}
+	.symbol {
+		display: none;
 	}
 }
 

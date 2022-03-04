@@ -115,3 +115,9 @@
 		margin-right: 0.5rem;
 	}
 }
+
+@media screen and (max-width: 550px) {
+	.statusTitle {
+		font-size: 0.75rem;
+	}
+}
