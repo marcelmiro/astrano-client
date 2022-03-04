@@ -57,7 +57,6 @@ const Content = ({ isLoading, projects, redirectToProject }: ContentProps) => {
 
 export default function LikedProjects({ show, onClose }: LikedProjectsProps) {
 	const { track } = useMixpanel()
-	track('GetLikedProjects')
 	const { logOut } = useAuth()
 	const [projects, setProjects] = useState<LikedProject[]>([])
 	const isMounted = useRef(false)
@@ -77,8 +76,9 @@ export default function LikedProjects({ show, onClose }: LikedProjectsProps) {
 	// On modal show
 	useEffect(() => {
 		if (!isMounted.current || !show) return
+		track('GetLikedProjects')
 		mutate()
-	}, [show, mutate])
+	}, [show, mutate, track])
 
 	// On component mount
 	useEffect(() => {
