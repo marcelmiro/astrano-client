@@ -183,6 +183,12 @@
 	user-select: none;
 }
 
+@media screen and (max-width: 550px) {
+	.header {
+		margin-bottom: 2.5rem;
+	}
+}
+
 @media screen and (max-width: 360px) {
 	.nav {
 		flex-flow: row wrap;
