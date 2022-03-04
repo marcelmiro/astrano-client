@@ -216,6 +216,7 @@
 
 .details {
 	margin-top: 4rem;
+	margin-left: 0.5rem;
 	display: flex;
 	flex-flow: row wrap;
 	gap: 1.5rem 5.25rem;
@@ -505,4 +506,89 @@ span.contractAddressEnd {
 		-webkit-box-shadow: 0 0 2rem -0.438rem rgba(var(--purple-accent), 0.8);
 		box-shadow: 0 0 2rem -0.438rem rgba(var(--purple-accent), 0.8);
 	}
+}
+
+@media screen and (max-width: 700px) {
+	.headerContent {
+		grid-template-columns: auto;
+		grid-template-rows: repeat(5, auto);
+		grid-template-areas:
+			'title'
+			'author'
+			'price'
+			'tags'
+			'actions';
+	}
+	.priceContainer {
+		margin-top: 1rem;
+		margin-left: 0;
+	}
+	.overview {
+		flex-flow: column nowrap;
+		align-items: center;
+		margin: 5rem auto 0;
+		text-align: center;
+	}
+	.overviewSidebar {
+		order: 0;
+		width: 100%;
+		max-width: 27.5rem;
+		margin-left: 0;
+	}
+}
+
+@media screen and (max-width: 550px) {
+	.header {
+		flex-flow: column nowrap;
+		align-items: center;
+		gap: 1.5rem;
+	}
+	.image {
+		margin-right: 0;
+		width: 5rem;
+		min-width: 5rem;
+		height: 5rem;
+	}
+	.headerContent {
+		max-width: 25rem;
+		display: flex;
+		flex-flow: column nowrap;
+		align-items: center;
+		text-align: center;
+	}
+	.name {
+		padding-right: 0;
+	}
+	.symbol {
+		display: none;
+	}
+	.overviewActions {
+		flex-flow: row wrap;
+		justify-content: flex-start;
+	}
+	.investButton {
+		margin-left: 0;
+	}
+	.details {
+		margin-left: 0;
+		justify-content: center;
+	}
+	.datum + .datum::after {
+		display: none;
+	}
+	.overview {
+		margin-top: 4rem;
+	}
+}
+
+@media screen and (max-width: 440px) {
+	.details {
+		gap: 1.25rem 3.5rem;
+	}
+}
+
+@media screen and (max-width: 250px) {
+	/* .price small {
+		display: none;
+	} */
 }

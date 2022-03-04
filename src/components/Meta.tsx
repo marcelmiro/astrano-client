@@ -52,7 +52,9 @@ export default function Meta({
 			{/* Twitter meta */}
 			<meta name="twitter:card" content="summary" />
 			<meta name="twitter:title" content={title} />
-			{description && <meta name="twitter:description" content={description} />}
+			{description && (
+				<meta name="twitter:description" content={description} />
+			)}
 			<meta name="twitter:site" content="@AstranoCrypto" />
 			<meta name="twitter:creator" content="@AstranoCrypto" />
 			<meta name="twitter:image" content={processedImage} />
@@ -83,7 +85,10 @@ export default function Meta({
 			/>
 			<link rel="shortcut icon" href="/favicons/favicon.ico" />
 			<meta name="msapplication-TileColor" content="#0f0e13" />
-			<meta name="msapplication-config" content="/favicons/browserconfig.xml" />
+			<meta
+				name="msapplication-config"
+				content="/favicons/browserconfig.xml"
+			/>
 			<meta name="theme-color" content="#0f0e13" />
 
 			{/* Other */}
