@@ -310,22 +310,23 @@ export default function BuyProject({
 
 			<div className={styles.mainContainer}>
 				<div className={styles.statsContainer}>
-					{isOpen &&
-						(timeAfterOpen ? (
-							<Countdown
-								label="Crowdsale ending in"
-								startDate={openingTime}
-								endDate={closingTime}
-							/>
-						) : (
-							<Countdown
-								label="Crowdsale starting in"
-								startDate={createdAt}
-								endDate={openingTime}
-							/>
-						))}
+					{isOpen && (
+						<Countdown
+							label="Crowdsale ending in"
+							startDate={openingTime}
+							endDate={closingTime}
+						/>
+					)}
 
-					{isOpen === false && (
+					{!isOpen && !timeAfterOpen && (
+						<Countdown
+							label="Crowdsale starting in"
+							startDate={createdAt}
+							endDate={openingTime}
+						/>
+					)}
+
+					{isOpen === false && timeAfterOpen && (
 						<div className={styles.stat}>
 							<span className={styles.statName} title="Status">
 								Status
