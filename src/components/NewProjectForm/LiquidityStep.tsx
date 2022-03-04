@@ -26,8 +26,8 @@ export default function CrowdsaleStep({
 
 	const onRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value
-		if (value.split('.')[1]?.length > 2)
-			e.target.value = parseFloat(e.target.value).toFixed(2)
+		if (value.split('.')[1]?.length > 0)
+			e.target.value = parseFloat(e.target.value).toFixed(0)
 		try {
 			setPrice(parseFloat(Big(e.target.value).pow(-1).toFixed(6)))
 		} catch (e) {}
@@ -115,7 +115,7 @@ export default function CrowdsaleStep({
 					min={liquidityConstants.rate.min}
 					max={liquidityConstants.rate.max}
 					maxLength={liquidityConstants.rate.maxLength}
-					pattern="[0-9]+(\.[0-9]+)?"
+					pattern="[0-9]+"
 					placeholder="Rate"
 					id="liquidityRate"
 					className={styles.textbox}

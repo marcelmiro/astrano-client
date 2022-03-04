@@ -132,6 +132,12 @@ const Countdown = ({ label, startDate, endDate }: CountdownProps) => {
 	)
 }
 
+const PAIR_TOKEN_CONFIG = {
+	name: 'USDT',
+	symbol: 'USDTT',
+	address: '0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684'
+}
+
 export default function BuyProject({
 	errorCode,
 	name,
@@ -243,7 +249,7 @@ export default function BuyProject({
 							Price
 						</span>
 						<span className={styles.statValue}>
-							1 USDT = 1,250 {tokenSymbol}
+							1 {PAIR_TOKEN_CONFIG.symbol} = 1,250 {tokenSymbol}
 						</span>
 					</div>
 
@@ -271,7 +277,7 @@ export default function BuyProject({
 							<ReadMore text="The minimum amount of tokens you can buy." />
 						</div>
 						<span className={styles.statValue}>
-							5 {tokenSymbol}
+							5 {PAIR_TOKEN_CONFIG.symbol}
 						</span>
 					</div>
 

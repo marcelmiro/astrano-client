@@ -532,18 +532,18 @@ export const token = {
 
 export const crowdsale = {
 	rate: {
-		min: 0.01,
+		min: 1,
 		max: 1_000_000,
-		maxLength: 10,
+		maxLength: 7,
 		schema: {
 			required: 'Rate is required',
 			pattern: {
-				value: /^[0-9]+(\.[0-9]+)?$/,
+				value: /^[0-9]+$/,
 				message: 'Sorry, only numbers are allowed',
 			},
 			min: {
-				value: 0.01,
-				message: 'Rate must be at least 0.01',
+				value: 1,
+				message: 'Rate must be at least 1',
 			},
 			max: {
 				value: 1_000_000,
@@ -684,18 +684,18 @@ export const liquidity = {
 		},
 	},
 	rate: {
-		min: 0.01,
+		min: 1,
 		max: 1_000_000,
-		maxLength: 10,
+		maxLength: 7,
 		schema: {
 			required: 'Rate is required',
 			pattern: {
-				value: /^[0-9]+(\.[0-9]+)?$/,
+				value: /^[0-9]+$/,
 				message: 'Sorry, only numbers are allowed',
 			},
 			min: {
-				value: 0.01,
-				message: 'Rate must be at least 0.01',
+				value: 1,
+				message: 'Rate must be at least 1',
 			},
 			max: {
 				value: 1_000_000,

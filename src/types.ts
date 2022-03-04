@@ -22,7 +22,6 @@ export interface ILogin {
 export interface IRegister {
 	email: string
 	username: string
-	name: string
 	password: string
 	passwordConfirmation: string
 }

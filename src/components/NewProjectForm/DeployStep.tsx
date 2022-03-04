@@ -68,58 +68,67 @@ export default function DeployStep({
 		setIsDeploying(true)
 		// TODO: Validate crowdsaleOpeningTime and crowdsaleClosingTime before deploying
 
-		const input = {
-			tokenName: project.token.name,
-			tokenSymbol: project.token.symbol,
-			tokenTotalSupply: ethers.utils.parseEther(
-				project.token.totalSupply
-			),
-			tokenLockStartIn: project.token.lockStartIn,
-			tokenLockDuration: project.token.lockDuration,
-			crowdsaleRate: project.crowdsale.rate,
-			crowdsaleCap: ethers.utils.parseEther(project.crowdsale.cap),
-			crowdsaleIndividualCap: ethers.utils.parseEther(
-				project.crowdsale.individualCap
-			),
-			crowdsaleMinPurchaseAmount: ethers.utils.parseEther(
-				project.crowdsale.minPurchaseAmount
-			),
-			crowdsaleGoal: ethers.utils.parseEther(project.crowdsale.goal),
-			crowdsaleOpeningTime: Math.ceil(
-				new Date(project.crowdsale.openingTime).getTime() / 1000
-			),
-			crowdsaleClosingTime: Math.ceil(
-				new Date(project.crowdsale.closingTime).getTime() / 1000
-			),
-			liquidityPercentage: project.liquidity.percentage,
-			liquidityRate: project.liquidity.rate,
-			liquidityLockStartIn: project.liquidity.lockStartIn,
-			liquidityLockDuration: project.liquidity.lockDuration,
+		try {
+			const input = {
+				tokenName: project.token.name,
+				tokenSymbol: project.token.symbol,
+				tokenTotalSupply: ethers.utils.parseEther(
+					project.token.totalSupply
+				),
+				tokenLockStartIn: project.token.lockStartIn,
+				tokenLockDuration: project.token.lockDuration,
+				crowdsaleRate: project.crowdsale.rate,
+				crowdsaleCap: ethers.utils.parseEther(project.crowdsale.cap),
+				crowdsaleIndividualCap: ethers.utils.parseEther(
+					project.crowdsale.individualCap
+				),
+				crowdsaleMinPurchaseAmount: ethers.utils.parseEther(
+					project.crowdsale.minPurchaseAmount
+				),
+				crowdsaleGoal: ethers.utils.parseEther(project.crowdsale.goal),
+				crowdsaleOpeningTime: Math.ceil(
+					new Date(project.crowdsale.openingTime).getTime() / 1000
+				),
+				crowdsaleClosingTime: Math.ceil(
+					new Date(project.crowdsale.closingTime).getTime() / 1000
+				),
+				liquidityPercentage: project.liquidity.percentage,
+				liquidityRate: project.liquidity.rate,
+				liquidityLockStartIn: project.liquidity.lockStartIn,
+				liquidityLockDuration: project.liquidity.lockDuration,
+			}
+
+			const signer = provider.getSigner()
+			const ProjectFactory = new ethers.Contract(address, abi, signer)
+
+			const creationFee = await ProjectFactory.creationFee()
+			const tx = (await ProjectFactory.createProject(input, {
+				value: creationFee,
+			})) as ContractTransaction
+
+			setTx(tx.hash)
+			deploySuccessful()
+
+			const receipt = await tx.wait()
+
+			const event = receipt.events?.find(
+				(ev) => ev.event === 'ProjectCreated'
+			)
+
+			const [, tokenAddress, crowdsaleAddress, vestingWalletAddress] =
+				event?.args || []
+
+			const data = {
+				tokenAddress,
+				crowdsaleAddress,
+				vestingWalletAddress,
+			}
+			await fetch('/projects/deploy', { method: 'POST', data })
+		} catch (e) {
+			throw e
+		} finally {
+			setIsDeploying(false)
 		}
-
-		const signer = provider.getSigner()
-		const ProjectFactory = new ethers.Contract(address, abi, signer)
-
-		const creationFee = await ProjectFactory.creationFee()
-		const tx = (await ProjectFactory.createProject(input, {
-			value: creationFee,
-		})) as ContractTransaction
-
-		setTx(tx.hash)
-		deploySuccessful()
-		setIsDeploying(false)
-
-		const receipt = await tx.wait()
-
-		const event = receipt.events?.find(
-			(ev) => ev.event === 'ProjectCreated'
-		)
-
-		const [, tokenAddress, crowdsaleAddress, vestingWalletAddress] =
-			event?.args || []
-
-		const data = { tokenAddress, crowdsaleAddress, vestingWalletAddress }
-		await fetch('/projects/deploy', { method: 'POST', data })
 	}
 
 	return (

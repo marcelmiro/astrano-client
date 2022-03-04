@@ -18,7 +18,7 @@ export default function ProjectListing({
 	logoUri,
 	user: { username },
 	tags,
-	token,
+	token: { symbol },
 	crowdsale,
 	status,
 	likes,
@@ -52,7 +52,7 @@ export default function ProjectListing({
 								<a className={styles.name}>{name}</a>
 							</Link>
 							<div className={styles.symbol}>
-								<span>{token.symbol}</span>
+								<span>{symbol}</span>
 							</div>
 						</div>
 						<p className={styles.author}>

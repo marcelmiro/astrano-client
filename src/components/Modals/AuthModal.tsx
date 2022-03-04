@@ -45,7 +45,6 @@ const loginPaths: (keyof ILogin)[] = ['email', 'password']
 const registerPaths: (keyof IRegister)[] = [
 	'email',
 	'username',
-	'name',
 	'password',
 	'passwordConfirmation',
 ]
@@ -164,7 +163,11 @@ const LoginContent = ({
 			<ErrorMessage message={generalError} className={styles.error} />
 
 			<div className={styles.actions}>
-				<button type="button" className={styles.button} onClick={showRegister}>
+				<button
+					type="button"
+					className={styles.button}
+					onClick={showRegister}
+				>
 					Sign up
 				</button>
 				<button
@@ -263,21 +266,6 @@ const RegisterContent = ({
 			</InputGroup>
 
 			<InputGroup
-				label="Full name"
-				id="name"
-				error={errors.name?.message}
-				{...inputGroupDefaults}
-			>
-				<input
-					type="text"
-					{...register('name', registerConstants.name.schema)}
-					placeholder="Full name"
-					id="name"
-					className={styles.textbox}
-				/>
-			</InputGroup>
-
-			<InputGroup
 				label="Password"
 				id="password"
 				error={errors.password?.message}
@@ -311,7 +299,8 @@ const RegisterContent = ({
 					{...register('passwordConfirmation', {
 						...registerConstants.passwordConfirmation.schema,
 						validate: (value: string) =>
-							value === watch('password') || 'Passwords do not match',
+							value === watch('password') ||
+							'Passwords do not match',
 					})}
 					placeholder="Confirm password"
 					id="passwordConfirmation"
@@ -330,7 +319,11 @@ const RegisterContent = ({
 			<ErrorMessage message={generalError} className={styles.error} />
 
 			<div className={styles.actions}>
-				<button type="button" className={styles.button} onClick={showLogin}>
+				<button
+					type="button"
+					className={styles.button}
+					onClick={showLogin}
+				>
 					Login
 				</button>
 				<button
