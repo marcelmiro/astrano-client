@@ -134,6 +134,9 @@
 	font-weight: 400;
 	font-size: 0.875rem;
 	text-align: right;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
 }
 
 .traderContainer {
@@ -176,6 +179,7 @@
 	background-color: rgb(var(--primary-600));
 	border-radius: 100vmax;
 	position: relative;
+	overflow: hidden;
 }
 
 .progress {
@@ -244,6 +248,12 @@
 	word-break: normal;
 	overflow-wrap: anywhere;
 	word-break: break-word;
+}
+
+.skeletonStatValue {
+	width: 3.5rem;
+	height: 1.25rem;
+	border-radius: 0.125rem;
 }
 
 @media screen and (max-width: 1000px) {

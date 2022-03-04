@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { Web3Provider } from '@ethersproject/providers'
 
+import { NETWORK_CONFIG } from '@/constants'
+
 export interface Chain {
 	chainId: string // A 0x-prefixed hexadecimal string
 	chainName: string
@@ -14,7 +16,15 @@ export interface Chain {
 	blockExplorerUrls: string[]
 }
 
+export enum MetamaskStatus {
+	NOT_INSTALLED = 'not_installed',
+	NOT_CONNECTED = 'not_connected',
+	WRONG_NETWORK = 'wrong_network',
+	CONNECTED = 'connected',
+}
+
 const useMetamask = () => {
+	const [status, setStatus] = useState<MetamaskStatus>()
 	const [provider, setProvider] = useState<Web3Provider>()
 	const [account, setAccount] = useState('')
 	const [chainId, setChainId] = useState('')
@@ -57,13 +67,6 @@ const useMetamask = () => {
 	}
 
 	useEffect(() => {
-		if (!window?.ethereum) return
-		try {
-			setProvider(new ethers.providers.Web3Provider(window.ethereum))
-		} catch (e) {}
-	}, [])
-
-	useEffect(() => {
 		if (!provider) return
 		let isSubscribed = true
 
@@ -89,7 +92,31 @@ const useMetamask = () => {
 		}
 	}, [provider])
 
-	return { provider, account, chainId, connectMetamask, changeNetwork }
+	useEffect(() => {
+		if (!chainId) setStatus(MetamaskStatus.NOT_INSTALLED)
+		else if (!account) setStatus(MetamaskStatus.NOT_CONNECTED)
+		else if (chainId === NETWORK_CONFIG.chainId)
+			setStatus(MetamaskStatus.CONNECTED)
+		else setStatus(MetamaskStatus.WRONG_NETWORK)
+	}, [chainId, account])
+
+	useEffect(() => {
+		if (!window?.ethereum) return
+		try {
+			setProvider(
+				new ethers.providers.Web3Provider(window.ethereum, 'any')
+			)
+		} catch (e) {}
+	}, [])
+
+	return {
+		status,
+		provider,
+		account,
+		chainId,
+		connectMetamask,
+		changeNetwork,
+	}
 }
 
 export default useMetamask

@@ -25,9 +25,7 @@ export default function CrowdsaleStep({
 	})
 
 	const onRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value
-		if (value.split('.')[1]?.length > 0)
-			e.target.value = parseFloat(e.target.value).toFixed(0)
+		e.target.value = e.target.value?.split('.')[0].replace(/\D/g, '')
 		try {
 			setPrice(parseFloat(Big(e.target.value).pow(-1).toFixed(6)))
 		} catch (e) {}

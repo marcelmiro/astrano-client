@@ -9,6 +9,7 @@ import {
 
 import { IUser } from '@/types'
 import fetch, { useSwrImmutable } from '@/utils/fetch'
+import { useMixpanel } from './Mixpanel'
 
 interface AuthContextProps {
 	loading: boolean
@@ -35,6 +36,7 @@ const AuthContext = createContext<AuthContextProps>(defaultValues)
 export const useAuth = () => useContext(AuthContext)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+	const { track } = useMixpanel()
 	const [loading, setLoading] = useState(true)
 	const [user, setUser] = useState<AuthContextProps['user']>(null)
 	const [showAuthModal, setShowAuthModal] = useState(false)
@@ -58,6 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	)
 
 	const logOut = useCallback(async () => {
+		track('Logout')
 		const { error } = await fetch('/auth/logOut', { method: 'POST' })
 		if (!error) setUser(null)
 	}, [])

@@ -1,3 +1,4 @@
+import { useState, useEffect, useCallback } from 'react'
 import {
 	Chart,
 	ArcElement,
@@ -7,17 +8,29 @@ import {
 	ChartOptions,
 } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
+import { Big } from 'big.js'
+import { ethers } from 'ethers'
 
 import { IProject } from '@/types'
-import { pagesMetaData, errorData, chartColors } from '@/constants'
+import {
+	pagesMetaData,
+	errorData,
+	chartColors,
+	PAIR_TOKEN_CONFIG,
+} from '@/constants'
 import Error from '@/pages/_error'
 import fetch from '@/utils/fetch'
 import useCountdown from '@/hooks/useCountdown'
+import { addThousandSeparator } from '@/utils/number'
+import useMetamask, { MetamaskStatus } from '@/hooks/useMetamask'
+import useRpc from '@/hooks/useRpc'
+import { abi as crowdsaleAbi } from '@/contracts/Crowdsale'
 
 import Meta from '@/components/Meta'
 import SkeletonImage from '@/components/SkeletonImage'
-import CryptoTrader from '@/components/CryptoTrader'
+import CrowdsaleTrader from '@/components/CrowdsaleTrader'
 import Tooltip from '@/components/Tooltip'
+import Skeleton from '@/components/Skeleton'
 
 import styles from '@/styles/ProjectBuy.module.scss'
 
@@ -30,7 +43,7 @@ interface BuyProjectProps extends IProject {
 }
 
 interface ReadMoreProps {
-	text: string
+	content: string | React.ReactElement
 }
 
 interface ProgressBarProps {
@@ -46,6 +59,7 @@ interface CountdownProps {
 interface PieChartLegendProps {
 	labels: string[]
 	backgroundColor: string[]
+	percentages: string[]
 }
 
 const pieOptions: ChartOptions<'doughnut'> = {
@@ -56,20 +70,11 @@ const pieOptions: ChartOptions<'doughnut'> = {
 	plugins: { legend: { display: false } },
 }
 
-const allocationData: ChartData<'doughnut'> = {
-	labels: ['Presale', 'Liquidity Pool', 'Locked'],
-	datasets: [
-		{
-			label: 'Amount of tokens',
-			data: [500000, 650000, 850000],
-			borderWidth: 0,
-			backgroundColor: chartColors,
-			hoverBackgroundColor: chartColors,
-		},
-	],
-}
-
-const PieChartLegend = ({ labels, backgroundColor }: PieChartLegendProps) => (
+const PieChartLegend = ({
+	labels,
+	backgroundColor,
+	percentages,
+}: PieChartLegendProps) => (
 	<div className={styles.legendContainer}>
 		{labels.map((label, index) => (
 			<div className={styles.legendItem} key={index}>
@@ -80,14 +85,16 @@ const PieChartLegend = ({ labels, backgroundColor }: PieChartLegendProps) => (
 							backgroundColor[index % backgroundColor.length],
 					}}
 				/>
-				<span className={styles.legendLabel}>{label}</span>
+				<span className={styles.legendLabel}>
+					{label} ({percentages[index]}%)
+				</span>
 			</div>
 		))}
 	</div>
 )
 
-const ReadMore = ({ text }: ReadMoreProps) => (
-	<Tooltip content={text}>
+const ReadMore = ({ content }: ReadMoreProps) => (
+	<Tooltip content={content}>
 		<div className={styles.readMore}>?</div>
 	</Tooltip>
 )
@@ -121,21 +128,17 @@ const Countdown = ({ label, startDate, endDate }: CountdownProps) => {
 		<div>
 			<div className={styles.stat}>
 				<span className={styles.statName} title={label}>
-					Crowdsale ending in
+					{label}
 				</span>
-				<span className={styles.statValue} suppressHydrationWarning>
-					{countdownText}
-				</span>
+				<Tooltip content={new Date(endDate).toString()}>
+					<span className={styles.statValue} suppressHydrationWarning>
+						{countdownText}
+					</span>
+				</Tooltip>
 			</div>
 			<ProgressBar progress={progress} />
 		</div>
 	)
-}
-
-const PAIR_TOKEN_CONFIG = {
-	name: 'USDT',
-	symbol: 'USDTT',
-	address: '0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684'
 }
 
 export default function BuyProject({
@@ -145,9 +148,41 @@ export default function BuyProject({
 	user,
 	description,
 	token,
-	crowdsale: { openingTime, closingTime },
+	crowdsale,
+	liquidity,
 	createdAt,
 }: BuyProjectProps) {
+	const [tokensSold, setTokensSold] = useState('')
+	const [isOpen, setIsOpen] = useState<boolean>()
+
+	const { provider: metamaskProvider, status } = useMetamask()
+	const { provider: rpcProvider } = useRpc()
+
+	const updateTokensSold = useCallback(async () => {
+		const provider =
+			metamaskProvider && status === MetamaskStatus.CONNECTED
+				? metamaskProvider
+				: rpcProvider
+
+		if (!provider) return
+
+		const Crowdsale = new ethers.Contract(
+			crowdsale.crowdsaleAddress,
+			crowdsaleAbi,
+			provider
+		)
+		const [isOpen, tokensSold] = await Promise.all([
+			Crowdsale.isOpen(),
+			Crowdsale.tokensSold(),
+		])
+		setIsOpen(isOpen)
+		setTokensSold(ethers.utils.formatEther(tokensSold))
+	}, [metamaskProvider, status, rpcProvider, crowdsale.crowdsaleAddress])
+
+	useEffect(() => {
+		updateTokensSold()
+	}, [updateTokensSold])
+
 	if (errorCode)
 		return (
 			<Error
@@ -156,13 +191,73 @@ export default function BuyProject({
 			/>
 		)
 
-	const { name: tokenName, symbol: tokenSymbol } = token
+	const {
+		name: tokenName,
+		symbol: tokenSymbol,
+		totalSupply,
+		lockStartIn: tokenLockStartIn,
+		lockDuration: tokenLockDuration,
+	} = token
+
+	const {
+		rate,
+		cap,
+		goal,
+		individualCap,
+		minPurchaseAmount,
+		openingTime,
+		closingTime,
+	} = crowdsale
+
+	const {
+		percentage: liquidityPercentage,
+		rate: liquidityRate,
+		lockStartIn: liquidityLockStartIn,
+		lockDuration: liquidityLockDuration,
+	} = liquidity
 
 	const timeAfterOpen = new Date() >= new Date(openingTime)
 
 	const summary = description.blocks.map(({ text }) => text).join(' ')
 
-	const tokensSoldProgress = 759412 / 2000000
+	const tokensSoldProgress = tokensSold
+		? Big(tokensSold).div(cap).toNumber()
+		: 0
+
+	const minTokenAmount = Big(minPurchaseAmount).mul(rate).toString()
+
+	const capAmount = Big(cap)
+	const liquidityAmount = Big(
+		capAmount
+			.div(rate)
+			.mul(liquidityPercentage)
+			.div(100)
+			.toFixed(0, Big.roundDown)
+	).mul(liquidityRate)
+	const lockedAmount = Big(totalSupply).sub(capAmount.add(liquidityAmount))
+
+	const allocationData: ChartData<'doughnut'> = {
+		labels: ['Presale', 'Liquidity Pool', 'Locked'],
+		datasets: [
+			{
+				label: 'Amount of tokens',
+				data: [
+					capAmount.toNumber(),
+					liquidityAmount.toNumber(),
+					lockedAmount.toNumber(),
+				],
+				borderWidth: 0,
+				backgroundColor: chartColors,
+				hoverBackgroundColor: chartColors,
+			},
+		],
+	}
+
+	const allocationPercentages = [
+		capAmount.mul(100).div(totalSupply).toFixed(0, Big.roundDown),
+		liquidityAmount.mul(100).div(totalSupply).toFixed(0, Big.roundDown),
+		lockedAmount.mul(100).div(totalSupply).toFixed(0, Big.roundDown),
+	]
 
 	return (
 		<>
@@ -215,104 +310,292 @@ export default function BuyProject({
 
 			<div className={styles.mainContainer}>
 				<div className={styles.statsContainer}>
-					{timeAfterOpen ? (
-						<Countdown
-							label="Crowdsale ending in"
-							startDate={openingTime}
-							endDate={closingTime}
-						/>
-					) : (
-						<Countdown
-							label="Crowdsale starting in"
-							startDate={createdAt}
-							endDate={openingTime}
-						/>
+					{isOpen &&
+						(timeAfterOpen ? (
+							<Countdown
+								label="Crowdsale ending in"
+								startDate={openingTime}
+								endDate={closingTime}
+							/>
+						) : (
+							<Countdown
+								label="Crowdsale starting in"
+								startDate={createdAt}
+								endDate={openingTime}
+							/>
+						))}
+
+					{isOpen === false && (
+						<div className={styles.stat}>
+							<span className={styles.statName} title="Status">
+								Status
+							</span>
+							<span className={styles.statValue}>Closed</span>
+						</div>
 					)}
 
-					<div>
-						<div className={styles.stat}>
-							<span
-								className={styles.statName}
-								title="Tokens sold"
-							>
-								Tokens sold
-							</span>
-							<span className={styles.statValue}>
-								759,412 / 2,000,000 {tokenSymbol}
-							</span>
+					{isOpen && (
+						<div>
+							<div className={styles.stat}>
+								<span
+									className={styles.statName}
+									title="Tokens sold"
+								>
+									Tokens sold
+								</span>
+								<span className={styles.statValue}>
+									{tokensSold || (
+										<Skeleton
+											className={styles.skeletonStatValue}
+										/>
+									)}{' '}
+									/ {addThousandSeparator(cap)} {tokenSymbol}
+								</span>
+							</div>
+							<ProgressBar progress={tokensSoldProgress} />
 						</div>
-						<ProgressBar progress={tokensSoldProgress} />
-					</div>
+					)}
 
 					<div className={styles.stat}>
 						<span className={styles.statName} title="Price">
 							Price
 						</span>
 						<span className={styles.statValue}>
-							1 {PAIR_TOKEN_CONFIG.symbol} = 1,250 {tokenSymbol}
+							1 {PAIR_TOKEN_CONFIG.symbol} = {rate} {tokenSymbol}
 						</span>
 					</div>
 
-					{/* <div className={styles.stat}>
-						<div className={styles.statName}>
-							<span title="Soft cap">Soft cap</span>
-							<ReadMore text="The minimum amount of funds needed for the project to start." />
-						</div>
-						<span className={styles.statValue}>1,000,000 {tokenSymbol}</span>
-					</div>
-
 					<div className={styles.stat}>
 						<div className={styles.statName}>
-							<span title="Hard cap">Hard cap</span>
-							<ReadMore text="The maximum amount of funds that the project is looking to raise." />
-						</div>
-						<span className={styles.statValue}>2,000,000 {tokenSymbol}</span>
-					</div> */}
-
-					<div className={styles.stat}>
-						<div className={styles.statName}>
-							<span title="Minimum purchase amount">
-								Minimum purchase amount
-							</span>
-							<ReadMore text="The minimum amount of tokens you can buy." />
+							<span title="Cap">Cap</span>
+							<ReadMore content="The maximum amount of tokens allowed to sell by the crowdsale. After reaching this amount, the crowdsale will close." />
 						</div>
 						<span className={styles.statValue}>
-							5 {PAIR_TOKEN_CONFIG.symbol}
+							{addThousandSeparator(cap)} {tokenSymbol}
 						</span>
 					</div>
 
 					<div className={styles.stat}>
 						<div className={styles.statName}>
-							<span title="Maximum purchase amount">
-								Maximum purchase amount
-							</span>
-							<ReadMore text="The maximum amount of tokens you can buy." />
+							<span title="Goal">Goal</span>
+							<ReadMore content="The minimum amount of tokens that are required to be sold for the crowdsale to be considered successful. If the crowdsale succeeds, the project creator will be able to finalize the project and generate the liquidity to enter the live market. If the crowdsale fails, investors will be able to request refunds of the tokens they purchased." />
 						</div>
 						<span className={styles.statValue}>
-							1,000 {tokenSymbol}
+							{addThousandSeparator(goal)} {tokenSymbol}
+						</span>
+					</div>
+
+					{minTokenAmount && minTokenAmount !== '0' && (
+						<div className={styles.stat}>
+							<div className={styles.statName}>
+								<span title="Minimum purchase amount">
+									Minimum purchase amount
+								</span>
+								<ReadMore content="The minimum amount of tokens you can buy." />
+							</div>
+							<span className={styles.statValue}>
+								{addThousandSeparator(minTokenAmount)}{' '}
+								{tokenSymbol}
+							</span>
+						</div>
+					)}
+
+					{individualCap && individualCap !== '0' && (
+						<div className={styles.stat}>
+							<div className={styles.statName}>
+								<span title="Maximum purchase amount">
+									Maximum purchase amount
+								</span>
+								<ReadMore content="The maximum amount of tokens you can buy." />
+							</div>
+							<span className={styles.statValue}>
+								{addThousandSeparator(individualCap)}{' '}
+								{tokenSymbol}
+							</span>
+						</div>
+					)}
+
+					<div className={styles.stat}>
+						<div className={styles.statName}>
+							<span title="Percentage to liquidity">
+								Percentage to liquidity
+							</span>
+							<ReadMore content="The amount of tokens that will be used to start the liquidity pool in the live market. Left over tokens will be transferred automatically to the project creator's wallet." />
+						</div>
+						<span className={styles.statValue}>
+							{liquidityPercentage}%
 						</span>
 					</div>
 
 					<div className={styles.stat}>
 						<div className={styles.statName}>
-							<span title="Percentage to Liquidity Pool">
-								Percentage to LP
+							<span title="Token vesting start (days)">
+								Token vesting start (days)
 							</span>
-							<ReadMore text="The amount of tokens that will be used to start the Liquidity Pool (LP) in the Automated Market Maker (AMM). Left over tokens will be transferred automatically to the project creator's wallet." />
+							<ReadMore
+								content={
+									<span>
+										Vesting start is the amount of time
+										elapsed before releasing any tokens.
+										<br />
+										<br />
+										To prevent rug pulls (learn about rug
+										pulls in
+										<a
+											href="https://docs.astrano.io/"
+											target="_blank"
+											rel="noopener noreferrer"
+										>
+											docs.astrano.io
+										</a>
+										), Astrano forces project creators to
+										vest their unused tokens. Token vesting
+										refers to the locking of tokens in a
+										smart contract and releasing an
+										incremental amount of the locked tokens
+										proportional to the current time. This
+										prevents project creators to overflood
+										the token&apos;s market or abuse
+										investors that purchase their token.
+									</span>
+								}
+							/>
 						</div>
-						<span className={styles.statValue}>70%</span>
+						<span className={styles.statValue}>
+							{addThousandSeparator(tokenLockStartIn)} days
+						</span>
 					</div>
 
 					<div className={styles.stat}>
 						<div className={styles.statName}>
-							<span title="Liquidity lockup time">
-								Liquidity lockup time
+							<span title="Token vesting duration (days)">
+								Token vesting duration (days)
 							</span>
-							<ReadMore text="The amount of time that needs to pass before the project creator can remove the initial Liquidity Pool's funds" />
+							<ReadMore
+								content={
+									<span>
+										Vesting duration is the number of days
+										(starting from the vesting start time)
+										until the full amount of locked tokens
+										are released.
+										<br />
+										<br />
+										To prevent rug pulls (learn about rug
+										pulls in
+										<a
+											href="https://docs.astrano.io/"
+											target="_blank"
+											rel="noopener noreferrer"
+										>
+											docs.astrano.io
+										</a>
+										), Astrano forces project creators to
+										vest their unused tokens. Token vesting
+										refers to the locking of tokens in a
+										smart contract and releasing an
+										incremental amount of the locked tokens
+										proportional to the current time. This
+										prevents project creators to overflood
+										the token&apos;s market or abuse
+										investors that purchase their token.
+									</span>
+								}
+							/>
 						</div>
-						<Tooltip content="Mon Dec 26 2022 20:49:09 GMT+0100 (Central European Standard Time)">
-							<span className={styles.statValue}>1 year</span>
-						</Tooltip>
+						<span className={styles.statValue}>
+							{addThousandSeparator(tokenLockDuration)} days
+						</span>
+					</div>
+
+					<div className={styles.stat}>
+						<div className={styles.statName}>
+							<span title="Liquidity vesting start (days)">
+								Liquidity vesting start (days)
+							</span>
+							<ReadMore
+								content={
+									<span>
+										Vesting start is the amount of time
+										elapsed before releasing any liquidity
+										tokens. When supplying liquidity for a
+										liquidity pool, an amount of generated
+										tokens is given to the supplier as a
+										means to quantify your contribution and
+										be able to extract your liquidity from
+										the liquidity pool.
+										<br />
+										<br />
+										To prevent rug pulls (learn about rug
+										pulls in
+										<a
+											href="https://docs.astrano.io/"
+											target="_blank"
+											rel="noopener noreferrer"
+										>
+											docs.astrano.io
+										</a>
+										), Astrano forces project creators to
+										vest liquidity tokens. Token vesting
+										refers to the locking of tokens in a
+										smart contract and releasing an
+										incremental amount of the locked tokens
+										proportional to the current time. This
+										prevents project creators to overflood
+										the token&apos;s market or abuse
+										investors that purchase their token.
+									</span>
+								}
+							/>
+						</div>
+						<span className={styles.statValue}>
+							{addThousandSeparator(liquidityLockStartIn)} days
+						</span>
+					</div>
+
+					<div className={styles.stat}>
+						<div className={styles.statName}>
+							<span title="Liquidity vesting duration (days)">
+								Liquidity vesting duration (days)
+							</span>
+							<ReadMore
+								content={
+									<span>
+										Vesting duration is the number of days
+										(starting from the Vesting start time)
+										until the full amount of locked tokens
+										are released. When supplying liquidity
+										for a liquidity pool, an amount of
+										generated tokens is given to the
+										supplier as a means to quantify your
+										contribution and be able to extract your
+										liquidity from the liquidity pool.
+										<br />
+										<br />
+										To prevent rug pulls (learn about rug
+										pulls in
+										<a
+											href="https://docs.astrano.io/"
+											target="_blank"
+											rel="noopener noreferrer"
+										>
+											docs.astrano.io
+										</a>
+										), Astrano forces project creators to
+										vest their unused tokens. Token vesting
+										refers to the locking of tokens in a
+										smart contract and releasing an
+										incremental amount of the locked tokens
+										proportional to the current time. This
+										prevents project creators to overflood
+										the token&apos;s market or abuse
+										investors that purchase their token.
+									</span>
+								}
+							/>
+						</div>
+						<span className={styles.statValue}>
+							{addThousandSeparator(liquidityLockDuration)} days
+						</span>
 					</div>
 
 					<div className={styles.allocation}>
@@ -335,16 +618,19 @@ export default function BuyProject({
 									allocationData.datasets[0]
 										.backgroundColor as string[]
 								}
+								percentages={allocationPercentages}
 							/>
 						</div>
 					</div>
 				</div>
 
 				<div className={styles.traderContainer}>
-					<CryptoTrader
-						name={tokenName}
-						symbol={tokenSymbol}
+					<CrowdsaleTrader
 						logoUri={logoUri}
+						token={token}
+						crowdsale={crowdsale}
+						isOpen={isOpen}
+						updateTokensSold={updateTokensSold}
 					/>
 					<p className={styles.traderDisclaimer}>
 						<b>DISCLAIMER</b> Astrano recommends its users to

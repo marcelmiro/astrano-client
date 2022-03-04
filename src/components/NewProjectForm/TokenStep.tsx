@@ -219,7 +219,7 @@ export default function TokenStep({
 				help={
 					<span>
 						Vesting duration is the number of days (starting from
-						the Vesting start time) until the full amount of locked
+						the vesting start time) until the full amount of locked
 						tokens are released.
 						<br />
 						<br />

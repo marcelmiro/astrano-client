@@ -30,6 +30,7 @@ import CopyVector from '@/public/copy.svg'
 import LinkVector from '@/public/link.svg'
 // import MetamaskVector from '@/public/metamask.svg'
 import styles from '@/styles/Project.module.scss'
+import { useMixpanel } from '@/context/Mixpanel'
 
 const { projectNotFound } = errorData
 
@@ -107,6 +108,7 @@ export default function Project({
 	// socialUrls,
 	likes: _likes,
 }: ProjectProps) {
+	const { track } = useMixpanel()
 	const {
 		user: contextUser,
 		setUser: setContextUser,
@@ -202,11 +204,13 @@ export default function Project({
 	}
 
 	const sendReport = async (message: string) => {
+		track('ReportProject')
 		console.log(message)
 		setReportStatus('success')
 	}
 
 	const likeProject = async () => {
+		track('LikeProject')
 		if (isLikeLoading) return
 		if (!contextUser) return setShowAuthModal(true)
 

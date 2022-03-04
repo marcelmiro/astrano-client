@@ -26,6 +26,7 @@ import LoadingSpinner from '@/components/LoadingSpinner'
 import styles from '@/styles/new.module.scss'
 import stepStyles from '@/styles/FormStep.module.scss'
 import DeployStep from '@/components/NewProjectForm/DeployStep'
+import { useMixpanel } from '@/context/Mixpanel'
 
 const { new: MetaData } = pagesMetaData
 
@@ -160,6 +161,7 @@ export default function New({
 }: {
 	undeployedProject: IUndeployedProject
 }) {
+	const { track } = useMixpanel()
 	const { user, logOut, setShowAuthModal } = useAuth()
 	const [project, setProject] = useState<IUndeployedProject | null>(
 		undeployedProject
@@ -231,6 +233,7 @@ export default function New({
 	}
 
 	const submitProject = async () => {
+		track('CreateProject')
 		const isValid = await trigger(steps.map((step) => step.fields).flat())
 		if (!isValid)
 			return redirectStepOnError(

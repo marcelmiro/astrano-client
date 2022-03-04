@@ -10,6 +10,7 @@ import LoadingSpinner from '@/components/LoadingSpinner'
 
 import CrossVector from '@/public/cross.svg'
 import styles from '@/styles/Modals/LikedProjects.module.scss'
+import { useMixpanel } from '@/context/Mixpanel'
 
 interface LikedProject {
 	name: IProject['name']
@@ -55,6 +56,8 @@ const Content = ({ isLoading, projects, redirectToProject }: ContentProps) => {
 }
 
 export default function LikedProjects({ show, onClose }: LikedProjectsProps) {
+	const { track } = useMixpanel()
+	track('GetLikedProjects')
 	const { logOut } = useAuth()
 	const [projects, setProjects] = useState<LikedProject[]>([])
 	const isMounted = useRef(false)

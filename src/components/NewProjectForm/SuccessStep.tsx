@@ -13,9 +13,10 @@ export default function SuccessStep({ tx }: { tx?: string }) {
 			</div>
 
 			<p className={styles.text}>
-				Congratulations! You are now part of the Astrano community. We
-				hope this is just t We will verify your project to be uploaded
-				to the Astrano platform as soon as possible.
+				Congratulations! You have now taken a step to the future and
+				successfully deployed your project on the blockchain. Click
+				below to find your blockchain transaction or return home to find
+				your project in the Astrano platform.
 			</p>
 
 			{tx && (

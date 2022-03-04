@@ -21,6 +21,7 @@ import EyeVector from '@/public/eye.svg'
 import EyeDashVector from '@/public/eye-dash.svg'
 import CheckVector from '@/public/check.svg'
 import styles from '@/styles/Modals/AuthModal.module.scss'
+import { useMixpanel } from '@/context/Mixpanel'
 
 interface AuthModalProps {
 	show: boolean
@@ -80,6 +81,7 @@ const LoginContent = ({
 	onClose,
 	setUser,
 }: LoginContentProps) => {
+	const { track } = useMixpanel()
 	const {
 		register,
 		handleSubmit,
@@ -92,6 +94,7 @@ const LoginContent = ({
 	const toggleShowPassword = () => setShowPassword((prev) => !prev)
 
 	const onSubmit = async (formData: ILogin) => {
+		track('Login')
 		const fetchAndParseOptions: FetchAndParseParams<ILogin> = {
 			setError,
 			setGeneralError,
@@ -189,6 +192,7 @@ const RegisterContent = ({
 	showStatus,
 	setShowStatus,
 }: RegisterContentProps) => {
+	const { track } = useMixpanel()
 	const {
 		register,
 		handleSubmit,
@@ -206,6 +210,7 @@ const RegisterContent = ({
 	}
 
 	const onSubmit = async (formData: ILogin) => {
+		track('Signup')
 		const fetchAndParseOptions: FetchAndParseParams<IRegister> = {
 			setError,
 			setGeneralError,

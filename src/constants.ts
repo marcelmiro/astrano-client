@@ -1,6 +1,7 @@
 import { RawDraftContentState } from 'draft-js'
 
 import { isNumber } from '@/utils/number'
+import { Chain } from '@/hooks/useMetamask'
 
 // import FireVector from '@/public/fire.svg'
 import TrophyVector from '@/public/trophy.svg'
@@ -8,6 +9,26 @@ import StarVector from '@/public/star.svg'
 import ListVector from '@/public/list.svg'
 import SquaresVector from '@/public/squares.svg'
 import NumberListVector from '@/public/numbered-list.svg'
+
+export const RPC_URL = 'https://data-seed-prebsc-1-s1.binance.org:8545/'
+
+export const NETWORK_CONFIG: Chain = {
+	chainId: '0x61',
+	chainName: 'Binance Smart Chain Testnet',
+	nativeCurrency: {
+		name: 'BNB',
+		symbol: 'BNB',
+		decimals: 18,
+	},
+	rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+	blockExplorerUrls: ['https://testnet.bscscan.com'],
+}
+
+export const PAIR_TOKEN_CONFIG = {
+	name: 'USDT',
+	symbol: 'USDT',
+	address: '0x7ef95a0fee0dd31b22626fa2e10ee6a223f8a684',
+}
 
 export const baseUrl = 'https://app.astrano.io'
 
@@ -491,7 +512,7 @@ export const token = {
 		},
 	},
 	lockStartIn: {
-		min: 30,
+		min: 1,
 		max: 3652,
 		schema: {
 			required: 'Vesting start is required',
@@ -500,8 +521,8 @@ export const token = {
 				message: 'Sorry, only numbers are allowed',
 			},
 			min: {
-				value: 30,
-				message: 'Vesting start must be at least 30 days',
+				value: 1,
+				message: 'Vesting start must be at least 1 days',
 			},
 			max: {
 				value: 3652,
@@ -510,7 +531,7 @@ export const token = {
 		},
 	},
 	lockDuration: {
-		min: 180,
+		min: 1,
 		max: 3652,
 		schema: {
 			required: 'Vesting duration is required',
@@ -519,8 +540,8 @@ export const token = {
 				message: 'Sorry, only numbers are allowed',
 			},
 			min: {
-				value: 180,
-				message: 'Vesting duration must be at least 180 days',
+				value: 1,
+				message: 'Vesting duration must be at least 1 days',
 			},
 			max: {
 				value: 3652,
@@ -704,7 +725,7 @@ export const liquidity = {
 		},
 	},
 	lockStartIn: {
-		min: 30,
+		min: 1,
 		max: 3652,
 		schema: {
 			required: 'Vesting start is required',
@@ -713,8 +734,8 @@ export const liquidity = {
 				message: 'Sorry, only numbers are allowed',
 			},
 			min: {
-				value: 30,
-				message: 'Vesting start must be at least 30 days',
+				value: 1,
+				message: 'Vesting start must be at least 1 days',
 			},
 			max: {
 				value: 3652,
@@ -723,7 +744,7 @@ export const liquidity = {
 		},
 	},
 	lockDuration: {
-		min: 180,
+		min: 1,
 		max: 3652,
 		schema: {
 			required: 'Vesting duration is required',
@@ -732,8 +753,8 @@ export const liquidity = {
 				message: 'Sorry, only numbers are allowed',
 			},
 			min: {
-				value: 180,
-				message: 'Vesting duration must be at least 180 days',
+				value: 1,
+				message: 'Vesting duration must be at least 1 days',
 			},
 			max: {
 				value: 3652,

@@ -1,34 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { ethers, ContractTransaction } from 'ethers'
 
+import { NETWORK_CONFIG } from '@/constants'
 import { IUndeployedProject } from '@/types'
-import useMetamask, { Chain } from '@/hooks/useMetamask'
+import useMetamask, { MetamaskStatus } from '@/hooks/useMetamask'
 import fetch from '@/utils/fetch'
 import { address, abi } from '@/contracts/ProjectFactory'
 import LoadingSpinner from '@/components/LoadingSpinner'
 
 import MetamaskVector from '@/public/metamask.svg'
 import styles from '@/styles/FormStep.module.scss'
-
-const NETWORK_CONFIG: Chain = {
-	chainId: '0x61',
-	chainName: 'Binance Smart Chain Testnet',
-	nativeCurrency: {
-		name: 'BNB',
-		symbol: 'BNB',
-		decimals: 18,
-	},
-	rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
-	blockExplorerUrls: ['https://testnet.bscscan.com'],
-}
-
-enum MetamaskStatus {
-	NOT_INSTALLED = 'not_installed',
-	NOT_CONNECTED = 'not_connected',
-	WRONG_NETWORK = 'wrong_network',
-	CONNECTED = 'connected',
-}
+import { useMixpanel } from '@/context/Mixpanel'
 
 interface DeployStepProps {
 	project: IUndeployedProject
@@ -57,26 +40,20 @@ export default function DeployStep({
 	deploySuccessful,
 	cancelProject,
 }: DeployStepProps) {
+	const { track } = useMixpanel()
 	const [isDeploying, setIsDeploying] = useState(false)
 	const [isDeleting, setIsDeleting] = useState(false)
-	const [status, setStatus] = useState<MetamaskStatus>()
 
-	const { provider, account, chainId, connectMetamask, changeNetwork } =
-		useMetamask()
-
-	useEffect(() => {
-		if (!chainId) setStatus(MetamaskStatus.NOT_INSTALLED)
-		else if (!account) setStatus(MetamaskStatus.NOT_CONNECTED)
-		else if (chainId === NETWORK_CONFIG.chainId)
-			setStatus(MetamaskStatus.CONNECTED)
-		else setStatus(MetamaskStatus.WRONG_NETWORK)
-	}, [chainId, account])
+	const { status, provider, connectMetamask, changeNetwork } = useMetamask()
 
 	const deployProject = async () => {
+		track('DeployProject')
 		if (isDeploying) return
 		if (!provider) return alert('Metamask extension not found')
 		setIsDeploying(true)
 		// TODO: Validate crowdsaleOpeningTime and crowdsaleClosingTime before deploying
+
+		const dayInSeconds = 60 * 60 * 24
 
 		try {
 			const input = {
@@ -85,8 +62,10 @@ export default function DeployStep({
 				tokenTotalSupply: ethers.utils.parseEther(
 					project.token.totalSupply
 				),
-				tokenLockStartIn: project.token.lockStartIn,
-				tokenLockDuration: project.token.lockDuration,
+				tokenLockStartIn:
+					parseInt(project.token.lockStartIn) * dayInSeconds,
+				tokenLockDuration:
+					parseInt(project.token.lockDuration) * dayInSeconds,
 				crowdsaleRate: project.crowdsale.rate,
 				crowdsaleCap: ethers.utils.parseEther(project.crowdsale.cap),
 				crowdsaleIndividualCap: ethers.utils.parseEther(
@@ -96,16 +75,18 @@ export default function DeployStep({
 					project.crowdsale.minPurchaseAmount
 				),
 				crowdsaleGoal: ethers.utils.parseEther(project.crowdsale.goal),
-				crowdsaleOpeningTime: Math.ceil(
+				crowdsaleOpeningTime: Math.floor(
 					new Date(project.crowdsale.openingTime).getTime() / 1000
 				),
-				crowdsaleClosingTime: Math.ceil(
+				crowdsaleClosingTime: Math.floor(
 					new Date(project.crowdsale.closingTime).getTime() / 1000
 				),
 				liquidityPercentage: project.liquidity.percentage,
 				liquidityRate: project.liquidity.rate,
-				liquidityLockStartIn: project.liquidity.lockStartIn,
-				liquidityLockDuration: project.liquidity.lockDuration,
+				liquidityLockStartIn:
+					parseInt(project.liquidity.lockStartIn) * dayInSeconds,
+				liquidityLockDuration:
+					parseInt(project.liquidity.lockDuration) * dayInSeconds,
 			}
 
 			const signer = provider.getSigner()
@@ -142,6 +123,7 @@ export default function DeployStep({
 	}
 
 	const deleteProject = async () => {
+		track('DeleteUndeployedProject')
 		setIsDeleting(true)
 		try {
 			await fetch('/projects/deploy', { method: 'DELETE' })

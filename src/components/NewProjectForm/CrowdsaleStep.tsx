@@ -21,11 +21,12 @@ export default function CrowdsaleStep({
 	const [goal, setGoal] = useState('')
 	const [individualCap, setIndividualCap] = useState('')
 	const [openingTime, setOpeningTime] = useState('')
+	const [closingTime, setClosingTime] = useState('')
+	const [localOpeningTime, setLocalOpeningTime] = useState('')
+	const [localClosingTime, setLocalClosingTime] = useState('')
 
 	const onRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value
-		if (value.split('.')[1]?.length > 0)
-			e.target.value = parseFloat(e.target.value).toFixed(0)
+		e.target.value = e.target.value?.split('.')[0].replace(/\D/g, '')
 		try {
 			setPrice(parseFloat(Big(e.target.value).pow(-1).toFixed(6)))
 		} catch (e) {}
@@ -50,8 +51,17 @@ export default function CrowdsaleStep({
 	}
 
 	const onOpeningTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const date = new Date(e.target.value)
-		if (date) setOpeningTime(e.target.value)
+		const date = new Date(e.target.value).toISOString()
+		if (!date) return
+		setOpeningTime(date)
+		setValue('crowdsaleOpeningTime', date, { shouldValidate: true })
+	}
+
+	const onClosingTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const date = new Date(e.target.value).toISOString()
+		if (!date) return
+		setClosingTime(date)
+		setValue('crowdsaleClosingTime', date, { shouldValidate: true })
 	}
 
 	const onMinPurchaseAmountChange = (
@@ -97,13 +107,69 @@ export default function CrowdsaleStep({
 					`Individual cap must not exceed crowdsale cap (${cap})`,
 			},
 		})
-	}, [register, cap, watch])
+		register('crowdsaleOpeningTime', crowdsaleConstants.openingTime.schema)
+		register('crowdsaleClosingTime', {
+			...crowdsaleConstants.closingTime.schema,
+			validate: {
+				...crowdsaleConstants.closingTime.schema.validate,
+				futureTime: (value: string) => {
+					const date = new Date(value)
+					if (!date) return 'Please provide a valid date'
+					const opening = new Date(openingTime)
+					if (!opening) return true
+					return (
+						date > opening ||
+						'Closing time must be greater than the opening time'
+					)
+				},
+				minCrowdsaleDuration: (value: string) => {
+					const date = new Date(value)
+					if (!date) return 'Please provide a valid date'
+					const opening = new Date(openingTime)
+					if (!opening) return true
+					const minTime = new Date(opening.getTime() + 1800000) // 30 minutes
+					return (
+						date >= minTime ||
+						'Crowdsale must be open for at least 30 minutes'
+					)
+				},
+				maxCrowdsaleDuration: (value: string) => {
+					const date = new Date(value)
+					if (!date) return 'Please provide a valid date'
+					const opening = new Date(openingTime)
+					if (!opening) return true
+					const maxTime = new Date(opening.getTime() + 2678400000) // 31 days
+					return (
+						date <= maxTime ||
+						'Crowdsale can only be open for at most 31 days'
+					)
+				},
+			},
+		})
+	}, [register, watch, cap, openingTime])
+
+	useEffect(() => {
+		const date = new Date(openingTime)
+		if (!date.getTime()) return
+		date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
+		const localDate = date.toISOString().slice(0, 16)
+		setLocalOpeningTime(localDate)
+	}, [openingTime])
+
+	useEffect(() => {
+		const date = new Date(closingTime)
+		if (!date.getTime()) return
+		date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
+		const localDate = date.toISOString().slice(0, 16)
+		setLocalClosingTime(localDate)
+	}, [closingTime])
 
 	useEffect(() => {
 		setCap(watch('crowdsaleCap') || '')
 		setGoal(watch('crowdsaleGoal') || '')
 		setIndividualCap(watch('crowdsaleIndividualCap') || '')
 		setOpeningTime(watch('crowdsaleOpeningTime') || '')
+		setClosingTime(watch('crowdsaleClosingTime') || '')
 
 		try {
 			setPrice(parseFloat(Big(watch('crowdsaleRate')).pow(-1).toFixed(6)))
@@ -236,11 +302,9 @@ export default function CrowdsaleStep({
 				{...inputGroupDefaults}
 			>
 				<input
-					{...register('crowdsaleOpeningTime', {
-						...crowdsaleConstants.openingTime.schema,
-						onChange: onOpeningTimeChange,
-					})}
 					type="datetime-local"
+					value={localOpeningTime}
+					onChange={onOpeningTimeChange}
 					className={styles.textbox}
 				/>
 			</InputGroup>
@@ -253,49 +317,9 @@ export default function CrowdsaleStep({
 				{...inputGroupDefaults}
 			>
 				<input
-					{...register('crowdsaleClosingTime', {
-						...crowdsaleConstants.closingTime.schema,
-						validate: {
-							...crowdsaleConstants.closingTime.schema.validate,
-							futureTime: (value: string) => {
-								const date = new Date(value)
-								if (!date) return 'Please provide a valid date'
-								const opening = new Date(openingTime)
-								if (!opening) return true
-								return (
-									date > opening ||
-									'Closing time must be greater than the opening time'
-								)
-							},
-							minCrowdsaleDuration: (value: string) => {
-								const date = new Date(value)
-								if (!date) return 'Please provide a valid date'
-								const opening = new Date(openingTime)
-								if (!opening) return true
-								const minTime = new Date(
-									opening.getTime() + 1800000
-								) // 30 minutes
-								return (
-									date >= minTime ||
-									'Crowdsale must be open for at least 30 minutes'
-								)
-							},
-							maxCrowdsaleDuration: (value: string) => {
-								const date = new Date(value)
-								if (!date) return 'Please provide a valid date'
-								const opening = new Date(openingTime)
-								if (!opening) return true
-								const maxTime = new Date(
-									opening.getTime() + 2678400000
-								) // 31 days
-								return (
-									date <= maxTime ||
-									'Crowdsale can only be open for at most 31 days'
-								)
-							},
-						},
-					})}
 					type="datetime-local"
+					value={localClosingTime}
+					onChange={onClosingTimeChange}
 					className={styles.textbox}
 				/>
 			</InputGroup>
