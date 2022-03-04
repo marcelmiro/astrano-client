@@ -464,6 +464,20 @@
 	}
 }
 
+.deployButtonSecondary {
+	@include button;
+	margin: 2.75rem auto 0;
+	height: 2.75rem;
+	font-size: 1rem;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	gap: 0.625rem;
+	svg {
+		width: 1.75rem;
+	}
+}
+
 .deployButtonContent {
 	display: flex;
 	flex-flow: row nowrap;

@@ -33,7 +33,8 @@ enum MetamaskStatus {
 interface DeployStepProps {
 	project: IUndeployedProject
 	setTx(tx: string): void
-	deploySuccessful: () => void
+	deploySuccessful(): void
+	cancelProject(): void
 }
 
 const DeployButtonContent = () => (
@@ -43,12 +44,21 @@ const DeployButtonContent = () => (
 	</div>
 )
 
+const DeleteButtonContent = () => (
+	<div className={styles.deployButtonContent}>
+		<LoadingSpinner className={styles.loading} />
+		<span>Canceling...</span>
+	</div>
+)
+
 export default function DeployStep({
 	project,
 	setTx,
 	deploySuccessful,
+	cancelProject,
 }: DeployStepProps) {
 	const [isDeploying, setIsDeploying] = useState(false)
+	const [isDeleting, setIsDeleting] = useState(false)
 	const [status, setStatus] = useState<MetamaskStatus>()
 
 	const { provider, account, chainId, connectMetamask, changeNetwork } =
@@ -131,6 +141,18 @@ export default function DeployStep({
 		}
 	}
 
+	const deleteProject = async () => {
+		setIsDeleting(true)
+		try {
+			await fetch('/projects/deploy', { method: 'DELETE' })
+			cancelProject()
+		} catch (e) {
+			throw e
+		} finally {
+			setIsDeleting(false)
+		}
+	}
+
 	return (
 		<>
 			<p className={styles.text}>
@@ -189,6 +211,13 @@ export default function DeployStep({
 					)}
 				</button>
 			)}
+
+			<button
+				className={styles.deployButtonSecondary}
+				onClick={deleteProject}
+			>
+				{isDeleting ? <DeleteButtonContent /> : 'Cancel project'}
+			</button>
 		</>
 	)
 }

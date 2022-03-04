@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useForm, FieldErrors } from 'react-hook-form'
 // import { GetServerSideProps } from 'next'
 import Link from 'next/link'
+import Router from 'next/router'
 import classNames from 'classnames'
 
 import { INewProject, INewProjectStepProps, IUndeployedProject } from '@/types'
@@ -289,6 +290,7 @@ export default function New({
 					project={project}
 					setTx={setTx}
 					deploySuccessful={() => setIsSubmitSuccessful(true)}
+					cancelProject={() => Router.reload()}
 				/>
 			)
 
