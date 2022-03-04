@@ -38,7 +38,9 @@
 	justify-content: center;
 	align-items: center;
 	transition: background-color 0.24s, border-color 0.24s, box-shadow 0.24s;
-	&[disabled] {
+	&[disabled],
+	&:disabled {
+		cursor: not-allowed;
 		pointer-events: none;
 		overflow: hidden;
 		position: relative;
@@ -62,18 +64,21 @@
 	&:hover {
 		background-color: rgb(var(--primary-600));
 	}
-	&[disabled] {
+	&[disabled],
+	&:disabled {
 		border-color: rgb(var(--primary-400));
 	}
 }
 @mixin primaryButton {
 	@include baseButton;
 	background-color: rgb(var(--purple-accent));
-	&:hover, &:focus {
+	&:hover,
+	&:focus {
 		-webkit-box-shadow: 0 0 2rem -0.438rem rgba(var(--purple-accent), 0.7);
 		box-shadow: 0 0 2rem -0.438rem rgba(var(--purple-accent), 0.7);
 	}
-	&[disabled] {
+	&[disabled],
+	&:disabled {
 		background-color: rgb(var(--primary-500));
 	}
 }
@@ -131,7 +136,8 @@
 	&::placeholder {
 		color: rgb(var(--primary-400));
 	}
-	&[disabled] {
+	&[disabled],
+	&:disabled {
 		pointer-events: none;
 	}
 	@at-root div#{&} {
