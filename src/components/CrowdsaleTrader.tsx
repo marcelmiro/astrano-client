@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { Big } from 'big.js'
 import { ContractTransaction, ethers } from 'ethers'
 
@@ -243,7 +244,15 @@ export default function CrowdsaleTrader({
 				</div>
 
 				{status === MetamaskStatus.NOT_INSTALLED && (
-					<button className={styles.button}>Install Metamask</button>
+					<Link href="https://docs.astrano.io/wallets/create-your-metamask-wallet">
+						<a
+							target="_blank"
+							rel="noopener noreferrer"
+							className={styles.button}
+						>
+							Install Metamask
+						</a>
+					</Link>
 				)}
 
 				{status === MetamaskStatus.NOT_CONNECTED && (
