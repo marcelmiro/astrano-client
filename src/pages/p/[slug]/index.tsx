@@ -339,7 +339,7 @@ export default function Project({
 							<Link href={`/p/${slug}/buy`}>
 								<a
 									className={styles.investButton}
-									target="_blank"
+									target="_self"
 									rel="noopener noreferrer"
 								>
 									Invest
