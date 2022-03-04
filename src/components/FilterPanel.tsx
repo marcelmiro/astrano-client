@@ -362,7 +362,7 @@ FilterPanelProps) {
 				<Link href="/">
 					<a>Cookie Policy</a>
 				</Link>
-				<p>© 2021 ASTRANO</p>
+				<p>© 2022 ASTRANO</p>
 			</div>
 		</div>
 	)

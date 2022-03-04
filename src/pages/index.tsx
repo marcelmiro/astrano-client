@@ -78,10 +78,6 @@ const ProjectContainer = ({
 				const redirect = () =>
 					router.push(redirectUrl, undefined, { shallow: true })
 
-				const status = project.status.name
-				project.status.name =
-					status === 'ico' ? 'ICO' : status[0].toUpperCase() + status.slice(1)
-
 				const props = {
 					...project,
 					redirectUrl,
@@ -166,7 +162,11 @@ export default function Index() {
 					})}
 				>
 					{isMounted.current && (
-						<ProjectContainer view={view} projects={projects} router={router} />
+						<ProjectContainer
+							view={view}
+							projects={projects}
+							router={router}
+						/>
 					)}
 				</div>
 			</div>

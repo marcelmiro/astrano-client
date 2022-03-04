@@ -19,6 +19,7 @@ interface AuthContextProps {
 	setShowAuthModal(value: boolean): void
 }
 
+/* eslint-disable @typescript-eslint/no-empty-function */
 const defaultValues: AuthContextProps = {
 	loading: true,
 	user: null,
@@ -27,6 +28,7 @@ const defaultValues: AuthContextProps = {
 	showAuthModal: false,
 	setShowAuthModal: () => {},
 }
+/* eslint-enable @typescript-eslint/no-empty-function */
 
 const AuthContext = createContext<AuthContextProps>(defaultValues)
 

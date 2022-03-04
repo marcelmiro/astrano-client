@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Big } from 'big.js'
 
 import { IProject } from '@/types'
 import { addThousandSeparator } from '@/utils/number'
@@ -14,23 +15,32 @@ interface ProjectProps extends IProject {
 
 export default function ProjectCard({
 	name,
-	logoUrl,
+	logoUri,
 	user: { username },
 	tags,
-	token: { symbol, price },
-	status: { name: status },
+	token,
+	crowdsale,
+	status,
 	likes,
 	redirectUrl,
 	redirect,
 }: ProjectProps) {
-	const _formattedPrice = addThousandSeparator(price)
-	const formattedPrice = _formattedPrice ? '$' + _formattedPrice : '-'
+	let price
+	try {
+		if (status === 'crowdsale') price = Big(crowdsale.rate).pow(-1)
+	} catch (e) {}
+
+	let formattedPrice = '-'
+	if (price) {
+		const stringifyPrice = price.lt(1) ? price.toFixed(4) : price.toFixed(2)
+		formattedPrice = '$' + addThousandSeparator(stringifyPrice)
+	}
 
 	return (
 		<button className={styles.container} onClick={redirect}>
 			<div className={styles.content}>
 				<SkeletonImage
-					src={logoUrl}
+					src={logoUri}
 					alt={name + ' logo'}
 					className={styles.image}
 				/>
@@ -39,7 +49,7 @@ export default function ProjectCard({
 						<a className={styles.name}>{name}</a>
 					</Link>
 					<div className={styles.symbol}>
-						<span>{symbol}</span>
+						<span>{token.symbol}</span>
 					</div>
 				</div>
 

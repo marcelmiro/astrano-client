@@ -1,64 +1,101 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm, FieldErrors } from 'react-hook-form'
+// import { GetServerSideProps } from 'next'
+import Link from 'next/link'
 import classNames from 'classnames'
 
-import { NewForm as IForm } from '@/types'
-import { pagesMetaData, token as tokenConstants } from '@/constants'
+import { INewProject, INewProjectStepProps, IUndeployedProject } from '@/types'
+import {
+	pagesMetaData,
+	token as tokenConstants,
+	crowdsale as crowdsaleConstants,
+	liquidity as liquidityConstants,
+} from '@/constants'
+import { useAuth } from '@/context/Auth.context'
+import fetch, { fetchAndParse, FetchAndParseParams } from '@/utils/fetch'
 
 import Meta from '@/components/Meta'
-import ProjectStep from '@/components/NewForm/ProjectStep'
-import TokenStep from '@/components/NewForm/TokenStep'
-import SocialStep from '@/components/NewForm/SocialStep'
-import SuccessStep from '@/components/NewForm/SuccessStep'
+import ProjectStep from '@/components/NewProjectForm/ProjectStep'
+import TokenStep from '@/components/NewProjectForm/TokenStep'
+import CrowdsaleStep from '@/components/NewProjectForm/CrowdsaleStep'
+import LiquidityStep from '@/components/NewProjectForm/LiquidityStep'
+import SuccessStep from '@/components/NewProjectForm/SuccessStep'
 import LoadingSpinner from '@/components/LoadingSpinner'
-import { useAuth } from '@/context/Auth.context'
-import { fetchAndParse, FetchAndParseParams } from '@/utils/fetch'
 
 import styles from '@/styles/new.module.scss'
 import stepStyles from '@/styles/FormStep.module.scss'
+import DeployStep from '@/components/NewProjectForm/DeployStep'
 
 const { new: MetaData } = pagesMetaData
 
 interface Step {
 	name: string
-	fields: (keyof IForm)[]
+	fields: (keyof INewProject)[]
+	disabled?: boolean
 }
 
 const steps: Step[] = [
 	{
 		name: 'Project',
-		fields: ['name', 'tags', 'description', 'relationship'],
+		fields: ['name', 'logo', 'tags', 'description'],
 	},
+	// Include social in project?
+	/* {
+		name: 'Social',
+		fields: ['website', 'socialUrls'],
+	}, */
 	{
 		name: 'Token',
 		fields: [
 			'tokenName',
 			'tokenSymbol',
-			'logo',
-			'tokenSupply',
-			'tokenDecimals',
-			'tokenDistributionTax',
+			'tokenTotalSupply',
+			'tokenLockStartIn',
+			'tokenLockDuration',
 		],
 	},
 	{
-		name: 'Social',
-		fields: ['website', 'socialUrls'],
+		name: 'Crowdsale',
+		fields: [
+			'crowdsaleRate',
+			'crowdsaleCap',
+			'crowdsaleIndividualCap',
+			'crowdsaleMinPurchaseAmount',
+			'crowdsaleGoal',
+			'crowdsaleOpeningTime',
+			'crowdsaleClosingTime',
+		],
+	},
+	{
+		name: 'Liquidity',
+		fields: [
+			'liquidityPercentage',
+			'liquidityRate',
+			'liquidityLockStartIn',
+			'liquidityLockDuration',
+		],
+	},
+	{
+		name: 'Deploy',
+		fields: [],
+		disabled: true,
 	},
 ]
 
 const stepFields = steps.map(({ fields }) => fields).flat()
 
-const defaultValues: Partial<IForm> = {
+const defaultValues: Partial<INewProject> = {
 	tags: [],
-	tokenSupply: tokenConstants.totalSupply.default.toString(),
-	tokenDecimals: tokenConstants.decimals.default,
-	tokenDistributionTax: tokenConstants.distributionTax.default,
+	tokenTotalSupply: tokenConstants.totalSupply.default.toString(),
+	crowdsaleIndividualCap: crowdsaleConstants.individualCap.default.toString(),
+	crowdsaleMinPurchaseAmount:
+		crowdsaleConstants.minPurchaseAmount.default.toString(),
+	liquidityPercentage: liquidityConstants.percentage.default,
 }
 
 const inputGroupDefaults = {
 	containerClassName: stepStyles.inputGroup,
 	labelClassName: stepStyles.label,
-	descriptionClassName: stepStyles.description,
 	errorClassName: stepStyles.error,
 }
 
@@ -117,12 +154,21 @@ const SubmitButtonContent = () => (
 	</div>
 )
 
-export default function New() {
+export default function New({
+	undeployedProject,
+}: {
+	undeployedProject: IUndeployedProject
+}) {
 	const { user, logOut, setShowAuthModal } = useAuth()
-	const [activeStep, setActiveStep] = useState(2)
+	const [project, setProject] = useState<IUndeployedProject | null>(
+		undeployedProject
+	)
+	const [activeStep, setActiveStep] = useState(undeployedProject ? 4 : 0)
 	const isLastStep = activeStep === steps.length - 1
 	const [generalError, setGeneralError] = useState('')
 	const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false)
+	const [tx, setTx] = useState('')
+	const isMounted = useRef(false)
 
 	const {
 		register,
@@ -131,81 +177,125 @@ export default function New() {
 		watch,
 		setValue,
 		setError,
-		control,
 		formState: { errors, isSubmitting },
-	} = useForm<IForm>({ defaultValues, mode: 'onChange' })
+	} = useForm<INewProject>({ defaultValues, mode: 'onChange' })
+
+	const defaultStepProps: INewProjectStepProps = {
+		register,
+		errors,
+		setValue,
+		watch,
+		inputGroupDefaults,
+		generalError,
+	}
 
 	// On step change
 	useEffect(() => window.scrollTo(0, 0), [activeStep])
 
 	// On component mount check if user logged in
 	useEffect(() => {
-		if (!user) setShowAuthModal(true)
-	}, [user, setShowAuthModal])
+		let isSubscribed = true
+		if (!user) {
+			setShowAuthModal(true)
+			if (isMounted.current) setProject(null)
+		}
+		if (user && !project) {
+			fetch<IUndeployedProject>('/projects/deploy').then(({ data }) => {
+				if (!isSubscribed) return
+				setProject(data)
+			})
+		}
+
+		return () => {
+			isSubscribed = false
+		}
+	}, [user, project, setShowAuthModal])
+
+	useEffect(() => {
+		if (project && activeStep !== 4) setActiveStep(4)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [project])
+
+	useEffect(() => {
+		isMounted.current = true
+	}, [])
 
 	if (isSubmitSuccessful) {
 		return (
 			<>
 				<DefaultRender />
-				<SuccessStep />
+				<SuccessStep tx={tx} />
 			</>
 		)
 	}
 
-	const submitProject = handleSubmit(async (data: IForm) => {
-		return console.log(data)
+	const submitProject = async () => {
+		const isValid = await trigger(steps.map((step) => step.fields).flat())
+		if (!isValid)
+			return redirectStepOnError(
+				errors as Record<string, string>,
+				setActiveStep
+			)
 
-		// FIXME Test fetchAndParseOptions onError as its never been tested
-		const formData = new FormData()
-		const { logo, ...restData } = data
-		formData.append('data', JSON.stringify(restData))
-		formData.append('logo', logo)
+		handleSubmit(async (data: INewProject) => {
+			// FIXME Test fetchAndParseOptions onError as its never been tested
+			const formData = new FormData()
+			const { logo, ...restData } = data
+			formData.append('data', JSON.stringify(restData))
+			formData.append('logo', logo)
 
-		const fetchAndParseOptions: FetchAndParseParams<IForm> = {
-			setError,
-			setGeneralError,
-			fetchOptions: {
-				url: '/projects',
-				method: 'POST',
-				headers: { 'content-type': 'multipart/form-data' },
-				data: formData,
-				onLogout: logOut,
-			},
-			paths: stepFields,
-			onError: (errors) => redirectStepOnError(errors, setActiveStep),
-		}
+			const fetchAndParseOptions: FetchAndParseParams<INewProject> = {
+				setError,
+				setGeneralError,
+				fetchOptions: {
+					url: '/projects',
+					method: 'POST',
+					headers: { 'content-type': 'multipart/form-data' },
+					data: formData,
+					onLogout: logOut,
+				},
+				paths: stepFields,
+				onError: (errors) => redirectStepOnError(errors, setActiveStep),
+			}
 
-		const fetchData = await fetchAndParse(fetchAndParseOptions)
+			const fetchData = await fetchAndParse<IUndeployedProject>(
+				fetchAndParseOptions
+			)
 
-		if (fetchData) {
-			setIsSubmitSuccessful(true)
-		}
-	})
+			if (fetchData) {
+				setProject(fetchData)
+				setActiveStep((prevStep) => prevStep + 1)
+			}
+		})()
+	}
 
 	const handleNextStep = async () => {
 		if (!user) return setShowAuthModal(true)
-		if (isLastStep) return submitProject()
-		if (!steps[activeStep]) return setActiveStep(0)
-		const isStepValid = await trigger(steps[activeStep].fields)
-		if (isStepValid) setActiveStep((prevStep) => prevStep + 1)
+		if (Object.keys(errors).length === 0) {
+			if (isLastStep || steps[activeStep + 1].disabled)
+				return await submitProject()
+			const isStepValid = await trigger(steps[activeStep].fields)
+			if (isStepValid) return setActiveStep((prevStep) => prevStep + 1)
+		}
+		redirectStepOnError(errors as Record<string, string>, setActiveStep)
 	}
 
 	const handlePreviousStep = () => setActiveStep((prevStep) => prevStep - 1)
 
-	const defaultStepProps = {
-		register,
-		errors,
-		setValue,
-		watch,
-		control,
-		inputGroupDefaults,
-		generalError,
-	}
-
 	const renderActiveStep = () => {
+		if (project)
+			return (
+				<DeployStep
+					project={project}
+					setTx={setTx}
+					deploySuccessful={() => setIsSubmitSuccessful(true)}
+				/>
+			)
+
 		if (activeStep === 0) return <ProjectStep {...defaultStepProps} />
 		if (activeStep === 1) return <TokenStep {...defaultStepProps} />
-		if (activeStep === 2) return <SocialStep {...defaultStepProps} />
+		if (activeStep === 2) return <CrowdsaleStep {...defaultStepProps} />
+		if (activeStep === 3) return <LiquidityStep {...defaultStepProps} />
 		setActiveStep(0)
 	}
 
@@ -216,40 +306,56 @@ export default function New() {
 			<div className={styles.container}>
 				<h1 className={styles.title}>Create a project</h1>
 				<h2 className={styles.subtitle}>
-					Fund your project by creating your own cryptocurrency token. Fields
-					with a default value are not required to be filled in.
+					Fund your project by creating your own cryptocurrency token.
+					For more information visit our documentation site by
+					clicking
+					<Link href="https://docs.astrano.io/">
+						<a target="_blank" rel="noopener noreferrer">
+							here
+						</a>
+					</Link>
+					.
 				</h2>
 
 				<StepStatus activeStep={activeStep} />
 
 				{renderActiveStep()}
 
-				<div className={styles.stepActions}>
-					{activeStep > 0 && (
+				{!steps[activeStep].disabled && (
+					<div className={styles.stepActions}>
+						{activeStep > 0 && (
+							<button
+								type="button"
+								className={styles.stepButton}
+								onClick={handlePreviousStep}
+							>
+								Back
+							</button>
+						)}
 						<button
 							type="button"
-							className={styles.stepButton}
-							onClick={handlePreviousStep}
+							className={styles.stepPrimaryButton}
+							onClick={handleNextStep}
+							disabled={!isStepValid(activeStep, errors)}
 						>
-							Back
+							{isSubmitting ? (
+								<SubmitButtonContent />
+							) : isLastStep ? (
+								'Create project'
+							) : (
+								'Next'
+							)}
 						</button>
-					)}
-					<button
-						type="button"
-						className={styles.stepPrimaryButton}
-						onClick={handleNextStep}
-						disabled={!isStepValid(activeStep, errors)}
-					>
-						{isSubmitting ? (
-							<SubmitButtonContent />
-						) : isLastStep ? (
-							'Create project'
-						) : (
-							'Next'
-						)}
-					</button>
-				</div>
+					</div>
+				)}
 			</div>
 		</>
 	)
 }
+
+/* export const getServerSideProps: GetServerSideProps = async (ctx) => {
+	const options: Record<string, unknown> = {}
+	if (ctx.req) options.headers = { cookie: ctx.req.headers.cookie }
+	const { data } = await fetch('/projects/deploy', options)
+	return data ? { props: { undeployedProject: data } } : { props: {} }
+} */

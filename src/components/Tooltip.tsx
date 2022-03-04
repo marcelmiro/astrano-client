@@ -5,7 +5,7 @@ import 'tippy.js/dist/tippy.css'
 import styles from '@/styles/Tooltip.module.scss'
 
 interface TooltipProps extends TippyProps {
-	content: string | HTMLElement
+	content: string | React.ReactElement
 	children: React.ReactElement
 	className?: string
 }

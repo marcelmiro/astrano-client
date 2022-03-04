@@ -6,13 +6,13 @@ import styles from '@/styles/CryptoTrader.module.scss'
 interface CryptoTraderProps {
 	name: string
 	symbol: string
-	logoUrl: string
+	logoUri: string
 }
 
 export default function CryptoTrader({
 	name,
 	symbol,
-	logoUrl,
+	logoUri,
 }: CryptoTraderProps) {
 	return (
 		<div className={styles.container}>
@@ -21,7 +21,7 @@ export default function CryptoTrader({
 				<p className={styles.description}>
 					Learn how to buy <b>{symbol}</b> by clicking{' '}
 					<a
-						href="https://www.followchain.org/connect-metamask-pancakeswap/"
+						href="https://docs.astrano.io/"
 						target="_blank"
 						rel="noopener noreferrer"
 					>
@@ -66,7 +66,7 @@ export default function CryptoTrader({
 					<div className={styles.swapOverview}>
 						<div className={styles.token}>
 							<SkeletonImage
-								src={logoUrl}
+								src={logoUri}
 								alt={symbol + ' logo'}
 								className={styles.tokenLogo}
 							/>

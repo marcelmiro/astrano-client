@@ -15,7 +15,7 @@ import { addThousandSeparator } from '@/utils/number'
 import { copyToClipboard } from '@/utils/element'
 import fetch from '@/utils/fetch'
 import { useAuth } from '@/context/Auth.context'
-import useCountdown from '@/hooks/useCountdown'
+// import useCountdown from '@/hooks/useCountdown'
 
 import Error from '@/pages/_error'
 import Meta from '@/components/Meta'
@@ -39,11 +39,13 @@ interface ProjectProps extends IProject {
 	errorCode?: number
 }
 
-interface CountdownProps {
+/* interface CountdownProps {
 	status: string
 	date: Date
 	placeholder: string
-}
+} */
+
+const TOKEN_BLOCKCHAIN_EXPLORER_BASE_URL = 'https://testnet.bscscan.com/token/'
 
 const getDomainFromUrl = (url: string): string | undefined => {
 	if (!url || typeof url !== 'string') return
@@ -57,7 +59,7 @@ const getDomainFromUrl = (url: string): string | undefined => {
 	}
 }
 
-const Countdown = ({ status, date, placeholder }: CountdownProps) => {
+/* const Countdown = ({ status, date, placeholder }: CountdownProps) => {
 	const timeLeft = useCountdown(date)
 
 	if (!timeLeft) return null
@@ -81,7 +83,7 @@ const Countdown = ({ status, date, placeholder }: CountdownProps) => {
 			</div>
 		</div>
 	)
-}
+} */
 
 const DescriptionNotFound = ({ className }: { className?: string }) => (
 	<p className={classNames(styles.descriptionNotFound, className)}>
@@ -94,14 +96,15 @@ export default function Project({
 	_id: id,
 	name,
 	slug,
-	logoUrl,
+	logoUri,
 	user,
 	tags,
 	description,
 	token,
-	status: statusObject,
-	website,
-	socialUrls,
+	crowdsale,
+	status,
+	// website,
+	// socialUrls,
 	likes: _likes,
 }: ProjectProps) {
 	const {
@@ -130,25 +133,15 @@ export default function Project({
 		)
 
 	const {
-		contractAddress,
-		blockchainExplorerUrl,
+		tokenAddress,
 		symbol: tokenSymbol,
-		totalSupply: _tokenSupply,
-		// decimals: tokenDecimals,
-		distributionTax: tokenDistributionTax,
-		price: _price,
+		totalSupply: tokenTotalSupply,
 	} = token
-
-	const {
-		name: status,
-		startsAt: statusStartsAt,
-		endsAt: statusEndsAt,
-	} = statusObject
 
 	// Process and format token price
 	let price: Big | undefined
 	try {
-		price = Big(_price)
+		if (status === 'crowdsale') price = Big(crowdsale.rate).pow(-1)
 	} catch (e) {}
 
 	let formattedPrice = '-'
@@ -157,45 +150,47 @@ export default function Project({
 		formattedPrice = '$' + addThousandSeparator(stringifyPrice)
 	}
 
-	// Process and format token total supply
-	let tokenSupply: Big | undefined
-	try {
-		tokenSupply = Big(_tokenSupply)
-	} catch (e) {}
-
-	const formattedTokenSupply =
-		tokenSupply && addThousandSeparator(tokenSupply.toString())
+	const formattedTokenTotalSupply = addThousandSeparator(tokenTotalSupply)
 
 	// Process and format market cap
 	let marketCap: string | undefined
-	if (tokenSupply && price) {
+	if (status === 'live' && tokenTotalSupply && price) {
 		try {
-			marketCap = tokenSupply.mul(price)?.toFixed(0)
+			const supply = Big(tokenTotalSupply)
+			marketCap = supply.mul(price).toFixed(0)
 		} catch (e) {}
 	}
 
 	const formattedMarketCap = marketCap && addThousandSeparator(marketCap)
 
-	const formattedStatus =
-		status === 'ico' ? 'ICO' : status[0].toUpperCase() + status.slice(1)
+	const formattedStatus = status[0].toUpperCase() + status.slice(1)
+
+	/* const blockTimestamp = Big(Math.ceil(Date.now() / 1000))
+	if (status === 'crowdsale') {
+		if (blockTimestamp.lte(crowdsale.openingTime)) 1
+		if (blockTimestamp.gte(crowdsale.closingTime)) 1
+	} */
 
 	const splitContractAddress = [
-		contractAddress.slice(
+		tokenAddress.slice(
 			0,
-			contractAddress.length - contractAddressLastCharactersLength
+			tokenAddress.length - contractAddressLastCharactersLength
 		),
-		contractAddress.slice(
-			contractAddress.length - contractAddressLastCharactersLength,
-			contractAddress.length
+		tokenAddress.slice(
+			tokenAddress.length - contractAddressLastCharactersLength,
+			tokenAddress.length
 		),
 	]
 
-	const websiteDomain = getDomainFromUrl(website) || 'website'
+	// const websiteDomain = getDomainFromUrl(website) || 'website'
+
+	const blockchainExplorerUrl =
+		TOKEN_BLOCKCHAIN_EXPLORER_BASE_URL + tokenAddress
 
 	const blockchainExplorerDomain =
 		getDomainFromUrl(blockchainExplorerUrl) || 'website'
 
-	const copyContractAddress = () => copyToClipboard(contractAddress)
+	const copyTokenAddress = () => copyToClipboard(tokenAddress)
 
 	// const addToMetamask = () => alert('Add token to MetaMask...')
 
@@ -247,7 +242,7 @@ export default function Project({
 			<Meta
 				title={pagesMetaData.project.title(name)}
 				description={summary}
-				image={logoUrl}
+				image={logoUri}
 			/>
 
 			<Report
@@ -261,7 +256,7 @@ export default function Project({
 			<div className={styles.container}>
 				<div className={styles.header}>
 					<SkeletonImage
-						src={logoUrl}
+						src={logoUri}
 						alt={name + ' logo'}
 						className={styles.image}
 					/>
@@ -269,23 +264,32 @@ export default function Project({
 						<div className={styles.title}>
 							<h1 className={styles.name}>{name}</h1>
 							<div className={styles.symbol}>
-								<h3 className={styles.symbolText}>{tokenSymbol}</h3>
+								<h3 className={styles.symbolText}>
+									{tokenSymbol}
+								</h3>
 							</div>
 						</div>
 						<div className={styles.author}>
 							{user?.username ? (
 								<>
-									{user?.logoUrl ? (
+									{user?.logoUri ? (
 										<SkeletonImage
-											src={user.logoUrl}
-											alt={(user.username || 'User') + ' icon'}
+											src={user.logoUri}
+											alt={
+												(user.username || 'User') +
+												' icon'
+											}
 											className={styles.authorImage}
 										/>
 									) : null}
-									<p className={styles.authorName}>@{user.username}</p>
+									<p className={styles.authorName}>
+										@{user.username}
+									</p>
 								</>
 							) : (
-								<p className={styles.authorName}>user not found</p>
+								<p className={styles.authorName}>
+									user not found
+								</p>
 							)}
 						</div>
 						<div className={styles.priceContainer}>
@@ -311,7 +315,11 @@ export default function Project({
 								onClick={likeProject}
 								title={isProjectLiked ? 'Dislike' : 'Like'}
 							>
-								{isLikeLoading ? <LoadingSpinner /> : <HeartVector />}
+								{isLikeLoading ? (
+									<LoadingSpinner />
+								) : (
+									<HeartVector />
+								)}
 								{likes}
 							</button>
 							<button
@@ -347,7 +355,7 @@ export default function Project({
 							{formattedStatus}
 						</p>
 					</div>
-					{!!statusEndsAt && status !== 'live' && (
+					{/* {status === 'live' && (
 						<Countdown
 							status={formattedStatus}
 							date={statusEndsAt}
@@ -360,7 +368,7 @@ export default function Project({
 							date={statusStartsAt}
 							placeholder="starting in"
 						/>
-					)}
+					)} */}
 					{!!formattedMarketCap && (
 						<div className={styles.datum}>
 							<h6 className={styles.datumTitle}>Market cap</h6>
@@ -369,16 +377,12 @@ export default function Project({
 							</p>
 						</div>
 					)}
-					{!!formattedTokenSupply && (
+					{!!formattedTokenTotalSupply && (
 						<div className={styles.datum}>
 							<h6 className={styles.datumTitle}>Total supply</h6>
-							<p className={styles.datumText}>{formattedTokenSupply}</p>
-						</div>
-					)}
-					{!!tokenDistributionTax && (
-						<div className={styles.datum}>
-							<h6 className={styles.datumTitle}>Distribution tax</h6>
-							<p className={styles.datumText}>{tokenDistributionTax}%</p>
+							<p className={styles.datumText}>
+								{formattedTokenTotalSupply}
+							</p>
 						</div>
 					)}
 				</div>
@@ -396,7 +400,9 @@ export default function Project({
 				<div className={styles.overview}>
 					<div className={styles.overviewSidebar}>
 						<div className={styles.sidebarDetail}>
-							<p className={styles.sidebarTitle}>Contract address</p>
+							<p className={styles.sidebarTitle}>
+								Contract address
+							</p>
 							<div
 								className={classNames(
 									styles.sidebarText,
@@ -410,7 +416,7 @@ export default function Project({
 									{splitContractAddress[1]}
 								</span>
 								<button
-									onClick={copyContractAddress}
+									onClick={copyTokenAddress}
 									className={styles.sidebarIconButton}
 									title="Copy contract address"
 								>
@@ -429,7 +435,9 @@ export default function Project({
 							</div>
 						</div>
 						<div className={styles.sidebarDetail}>
-							<p className={styles.sidebarTitle}>Blockchain explorer</p>
+							<p className={styles.sidebarTitle}>
+								Blockchain explorer
+							</p>
 							<Link href={blockchainExplorerUrl}>
 								<a
 									className={styles.sidebarText}
@@ -441,7 +449,7 @@ export default function Project({
 								</a>
 							</Link>
 						</div>
-						<div className={styles.sidebarDetail}>
+						{/* <div className={styles.sidebarDetail}>
 							<p className={styles.sidebarTitle}>Website</p>
 							<Link href={website}>
 								<a
@@ -453,10 +461,12 @@ export default function Project({
 									<LinkVector />
 								</a>
 							</Link>
-						</div>
-						{socialUrls?.length > 0 && (
+						</div> */}
+						{/* {socialUrls?.length > 0 && (
 							<div className={styles.sidebarDetail}>
-								<p className={styles.sidebarTitle}>Social media</p>
+								<p className={styles.sidebarTitle}>
+									Social media
+								</p>
 								{socialUrls.map((socialMedia, index) => (
 									<Link href={socialMedia.url} key={index}>
 										<a
@@ -470,7 +480,7 @@ export default function Project({
 									</Link>
 								))}
 							</div>
-						)}
+						)} */}
 					</div>
 
 					<div className={styles.overviewContent}>

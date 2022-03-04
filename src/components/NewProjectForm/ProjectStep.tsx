@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
-import { UseFormRegister, FieldErrors, UseFormSetValue } from 'react-hook-form'
 import { RawDraftContentState } from 'draft-js'
 import classNames from 'classnames'
 
-import { NewForm as IForm } from '@/types'
+import { INewProjectStepProps } from '@/types'
 import { project as projectConstants, projectTags } from '@/constants'
 import { handleBlur } from '@/utils/element'
 import InputGroup from '@/components/InputGroup'
-import TextareaAutoHeight from '@/components/TextareaAutoHeight'
 import RichEditor from '@/components/RichEditor'
+import SkeletonImage from '@/components/SkeletonImage'
 
+import UploadVector from '@/public/upload.svg'
 import ArrowHead from '@/public/arrowhead.svg'
 import ArrowVector from '@/public/arrow.svg'
 import CheckVector from '@/public/check.svg'
@@ -18,19 +18,23 @@ import styles from '@/styles/FormStep.module.scss'
 import checkboxStyles from '@/styles/CheckboxList.module.scss'
 import 'draft-js/dist/Draft.css'
 
-interface ProjectStepProps {
-	register: UseFormRegister<IForm>
-	errors: FieldErrors
-	setValue: UseFormSetValue<IForm>
-	inputGroupDefaults: Record<string, string>
+const generateImageBlob = (file: File): string => {
+	if (!file) return ''
+	try {
+		return URL.createObjectURL(file) || ''
+	} catch (e) {
+		return ''
+	}
 }
 
 export default function ProjectStep({
 	register,
 	errors,
 	setValue,
+	watch,
 	inputGroupDefaults,
-}: ProjectStepProps) {
+}: INewProjectStepProps) {
+	const [logoPreview, setLogoPreview] = useState('')
 	const [showTags, setShowTags] = useState(false)
 	const toggleShowTags = () => setShowTags((prevState) => !prevState)
 	const [tagList, setTagList] = useState(
@@ -38,6 +42,17 @@ export default function ProjectStep({
 	)
 	const [customTag, setCustomTag] = useState('')
 	const descriptionRef = useRef<HTMLDivElement>(null)
+	const logoRef = useRef<HTMLInputElement>(null)
+	const [logo] = watch(['logo'])
+
+	const onLogoClick = () => logoRef?.current?.click()
+
+	const onLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0]
+		if (!file?.name) return
+		setValue('logo', file, { shouldValidate: true })
+		setLogoPreview(generateImageBlob(file))
+	}
 
 	const onDescriptionChange = (rawState: RawDraftContentState) => {
 		setValue('description', rawState, { shouldValidate: true })
@@ -93,9 +108,15 @@ export default function ProjectStep({
 
 	// Create uncontrolled form fields
 	useEffect(() => {
+		register('logo', projectConstants.logo.schema)
 		register('tags', projectConstants.tags.schema)
 		register('description', projectConstants.description.schema)
 	}, [register])
+
+	useEffect(() => {
+		setLogoPreview(generateImageBlob(logo))
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
 
 	return (
 		<>
@@ -103,7 +124,7 @@ export default function ProjectStep({
 
 			<InputGroup
 				label="Name"
-				description="This is the name that will be displayed in the Astrano platform. The project name cannot be changed after creating the project."
+				help="Project name that will be displayed in the Astrano platform. The project name cannot be changed after creating the project."
 				id="name"
 				error={errors.name?.message}
 				{...inputGroupDefaults}
@@ -120,8 +141,59 @@ export default function ProjectStep({
 			</InputGroup>
 
 			<InputGroup
+				label="Logo"
+				help="Choose the image to upload. This image will be used as the project's logo in the Astrano platform as well as the token's logo in the blockchain explorer and other marketplaces."
+				id="logo"
+				error={errors.logo?.message}
+				{...inputGroupDefaults}
+			>
+				<input
+					type="file"
+					accept="image/png, image/svg+xml, image/jpeg, image/webp"
+					id="logo"
+					onChange={onLogoChange}
+					ref={logoRef}
+				/>
+				<div
+					className={classNames(styles.fileInput, {
+						[styles.selectedFile]: logo?.name,
+					})}
+				>
+					{logo?.name ? (
+						<div className={styles.selectedFileContent}>
+							{logoPreview && (
+								<SkeletonImage
+									src={logoPreview}
+									alt="Token logo preview"
+									className={styles.filePreview}
+								/>
+							)}
+							<div
+								className={
+									styles.selectedFileContentSecondColumn
+								}
+							>
+								<p>{logo.name}</p>
+								<button onClick={onLogoClick}>
+									Change logo
+								</button>
+							</div>
+						</div>
+					) : (
+						<div
+							className={styles.fileInputContent}
+							onClick={onLogoClick}
+						>
+							<UploadVector />
+							PNG, JPEG, WEBP or SVG. Max 1Mb.
+						</div>
+					)}
+				</div>
+			</InputGroup>
+
+			<InputGroup
 				label="Tags"
-				description={`Category tags used to identify unique projects. A maximum of ${projectConstants.tags.max} tags can be used.`}
+				help={`Category tags used to identify unique projects. A maximum of ${projectConstants.tags.max} tags can be used.`}
 				id="tags"
 				error={errors.tags?.message}
 				labelOnClick={toggleShowTags}
@@ -198,6 +270,7 @@ export default function ProjectStep({
 
 			<InputGroup
 				label="Detailed description"
+				help="The project description can help project creators explain their project/company/idea to attract investors."
 				id="description"
 				error={errors.description?.message}
 				labelOnClick={() => descriptionRef?.current?.click()}
@@ -210,26 +283,6 @@ export default function ProjectStep({
 					containerClassName={styles.projectDescriptionContainer}
 					editorClassName={styles.projectDescriptionEditor}
 					ref={descriptionRef}
-				/>
-			</InputGroup>
-
-			<InputGroup
-				label="Project relationship"
-				id="relationship"
-				error={errors.relationship?.message}
-				{...inputGroupDefaults}
-			>
-				<TextareaAutoHeight
-					{...register(
-						'relationship',
-						projectConstants.relationship.schema
-					)}
-					// maxLength={projectConstants.relationship.maxLength}
-					placeholder="Project relationship (e.g. CEO, founder or employee)"
-					name="relationship"
-					id="relationship"
-					className={styles.textbox}
-					style={{ minHeight: '6.25rem' }}
 				/>
 			</InputGroup>
 		</>

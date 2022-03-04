@@ -1,5 +1,6 @@
 // import { useState } from 'react'
-import {
+export {}
+/* import {
 	UseFormRegister,
 	FieldErrors,
 	Control,
@@ -91,3 +92,4 @@ export default function SocialStep({
 		</>
 	)
 }
+ */

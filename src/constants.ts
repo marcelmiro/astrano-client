@@ -1,5 +1,7 @@
 import { RawDraftContentState } from 'draft-js'
 
+import { isNumber } from '@/utils/number'
+
 // import FireVector from '@/public/fire.svg'
 import TrophyVector from '@/public/trophy.svg'
 import StarVector from '@/public/star.svg'
@@ -23,7 +25,8 @@ export const pagesMetaData = {
 	},
 	new: {
 		title: 'Create a project | Astrano',
-		description: 'Fund your project by creating your own cryptocurrency token.',
+		description:
+			'Fund your project by creating your own cryptocurrency token.',
 	},
 	project: {
 		title: (projectName: string) =>
@@ -31,7 +34,7 @@ export const pagesMetaData = {
 	},
 	buyToken: {
 		title: (projectName: string, tokenName: string, tokenSymbol: string) =>
-			`${projectName} Initial Coin Offering (ICO). Invest in ${tokenName} (${tokenSymbol}) | Astrano`,
+			`${projectName} crowdsale. Invest in ${tokenName} (${tokenSymbol}) | Astrano`,
 	},
 	verifyUser: {
 		title: 'User verification | Astrano',
@@ -71,8 +74,7 @@ export const login = {
 		schema: {
 			required: 'Email is required',
 			pattern: {
-				value:
-					/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+				value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
 				message: 'Please enter a valid email address',
 			},
 		},
@@ -84,11 +86,13 @@ export const login = {
 			required: 'Password is required',
 			minLength: {
 				value: 8,
-				message: 'Password is too short - Should be 8 characters minimum',
+				message:
+					'Password is too short - Should be 8 characters minimum',
 			},
 			maxLength: {
 				value: 100,
-				message: 'Password is too long - Should be 100 characters maximum',
+				message:
+					'Password is too long - Should be 100 characters maximum',
 			},
 		},
 	},
@@ -101,8 +105,7 @@ export const register = {
 		schema: {
 			required: 'Email is required',
 			pattern: {
-				value:
-					/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+				value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
 				message: 'Please enter a valid email address',
 			},
 		},
@@ -114,11 +117,13 @@ export const register = {
 			required: 'Username is required',
 			minLength: {
 				value: 3,
-				message: 'Username is too short - Should be 3 characters minimum',
+				message:
+					'Username is too short - Should be 3 characters minimum',
 			},
 			maxLength: {
 				value: 32,
-				message: 'Username is too long - Should be 32 characters maximum',
+				message:
+					'Username is too long - Should be 32 characters maximum',
 			},
 			pattern: {
 				value: /^(?!.*[._]{2})(?!.*\.$)(?!\..*$)[a-zA-Z0-9._]+$/,
@@ -134,11 +139,13 @@ export const register = {
 			required: 'Full name is required',
 			minLength: {
 				value: 2,
-				message: 'Full name is too short - Should be 2 characters minimum',
+				message:
+					'Full name is too short - Should be 2 characters minimum',
 			},
 			maxLength: {
 				value: 32,
-				message: 'Full name is too long - Should be 32 characters maximum',
+				message:
+					'Full name is too long - Should be 32 characters maximum',
 			},
 			pattern: {
 				value: /^(?!.*[  ]{2})[a-zA-Z0-9 ]+$/,
@@ -153,15 +160,16 @@ export const register = {
 			required: 'Password is required',
 			minLength: {
 				value: 8,
-				message: 'Password is too short - Should be 8 characters minimum',
+				message:
+					'Password is too short - Should be 8 characters minimum',
 			},
 			maxLength: {
 				value: 100,
-				message: 'Password is too long - Should be 100 characters maximum',
+				message:
+					'Password is too long - Should be 100 characters maximum',
 			},
 			pattern: {
-				value:
-					/^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[~!@#$%^&*()_\-+=[\]{}:;"'|\\<>,./?€]).*$/,
+				value: /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[~!@#$%^&*()_\-+=[\]{}:;"'|\\<>,./?€]).*$/,
 				message: 'Please use a mix of letters, numbers and symbols',
 			},
 		},
@@ -318,8 +326,8 @@ export const tokenFilter = {
 			value: 'live',
 		},
 		{
-			label: 'ICO',
-			value: 'ico',
+			label: 'Crowdsale',
+			value: 'crowdsale',
 		},
 		{
 			label: 'Private round',
@@ -346,7 +354,7 @@ export const otherFilter = {
 
 export const contractAddressLastCharactersLength = 6
 
-export const tokenCreationTax = 0.1
+export const tokenCreationTax = 0.04
 
 export const project = {
 	name: {
@@ -361,11 +369,21 @@ export const project = {
 			},
 			minLength: {
 				value: 3,
-				message: 'Project name is too short - Should be 3 characters minimum',
+				message:
+					'Project name is too short - Should be 3 characters minimum',
 			},
 			maxLength: {
 				value: 42,
-				message: 'Project name is too long - Should be 42 characters maximum',
+				message:
+					'Project name is too long - Should be 42 characters maximum',
+			},
+		},
+	},
+	logo: {
+		schema: {
+			validate: {
+				required: (file: File) =>
+					Boolean(file?.name) || 'Project logo is required',
 			},
 		},
 	},
@@ -389,30 +407,16 @@ export const project = {
 		schema: {
 			validate: {
 				required: (value: RawDraftContentState) =>
-					value?.blocks?.map(({ text }) => text).join('').length > 0 ||
-					'Project description is required',
+					value?.blocks?.map(({ text }) => text).join('').length >
+						0 || 'Project description is required',
 				minLength: (value: RawDraftContentState) =>
-					value.blocks.map(({ text }) => text).join('').length >= 20 ||
+					value.blocks.map(({ text }) => text).join('').length >=
+						20 ||
 					'Project description is too short - Should be 20 characters minimum',
 				maxLength: (value: RawDraftContentState) =>
-					value.blocks.map(({ text }) => text).join('').length <= 8000 ||
+					value.blocks.map(({ text }) => text).join('').length <=
+						8000 ||
 					'Project description is too long - Should be 8000 characters maximum',
-			},
-		},
-	},
-	relationship: {
-		// maxLength: 400,
-		schema: {
-			required: 'Project relationship is required',
-			minLength: {
-				value: 20,
-				message:
-					'Project relationship is too short - Should be 20 characters minimum',
-			},
-			maxLength: {
-				value: 400,
-				message:
-					'Project relationship is too long - Should be 400 characters maximum',
 			},
 		},
 	},
@@ -431,11 +435,13 @@ export const token = {
 			}, */
 			minLength: {
 				value: 3,
-				message: 'Token name is too short - Should be 3 characters minimum',
+				message:
+					'Token name is too short - Should be 3 characters minimum',
 			},
 			maxLength: {
 				value: 42,
-				message: 'Token name is too long - Should be 42 characters maximum',
+				message:
+					'Token name is too long - Should be 42 characters maximum',
 			},
 		},
 	},
@@ -455,24 +461,17 @@ export const token = {
 			},
 			maxLength: {
 				value: 5,
-				message: 'Token name is too long - Should be 5 characters maximum',
-			},
-		},
-	},
-	logo: {
-		schema: {
-			validate: {
-				required: (file: File) =>
-					Boolean(file?.name) || 'Project logo is required',
+				message:
+					'Token name is too long - Should be 5 characters maximum',
 			},
 		},
 	},
 	totalSupply: {
 		min: 100,
-		max: 999999999999,
+		max: 999_999_999_999,
 		minLength: 3,
 		maxLength: 12,
-		default: 21000000,
+		default: 21_000_000,
 		schema: {
 			required: 'Token supply is required',
 			pattern: {
@@ -481,51 +480,264 @@ export const token = {
 			},
 			validate: {
 				format: (value: string) =>
-					Boolean(parseInt(value)) || 'Please provide a valid number',
+					isNumber(value) || 'Please provide a valid number',
 				min: (value: string) =>
-					parseInt(value) >= 100 || 'Token supply must be at least 100',
+					parseInt(value) >= 100 ||
+					'Token supply must be at least 100',
 				max: (value: string) =>
 					parseInt(value) <= 999999999999 ||
 					'Token supply must not exceed 999,999,999,999 (999B)',
 			},
 		},
 	},
-	decimals: {
-		min: 8,
-		max: 21,
-		minLength: 1,
-		maxLength: 2,
-		default: 18,
+	lockStartIn: {
+		min: 30,
+		max: 3652,
 		schema: {
-			required: 'Token decimals is required',
+			required: 'Vesting start is required',
 			pattern: {
 				value: /^[0-9]+$/,
 				message: 'Sorry, only numbers are allowed',
 			},
 			min: {
-				value: 8,
-				message: 'Token decimals must be at least 8',
+				value: 30,
+				message: 'Vesting start must be at least 30 days',
 			},
 			max: {
-				value: 21,
-				message: 'Token decimals must not exceed 21',
+				value: 3652,
+				message: 'Vesting start must not exceed 3652 days',
 			},
 		},
 	},
-	distributionTax: {
-		min: 0,
-		max: 5,
-		step: 0.1,
-		default: 2,
+	lockDuration: {
+		min: 180,
+		max: 3652,
 		schema: {
-			required: 'Token distribution tax is required',
+			required: 'Vesting duration is required',
+			pattern: {
+				value: /^[0-9]+$/,
+				message: 'Sorry, only numbers are allowed',
+			},
 			min: {
-				value: 0,
-				message: 'Token distribution tax must be a positive number',
+				value: 180,
+				message: 'Vesting duration must be at least 180 days',
 			},
 			max: {
-				value: 5,
-				message: 'Token distribution tax must not exceed 5%',
+				value: 3652,
+				message: 'Vesting duration must not exceed 3652 days',
+			},
+		},
+	},
+}
+
+export const crowdsale = {
+	rate: {
+		min: 0.01,
+		max: 1_000_000,
+		maxLength: 10,
+		schema: {
+			required: 'Rate is required',
+			pattern: {
+				value: /^[0-9]+(\.[0-9]+)?$/,
+				message: 'Sorry, only numbers are allowed',
+			},
+			min: {
+				value: 0.01,
+				message: 'Rate must be at least 0.01',
+			},
+			max: {
+				value: 1_000_000,
+				message: 'Rate must not exceed 1000000 (1M)',
+			},
+		},
+	},
+	cap: {
+		min: 10,
+		max: 999_999_999_999,
+		minLength: 2,
+		maxLength: 12,
+		schema: {
+			required: 'Cap is required',
+			pattern: {
+				value: /^[0-9]+$/,
+				message: 'Sorry, only numbers are allowed',
+			},
+			validate: {
+				format: (value: string) =>
+					isNumber(value) || 'Please provide a valid number',
+				min: (value: string) =>
+					parseInt(value) >= 10 || 'Cap must be at least 10',
+				max: (value: string) =>
+					parseInt(value) <= 999999999999 ||
+					'Cap must not exceed 999,999,999,999 (999B)',
+			},
+		},
+	},
+	goal: {
+		min: 1,
+		max: 999_999_999_999,
+		minLength: 1,
+		maxLength: 12,
+		schema: {
+			required: 'Goal is required',
+			pattern: {
+				value: /^[0-9]+$/,
+				message: 'Sorry, only numbers are allowed',
+			},
+			validate: {
+				format: (value: string) =>
+					isNumber(value) || 'Please provide a valid number',
+				min: (value: string) =>
+					parseInt(value) >= 1 || 'Goal must be at least 1',
+				max: (value: string) =>
+					parseInt(value) <= 999999999999 ||
+					'Goal must not exceed 999,999,999,999 (999B)',
+			},
+		},
+	},
+	individualCap: {
+		min: 0,
+		max: 999_999_999_999,
+		minLength: 2,
+		maxLength: 12,
+		default: 0,
+		schema: {
+			required: 'Individual cap is required',
+			pattern: {
+				value: /^[0-9]+$/,
+				message: 'Sorry, only numbers are allowed',
+			},
+			validate: {
+				format: (value: string) =>
+					isNumber(value) || 'Please provide a valid number',
+				min: (value: string) =>
+					parseInt(value) >= 0 ||
+					'Individual cap must be a positive number',
+				max: (value: string) =>
+					parseInt(value) <= 999999999999 ||
+					'Individual cap must not exceed 999,999,999,999 (999B)',
+			},
+		},
+	},
+	minPurchaseAmount: {
+		min: 0,
+		max: 100,
+		default: 0,
+		schema: {
+			required: 'Minimum purchase amount is required',
+			pattern: {
+				value: /^[0-9]+(\.[0-9]+)?$/,
+				message: 'Sorry, only numbers are allowed',
+			},
+			min: {
+				value: 0,
+				message: 'Minimum purchase amount must be a positive number',
+			},
+			max: {
+				value: 100,
+				message: 'Minimum purchase amount must not exceed $100',
+			},
+		},
+	},
+	openingTime: {
+		schema: {
+			validate: {
+				futureTime: (value: string) => {
+					const date = new Date(value)
+					if (!date) return 'Please provide a valid date'
+					return (
+						date > new Date() ||
+						'Opening time must be a time in the future'
+					)
+				},
+				lessThan: (value: string) => {
+					const date = new Date(value)
+					if (!date) return 'Please provide a valid date'
+					const maxTime = new Date(Date.now() + 2678400000) // 31 days
+					return (
+						date <= maxTime ||
+						'Opening time must start before 31 days'
+					)
+				},
+			},
+		},
+	},
+	closingTime: { schema: { validate: {} } },
+}
+
+export const liquidity = {
+	percentage: {
+		min: 50,
+		max: 100,
+		step: 1,
+		default: 75,
+		schema: {
+			required: 'Liquidity percentage is required',
+			min: {
+				value: 50,
+				message: 'Liquidity percentage must be at least 50%',
+			},
+			max: {
+				value: 100,
+				message: 'Liquidity percentage must not exceed 100%',
+			},
+		},
+	},
+	rate: {
+		min: 0.01,
+		max: 1_000_000,
+		maxLength: 10,
+		schema: {
+			required: 'Rate is required',
+			pattern: {
+				value: /^[0-9]+(\.[0-9]+)?$/,
+				message: 'Sorry, only numbers are allowed',
+			},
+			min: {
+				value: 0.01,
+				message: 'Rate must be at least 0.01',
+			},
+			max: {
+				value: 1_000_000,
+				message: 'Rate must not exceed 1000000 (1M)',
+			},
+		},
+	},
+	lockStartIn: {
+		min: 30,
+		max: 3652,
+		schema: {
+			required: 'Vesting start is required',
+			pattern: {
+				value: /^[0-9]+$/,
+				message: 'Sorry, only numbers are allowed',
+			},
+			min: {
+				value: 30,
+				message: 'Vesting start must be at least 30 days',
+			},
+			max: {
+				value: 3652,
+				message: 'Vesting start must not exceed 3652 days',
+			},
+		},
+	},
+	lockDuration: {
+		min: 180,
+		max: 3652,
+		schema: {
+			required: 'Vesting duration is required',
+			pattern: {
+				value: /^[0-9]+$/,
+				message: 'Sorry, only numbers are allowed',
+			},
+			min: {
+				value: 180,
+				message: 'Vesting duration must be at least 180 days',
+			},
+			max: {
+				value: 3652,
+				message: 'Vesting duration must not exceed 3652 days',
 			},
 		},
 	},
@@ -539,15 +751,16 @@ export const social = {
 			required: 'Website is required',
 			minLength: {
 				value: 4,
-				message: 'Website is too short - Should be 4 characters minimum',
+				message:
+					'Website is too short - Should be 4 characters minimum',
 			},
 			maxLength: {
 				value: 128,
-				message: 'Website is too long - Should be 128 characters maximum',
+				message:
+					'Website is too long - Should be 128 characters maximum',
 			},
 			pattern: {
-				value:
-					/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
+				value: /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
 				message: 'Please enter a valid URL',
 			},
 		},

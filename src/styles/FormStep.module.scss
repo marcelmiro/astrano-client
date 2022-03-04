@@ -37,6 +37,21 @@
 	@include error;
 }
 
+.readMore {
+	flex-shrink: 0;
+	width: 1.25rem;
+	height: 1.25rem;
+	border-radius: 50%;
+	background-color: rgb(var(--primary-700));
+	color: rgb(var(--primary-400));
+	font-weight: 400;
+	font-size: 0.8125rem;
+	cursor: default;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 .dropdownContainer {
 	position: relative;
 }
@@ -281,15 +296,16 @@
 	overflow: hidden;
 }
 
-.receivedTokensContainer {
+.infoGroup {
 	display: flex;
 	flex-flow: row nowrap;
 	align-items: center;
+	gap: 0.625rem;
 	.label {
 		white-space: nowrap;
 	}
 	.textbox {
-		margin: 0 0.625rem 0 auto;
+		margin: 0 0 0 auto;
 		width: 12.5rem;
 		overflow: hidden;
 		white-space: nowrap;
@@ -421,11 +437,37 @@
 		}
 	}
 }
-.successText {
+.text {
 	@include text;
-	margin-top: 1.75rem;
+	margin: 1.75rem auto 0;
 	max-width: 27.5rem;
+	text-align: center;
+	a {
+		color: rgb(var(--purple-accent));
+	}
 }
 .successActions {
 	margin-top: 2.625rem;
+}
+
+.deployButton {
+	@include primaryButton;
+	margin: 2.75rem auto 0;
+	height: 2.75rem;
+	font-size: 1rem;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	gap: 0.625rem;
+	svg {
+		width: 1.75rem;
+	}
+}
+
+.deployButtonContent {
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	gap: 0.625rem;
+	margin-left: -0.625rem;
 }

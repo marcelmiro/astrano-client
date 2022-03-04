@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const relative = require('path').relative
+const path = require('path')
 const loaderUtils = require('loader-utils')
 
 // Based on https://tinyurl.com/next-config-js
 function getCssModuleLocalIdent(context, _, exportName, options) {
-	const relativePath = relative(
-		context.rootContext,
-		context.resourcePath
-	).replace(/\\+/g, '/')
+	const relativePath = path
+		.relative(context.rootContext, context.resourcePath)
+		.replace(/\\+/g, '/')
 
-	const buffer = Buffer.from(`filePath:${relativePath}#className:${exportName}`)
+	const buffer = Buffer.from(
+		`filePath:${relativePath}#className:${exportName}`
+	)
 
 	const hash = loaderUtils.getHashDigest(buffer, 'md5', 'base64', 6)
 
@@ -29,11 +30,12 @@ const nextConfig = {
 
 	poweredByHeader: false,
 
-	swcMinify: true, // TODO: Remove after next js v12.1 as will become default
-
 	images: {
 		formats: ['image/avif', 'image/webp'],
 		domains: ['cdn.astrano.io'],
+		dangerouslyAllowSVG: true,
+		contentSecurityPolicy:
+			"default-src 'self'; script-src 'none'; sandbox;",
 	},
 
 	webpack(config, { dev }) {
@@ -74,7 +76,8 @@ const nextConfig = {
 						moduleLoader.loader?.includes('css-loader') &&
 						!moduleLoader.loader.includes('postcss-loader')
 					) {
-						moduleLoader.options.modules.getLocalIdent = getCssModuleLocalIdent
+						moduleLoader.options.modules.getLocalIdent =
+							getCssModuleLocalIdent
 					}
 				})
 			})

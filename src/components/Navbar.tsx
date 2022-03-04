@@ -26,11 +26,11 @@ import styles from '@/styles/Navbar.module.scss'
 
 interface AvatarProps {
 	loading: boolean
-	logoUrl?: string
+	logoUri?: string
 	toggleDropdown(): void
 }
 
-const Avatar = ({ loading, logoUrl, toggleDropdown }: AvatarProps) => {
+const Avatar = ({ loading, logoUri, toggleDropdown }: AvatarProps) => {
 	if (loading) {
 		return (
 			<div className={styles.userButton}>
@@ -45,9 +45,9 @@ const Avatar = ({ loading, logoUrl, toggleDropdown }: AvatarProps) => {
 			onClick={toggleDropdown}
 			title="User"
 		>
-			{logoUrl ? (
+			{logoUri ? (
 				<SkeletonImage
-					src={logoUrl}
+					src={logoUri}
 					alt="User avatar"
 					className={styles.userAvatar}
 				/>
@@ -241,7 +241,7 @@ export default function Navbar() {
 						>
 							<Avatar
 								loading={loading}
-								logoUrl={user?.logoUrl}
+								logoUri={user?.logoUri}
 								toggleDropdown={toggleUserDropdown}
 							/>
 							<UserDropdown

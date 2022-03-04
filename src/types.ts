@@ -1,10 +1,16 @@
 import { RawDraftContentState } from 'draft-js'
+import {
+	FieldErrors,
+	UseFormRegister,
+	UseFormSetValue,
+	UseFormWatch,
+} from 'react-hook-form'
 
 export interface IUser {
 	email: string
 	username: string
 	name: string
-	logoUrl: string
+	logoUri: string
 	likedProjects: string[]
 }
 
@@ -23,57 +29,92 @@ export interface IRegister {
 
 interface IProjectUser {
 	username: string
-	logoUrl: string
+	logoUri: string
 }
 
 interface IProjectToken {
 	name: string
 	symbol: string
 	totalSupply: string
-	decimals: number
-	distributionTax: number
-	contractAddress: string
-	blockchainExplorerUrl: string
-	marketUrl?: string
-	price: string
+	lockStartIn: string
+	lockDuration: string
+	tokenAddress: string
+	vestingWalletAddress: string
 }
 
-interface IProjectStatus {
-	// name: ['live', 'ico']
-	name: string
-	startsAt?: Date
-	endsAt?: Date
+interface IProjectCrowdsale {
+	rate: string
+	cap: string
+	individualCap: string
+	minPurchaseAmount: string
+	goal: string
+	openingTime: string
+	closingTime: string
+	crowdsaleAddress: string
+}
+
+interface IProjectLiquidity {
+	percentage: number
+	rate: string
+	lockStartIn: string
+	lockDuration: string
 }
 
 export interface IProject {
 	_id: string
 	name: string
 	slug: string
-	logoUrl: string
+	logoUri: string
 	user: IProjectUser
 	tags: string[]
 	description: RawDraftContentState
-	relationship?: string
+	// website: string
+	// socialUrls: { name: string; url: string }[]
 	token: IProjectToken
-	status: IProjectStatus
-	website: string
-	socialUrls: { name: string; url: string }[]
+	crowdsale: IProjectCrowdsale
+	liquidity: IProjectLiquidity
+	status: 'crowdsale' | 'live'
 	likes: number
 	updatedAt: Date
 	createdAt: Date
 }
 
-export interface NewForm {
+export interface IUndeployedProject
+	extends Omit<IProject, 'token' | 'crowdsale' | 'status' | 'likes'> {
+	token: Omit<IProjectToken, 'tokenAddress' | 'vestingWalletAddress'>
+	crowdsale: Omit<IProjectCrowdsale, 'crowdsaleAddress'>
+}
+
+export interface INewProject {
 	name: string
+	logo: File
 	tags: string[]
 	description: RawDraftContentState
-	relationship: string
+	// website: string
+	// socialUrls: Array<{ name: string, url: string }>
 	tokenName: string
 	tokenSymbol: string
-	logo: File
-	tokenSupply: string
-	tokenDecimals: number
-	tokenDistributionTax: number
-	website: string
-	socialUrls: Array<{ name: string, url: string }>
+	tokenTotalSupply: string
+	tokenLockStartIn: string
+	tokenLockDuration: string
+	crowdsaleRate: string
+	crowdsaleCap: string
+	crowdsaleIndividualCap: string
+	crowdsaleMinPurchaseAmount: string
+	crowdsaleGoal: string
+	crowdsaleOpeningTime: string
+	crowdsaleClosingTime: string
+	liquidityPercentage: number
+	liquidityRate: string
+	liquidityLockStartIn: string
+	liquidityLockDuration: string
+}
+
+export interface INewProjectStepProps {
+	register: UseFormRegister<INewProject>
+	errors: FieldErrors
+	setValue: UseFormSetValue<INewProject>
+	watch: UseFormWatch<INewProject>
+	inputGroupDefaults: Record<string, string>
+	generalError: string
 }

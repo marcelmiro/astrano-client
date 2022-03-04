@@ -14,7 +14,7 @@ import styles from '@/styles/Modals/LikedProjects.module.scss'
 interface LikedProject {
 	name: IProject['name']
 	slug: IProject['slug']
-	logoUrl: IProject['logoUrl']
+	logoUri: IProject['logoUri']
 }
 
 interface SwrResponse {
@@ -35,14 +35,14 @@ interface ContentProps {
 const Content = ({ isLoading, projects, redirectToProject }: ContentProps) => {
 	if (isLoading) return <LoadingSpinner className={styles.loadingSpinner} />
 	if (projects && projects.length > 0) {
-		const projectEls = projects.map(({ name, slug, logoUrl }) => (
+		const projectEls = projects.map(({ name, slug, logoUri }) => (
 			<button
 				className={styles.project}
 				onClick={() => redirectToProject(slug)}
 				key={slug}
 			>
 				<SkeletonImage
-					src={logoUrl}
+					src={logoUri}
 					alt={`${name} logo`}
 					className={styles.projectLogo}
 				/>
@@ -60,7 +60,9 @@ export default function LikedProjects({ show, onClose }: LikedProjectsProps) {
 	const isMounted = useRef(false)
 
 	const fetchUrl = show ? '/users/me/liked-projects' : null
-	const response = useSwrImmutable<SwrResponse>(fetchUrl, logOut)
+	const response = useSwrImmutable<SwrResponse>(fetchUrl, {
+		onLogout: logOut,
+	})
 	const { data, isValidating, mutate } = response
 
 	// On data change

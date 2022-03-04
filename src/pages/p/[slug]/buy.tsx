@@ -39,8 +39,8 @@ interface ProgressBarProps {
 
 interface CountdownProps {
 	label: string
-	startDate: Date
-	endDate: Date
+	startDate: Date | string
+	endDate: Date | string
 }
 
 interface PieChartLegendProps {
@@ -76,7 +76,8 @@ const PieChartLegend = ({ labels, backgroundColor }: PieChartLegendProps) => (
 				<div
 					className={styles.legendColor}
 					style={{
-						backgroundColor: backgroundColor[index % backgroundColor.length],
+						backgroundColor:
+							backgroundColor[index % backgroundColor.length],
 					}}
 				/>
 				<span className={styles.legendLabel}>{label}</span>
@@ -102,7 +103,7 @@ const ProgressBar = ({ progress }: ProgressBarProps) => (
 )
 
 const Countdown = ({ label, startDate, endDate }: CountdownProps) => {
-	const timeLeft = useCountdown(endDate)
+	const timeLeft = useCountdown(new Date(endDate))
 
 	const countdownText =
 		timeLeft && timeLeft.length > 0
@@ -113,14 +114,14 @@ const Countdown = ({ label, startDate, endDate }: CountdownProps) => {
 
 	const progress =
 		totalSeconds > 0
-			? Math.min((+new Date() - +new Date(startDate as Date)) / totalSeconds, 1)
+			? Math.min((+new Date() - +new Date(startDate)) / totalSeconds, 1)
 			: 1
 
 	return (
 		<div>
 			<div className={styles.stat}>
 				<span className={styles.statName} title={label}>
-					ICO ending in
+					Crowdsale ending in
 				</span>
 				<span className={styles.statValue} suppressHydrationWarning>
 					{countdownText}
@@ -134,11 +135,12 @@ const Countdown = ({ label, startDate, endDate }: CountdownProps) => {
 export default function BuyProject({
 	errorCode,
 	name,
-	logoUrl,
+	logoUri,
 	user,
 	description,
 	token,
-	status,
+	crowdsale: { openingTime, closingTime },
+	createdAt,
 }: BuyProjectProps) {
 	if (errorCode)
 		return (
@@ -150,7 +152,7 @@ export default function BuyProject({
 
 	const { name: tokenName, symbol: tokenSymbol } = token
 
-	const { startsAt, endsAt } = status
+	const timeAfterOpen = new Date() >= new Date(openingTime)
 
 	const summary = description.blocks.map(({ text }) => text).join(' ')
 
@@ -159,14 +161,18 @@ export default function BuyProject({
 	return (
 		<>
 			<Meta
-				title={pagesMetaData.buyToken.title(name, tokenName, tokenSymbol)}
+				title={pagesMetaData.buyToken.title(
+					name,
+					tokenName,
+					tokenSymbol
+				)}
 				description={summary}
-				image={logoUrl}
+				image={logoUri}
 			/>
 
 			<div className={styles.header}>
 				<SkeletonImage
-					src={logoUrl}
+					src={logoUri}
 					alt={name + ' logo'}
 					className={styles.image}
 				/>
@@ -181,14 +187,18 @@ export default function BuyProject({
 					<div className={styles.author}>
 						{user?.username ? (
 							<>
-								{user?.logoUrl ? (
+								{user?.logoUri ? (
 									<SkeletonImage
-										src={user.logoUrl}
-										alt={(user.username || 'User') + ' icon'}
+										src={user.logoUri}
+										alt={
+											(user.username || 'User') + ' icon'
+										}
 										className={styles.authorImage}
 									/>
 								) : null}
-								<p className={styles.authorName}>@{user.username}</p>
+								<p className={styles.authorName}>
+									@{user.username}
+								</p>
 							</>
 						) : (
 							<p className={styles.authorName}>user not found</p>
@@ -199,15 +209,26 @@ export default function BuyProject({
 
 			<div className={styles.mainContainer}>
 				<div className={styles.statsContainer}>
-					<Countdown
-						label="ICO ending in"
-						startDate={startsAt as Date}
-						endDate={endsAt as Date}
-					/>
+					{timeAfterOpen ? (
+						<Countdown
+							label="Crowdsale ending in"
+							startDate={openingTime}
+							endDate={closingTime}
+						/>
+					) : (
+						<Countdown
+							label="Crowdsale starting in"
+							startDate={createdAt}
+							endDate={openingTime}
+						/>
+					)}
 
 					<div>
 						<div className={styles.stat}>
-							<span className={styles.statName} title="Tokens sold">
+							<span
+								className={styles.statName}
+								title="Tokens sold"
+							>
 								Tokens sold
 							</span>
 							<span className={styles.statValue}>
@@ -249,7 +270,9 @@ export default function BuyProject({
 							</span>
 							<ReadMore text="The minimum amount of tokens you can buy." />
 						</div>
-						<span className={styles.statValue}>5 {tokenSymbol}</span>
+						<span className={styles.statValue}>
+							5 {tokenSymbol}
+						</span>
 					</div>
 
 					<div className={styles.stat}>
@@ -259,12 +282,16 @@ export default function BuyProject({
 							</span>
 							<ReadMore text="The maximum amount of tokens you can buy." />
 						</div>
-						<span className={styles.statValue}>1,000 {tokenSymbol}</span>
+						<span className={styles.statValue}>
+							1,000 {tokenSymbol}
+						</span>
 					</div>
 
 					<div className={styles.stat}>
 						<div className={styles.statName}>
-							<span title="Percentage to Liquidity Pool">Percentage to LP</span>
+							<span title="Percentage to Liquidity Pool">
+								Percentage to LP
+							</span>
 							<ReadMore text="The amount of tokens that will be used to start the Liquidity Pool (LP) in the Automated Market Maker (AMM). Left over tokens will be transferred automatically to the project creator's wallet." />
 						</div>
 						<span className={styles.statValue}>70%</span>
@@ -272,7 +299,9 @@ export default function BuyProject({
 
 					<div className={styles.stat}>
 						<div className={styles.statName}>
-							<span title="Liquidity lockup time">Liquidity lockup time</span>
+							<span title="Liquidity lockup time">
+								Liquidity lockup time
+							</span>
 							<ReadMore text="The amount of time that needs to pass before the project creator can remove the initial Liquidity Pool's funds" />
 						</div>
 						<Tooltip content="Mon Dec 26 2022 20:49:09 GMT+0100 (Central European Standard Time)">
@@ -281,10 +310,15 @@ export default function BuyProject({
 					</div>
 
 					<div className={styles.allocation}>
-						<h2 className={styles.allocationTitle}>Token allocation</h2>
+						<h2 className={styles.allocationTitle}>
+							Token allocation
+						</h2>
 						<div className={styles.allocationChartContainer}>
 							<div className={styles.allocationChart}>
-								<Doughnut data={allocationData} options={pieOptions} />
+								<Doughnut
+									data={allocationData}
+									options={pieOptions}
+								/>
 							</div>
 
 							<div className={styles.allocationChartSpacing} />
@@ -292,7 +326,8 @@ export default function BuyProject({
 							<PieChartLegend
 								labels={allocationData.labels as string[]}
 								backgroundColor={
-									allocationData.datasets[0].backgroundColor as string[]
+									allocationData.datasets[0]
+										.backgroundColor as string[]
 								}
 							/>
 						</div>
@@ -303,12 +338,13 @@ export default function BuyProject({
 					<CryptoTrader
 						name={tokenName}
 						symbol={tokenSymbol}
-						logoUrl={logoUrl}
+						logoUri={logoUri}
 					/>
 					<p className={styles.traderDisclaimer}>
-						<b>DISCLAIMER</b> Astrano recommends its users to perform their own
-						research before investing in any project (both in the Astrano
-						platform and outside of it).
+						<b>DISCLAIMER</b> Astrano recommends its users to
+						perform their own research before investing in any
+						project (both in the Astrano platform and outside of
+						it).
 					</p>
 				</div>
 			</div>
@@ -316,13 +352,15 @@ export default function BuyProject({
 	)
 }
 
+const AMM_BASE_URL =
+	'https://pancake.kiemtienonline360.com/#/swap?outputCurrency='
+
 export async function getServerSideProps({
 	params,
 }: {
 	params: { slug: string }
 }) {
 	const { slug } = params
-
 	const { data: project, error } = await fetch<IProject>('/projects/' + slug)
 
 	if (error || !project) {
@@ -330,17 +368,15 @@ export async function getServerSideProps({
 		return { props: { errorCode } }
 	}
 
-	const status = project.status?.name?.toLowerCase()
-
-	if (status === 'live' && project.token.marketUrl)
+	const status = project.status?.toLowerCase()
+	if (status === 'live')
 		return {
 			redirect: {
 				permanent: false,
-				destination: project.token.marketUrl,
+				destination: AMM_BASE_URL + project.token.tokenAddress,
 			},
 		}
-
-	if (status === 'ico') return { props: project }
+	if (status === 'crowdsale') return { props: project }
 
 	return { props: { errorCode: 404 } }
 }

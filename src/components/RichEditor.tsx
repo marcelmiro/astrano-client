@@ -204,11 +204,6 @@ export default forwardRef<HTMLDivElement, RichEditorProps>(function RichEditor(
 		<>
 			<Head>
 				<meta charSet="utf-8" />
-				{/* eslint-disable-next-line @next/next/no-page-custom-font */}
-				<link
-					href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,600;1,400;1,500;1,600&display=swap"
-					rel="stylesheet"
-				/>
 			</Head>
 
 			<div className={classNames(styles.container, containerClassName)}>

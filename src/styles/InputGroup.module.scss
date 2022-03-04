@@ -1,0 +1,21 @@
+.labelContainer {
+	display: flex;
+	flex-flow: row wrap;
+	align-items: center;
+	gap: 0.625rem;
+}
+
+.readMore {
+	flex-shrink: 0;
+	width: 1.25rem;
+	height: 1.25rem;
+	border-radius: 50%;
+	background-color: rgb(var(--primary-700));
+	color: rgb(var(--primary-400));
+	font-weight: 400;
+	font-size: 0.8125rem;
+	cursor: default;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

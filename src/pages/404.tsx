@@ -10,13 +10,7 @@ const { 404: error404 } = errorData
 export default function Custom404() {
 	return (
 		<>
-			<Meta title={error404.metaTitle} description={error404.message}>
-				{/* eslint-disable-next-line @next/next/no-page-custom-font */}
-				<link
-					href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap"
-					rel="stylesheet"
-				/>
-			</Meta>
+			<Meta title={error404.metaTitle} description={error404.message} />
 
 			<div className={styles.container}>
 				<h1 className={styles.title}>Oops!</h1>

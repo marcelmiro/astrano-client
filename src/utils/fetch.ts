@@ -18,7 +18,7 @@ const fetchApi = axios.create({
 })
 
 const swrFetch = async (url: string, onLogout?: () => void) => {
-	console.log('Swr fetch: ' + url)
+	// console.log('Swr fetch: ' + url)
 	try {
 		const { data } = await fetchApi.get(url)
 		return data
@@ -55,7 +55,7 @@ export interface UseSwrOptions extends SWRConfiguration {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type UseSwr = <T = any, K = any>(
 	url: string | null,
-	options: UseSwrOptions
+	options?: UseSwrOptions
 ) => SWRResponse<T, K>
 
 export const useSwr: UseSwr = (url, options = {}) => {
@@ -89,7 +89,7 @@ type Fetch = <T>(
 
 const fetch: Fetch = async (url, options = {}, onLogout) => {
 	try {
-		console.log('Fetch: ' + url)
+		// console.log('Fetch: ' + url)
 		const { data } = await fetchApi(url, options)
 		return { data, error: null }
 	} catch (e) {
@@ -115,7 +115,8 @@ const fetch: Fetch = async (url, options = {}, onLogout) => {
 		}
 
 		if (!error.message && !error.errors)
-			error.message = 'An unexpected error occurred. Please try again later'
+			error.message =
+				'An unexpected error occurred. Please try again later'
 
 		return { error, data: null }
 	}
