@@ -147,8 +147,13 @@ export default function CrowdsaleTrader({
 				account,
 				crowdsaleAddress
 			)
-			if (allowance.lt(buyAmountUnits))
-				await PairToken.approve(crowdsaleAddress, buyAmountUnits)
+			if (allowance.lt(buyAmountUnits)) {
+				const tx = (await PairToken.approve(
+					crowdsaleAddress,
+					buyAmountUnits
+				)) as ContractTransaction
+				await tx.wait()
+			}
 			const tx = (await Crowdsale.buy(
 				account,
 				buyAmountUnits
