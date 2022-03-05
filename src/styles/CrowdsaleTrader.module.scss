@@ -111,7 +111,10 @@
 	color: rgb(var(--primary));
 	font-weight: 400;
 	font-size: 1rem;
-	text-align: center;
+	display: flex;
+    justify-content: center;
+    align-items: center;
+	gap: 0.625rem;
     transition: background-color 0.16s;
 	cursor: pointer;
     &:hover:not(:disabled) {

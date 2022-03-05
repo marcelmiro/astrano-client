@@ -12,7 +12,7 @@ import {
 } from '@/constants'
 import { IProject } from '@/types'
 import { addThousandSeparator } from '@/utils/number'
-import { copyToClipboard } from '@/utils/element'
+// import { copyToClipboard } from '@/utils/element'
 import fetch from '@/utils/fetch'
 import { useAuth } from '@/context/Auth.context'
 // import useCountdown from '@/hooks/useCountdown'
@@ -26,7 +26,7 @@ import LoadingSpinner from '@/components/LoadingSpinner'
 
 import HeartVector from '@/public/heart-filled.svg'
 import FlagVector from '@/public/flag.svg'
-import CopyVector from '@/public/copy.svg'
+// import CopyVector from '@/public/copy.svg'
 import LinkVector from '@/public/link.svg'
 // import MetamaskVector from '@/public/metamask.svg'
 import styles from '@/styles/Project.module.scss'
@@ -48,7 +48,9 @@ interface ProjectProps extends IProject {
 
 const TOKEN_BLOCKCHAIN_EXPLORER_BASE_URL = 'https://testnet.bscscan.com/token/'
 
-const getDomainFromUrl = (url: string): string | undefined => {
+const ADDR_BLOCKCHAIN_EXPLORER_BASE_URL = 'https://testnet.bscscan.com/address/'
+
+/* const getDomainFromUrl = (url: string): string | undefined => {
 	if (!url || typeof url !== 'string') return
 	try {
 		const urlObject = new URL(url)
@@ -58,7 +60,7 @@ const getDomainFromUrl = (url: string): string | undefined => {
 	} catch (e) {
 		return
 	}
-}
+} */
 
 /* const Countdown = ({ status, date, placeholder }: CountdownProps) => {
 	const timeLeft = useCountdown(date)
@@ -91,6 +93,54 @@ const DescriptionNotFound = ({ className }: { className?: string }) => (
 		Project description not found
 	</p>
 )
+
+const SidebarContract = ({
+	label,
+	address,
+	explorerUrl,
+}: {
+	label: string
+	address: string
+	explorerUrl: string
+}) => {
+	const splitAddress = [
+		address.slice(0, address.length - contractAddressLastCharactersLength),
+		address.slice(
+			address.length - contractAddressLastCharactersLength,
+			address.length
+		),
+	]
+	return (
+		<div className={styles.sidebarDetail}>
+			<p className={styles.sidebarTitle}>{label}</p>
+			<div
+				className={classNames(
+					styles.sidebarText,
+					styles.contractAddress
+				)}
+			>
+				<span className={styles.contractAddressStart}>
+					{splitAddress[0]}
+				</span>
+				<span className={styles.contractAddressEnd}>
+					{splitAddress[1]}
+				</span>
+				<Link href={explorerUrl}>
+					<a
+						className={classNames(
+							styles.sidebarIconButton,
+							styles.linkIcon
+						)}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						<LinkVector />
+					</a>
+				</Link>
+			</div>
+		</div>
+	)
+}
 
 export default function Project({
 	errorCode,
@@ -136,9 +186,12 @@ export default function Project({
 
 	const {
 		tokenAddress,
+		vestingWalletAddress,
 		symbol: tokenSymbol,
 		totalSupply: tokenTotalSupply,
 	} = token
+
+	const { crowdsaleAddress } = crowdsale
 
 	// Process and format token price
 	let price: Big | undefined
@@ -156,7 +209,7 @@ export default function Project({
 
 	// Process and format market cap
 	let marketCap: string | undefined
-	if (status === 'live' && tokenTotalSupply && price) {
+	if (tokenTotalSupply && price) {
 		try {
 			const supply = Big(tokenTotalSupply)
 			marketCap = supply.mul(price).toFixed(0)
@@ -173,26 +226,15 @@ export default function Project({
 		if (blockTimestamp.gte(crowdsale.closingTime)) 1
 	} */
 
-	const splitContractAddress = [
-		tokenAddress.slice(
-			0,
-			tokenAddress.length - contractAddressLastCharactersLength
-		),
-		tokenAddress.slice(
-			tokenAddress.length - contractAddressLastCharactersLength,
-			tokenAddress.length
-		),
-	]
-
 	// const websiteDomain = getDomainFromUrl(website) || 'website'
 
-	const blockchainExplorerUrl =
-		TOKEN_BLOCKCHAIN_EXPLORER_BASE_URL + tokenAddress
+	const tokenExplorerUrl = TOKEN_BLOCKCHAIN_EXPLORER_BASE_URL + tokenAddress
 
-	const blockchainExplorerDomain =
-		getDomainFromUrl(blockchainExplorerUrl) || 'website'
+	const crowdsaleExplorerUrl =
+		ADDR_BLOCKCHAIN_EXPLORER_BASE_URL + crowdsaleAddress
 
-	const copyTokenAddress = () => copyToClipboard(tokenAddress)
+	const vestingWalletExplorerUrl =
+		ADDR_BLOCKCHAIN_EXPLORER_BASE_URL + vestingWalletAddress
 
 	// const addToMetamask = () => alert('Add token to MetaMask...')
 
@@ -403,56 +445,24 @@ export default function Project({
 
 				<div className={styles.overview}>
 					<div className={styles.overviewSidebar}>
-						<div className={styles.sidebarDetail}>
-							<p className={styles.sidebarTitle}>
-								Contract address
-							</p>
-							<div
-								className={classNames(
-									styles.sidebarText,
-									styles.contractAddress
-								)}
-							>
-								<span className={styles.contractAddressStart}>
-									{splitContractAddress[0]}
-								</span>
-								<span className={styles.contractAddressEnd}>
-									{splitContractAddress[1]}
-								</span>
-								<button
-									onClick={copyTokenAddress}
-									className={styles.sidebarIconButton}
-									title="Copy contract address"
-								>
-									<CopyVector />
-								</button>
-								{/* <button
-									onClick={addToMetamask}
-									className={classNames(
-										styles.sidebarIconButton,
-										styles.metamaskIcon
-									)}
-									title="Add token to MetaMask"
-								>
-									<MetamaskVector />
-								</button> */}
-							</div>
-						</div>
-						<div className={styles.sidebarDetail}>
-							<p className={styles.sidebarTitle}>
-								Blockchain explorer
-							</p>
-							<Link href={blockchainExplorerUrl}>
-								<a
-									className={styles.sidebarText}
-									target="_blank"
-									rel="noopener noreferrer"
-								>
-									<span>{blockchainExplorerDomain}</span>
-									<LinkVector />
-								</a>
-							</Link>
-						</div>
+						<SidebarContract
+							label="Token address"
+							address={tokenAddress}
+							explorerUrl={tokenExplorerUrl}
+						/>
+						{status === 'crowdsale' && (
+							<SidebarContract
+								label="Crowdsale address"
+								address={crowdsaleAddress}
+								explorerUrl={crowdsaleExplorerUrl}
+							/>
+						)}
+						<SidebarContract
+							label="Vesting wallet address"
+							address={vestingWalletAddress}
+							explorerUrl={vestingWalletExplorerUrl}
+						/>
+
 						{/* <div className={styles.sidebarDetail}>
 							<p className={styles.sidebarTitle}>Website</p>
 							<Link href={website}>

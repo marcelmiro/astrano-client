@@ -398,6 +398,9 @@ a.sidebarText:hover svg path {
 			fill: rgb(var(--primary));
 		}
 	}
+	&.linkIcon {
+		margin-top: -0.25rem;
+	}
 	&.metamaskIcon {
 		width: 1.25rem;
 		min-width: 1.25rem;
@@ -562,9 +565,13 @@ span.contractAddressEnd {
 	.symbol {
 		display: none;
 	}
+	.tagsContainer {
+		justify-content: center;
+	}
 	.overviewActions {
 		flex-flow: row wrap;
 		justify-content: flex-start;
+		align-items: center;
 	}
 	.investButton {
 		margin-left: 0;
