@@ -388,7 +388,7 @@ export default function BuyProject({
 						</div>
 					)}
 
-					{contributors && (
+					{!!contributors && (
 						<div className={styles.stat}>
 							<span
 								className={styles.statName}
