@@ -209,7 +209,7 @@ export default function Project({
 
 	// Process and format market cap
 	let marketCap: string | undefined
-	if (tokenTotalSupply && price) {
+	if (status === 'live' && tokenTotalSupply && price) {
 		try {
 			const supply = Big(tokenTotalSupply)
 			marketCap = supply.mul(price).toFixed(0)
