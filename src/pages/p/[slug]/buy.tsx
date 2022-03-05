@@ -9,7 +9,7 @@ import {
 } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
 import { Big } from 'big.js'
-import { ethers } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 
 import { IProject } from '@/types'
 import {
@@ -153,6 +153,7 @@ export default function BuyProject({
 	createdAt,
 }: BuyProjectProps) {
 	const [tokensSold, setTokensSold] = useState('')
+	const [contributors, setContributors] = useState(0)
 	const [isOpen, setIsOpen] = useState<boolean>()
 
 	const { provider: metamaskProvider, status } = useMetamask()
@@ -178,6 +179,36 @@ export default function BuyProject({
 		setIsOpen(isOpen)
 		setTokensSold(ethers.utils.formatEther(tokensSold))
 	}, [metamaskProvider, status, rpcProvider, crowdsale.crowdsaleAddress])
+
+	useEffect(() => {
+		if (!tokensSold) return
+		const provider =
+			metamaskProvider && status === MetamaskStatus.CONNECTED
+				? metamaskProvider
+				: rpcProvider
+		if (!provider) return
+		let isSubscribed = true
+
+		const Crowdsale = new ethers.Contract(
+			crowdsale.crowdsaleAddress,
+			crowdsaleAbi,
+			provider
+		)
+		Crowdsale.contributors().then((contributors: BigNumber) => {
+			if (!isSubscribed) return
+			setContributors(contributors.toNumber())
+		})
+
+		return () => {
+			isSubscribed = false
+		}
+	}, [
+		tokensSold,
+		metamaskProvider,
+		status,
+		rpcProvider,
+		crowdsale.crowdsaleAddress,
+	])
 
 	useEffect(() => {
 		updateTokensSold()
@@ -354,6 +385,20 @@ export default function BuyProject({
 								</span>
 							</div>
 							<ProgressBar progress={tokensSoldProgress} />
+						</div>
+					)}
+
+					{contributors && (
+						<div className={styles.stat}>
+							<span
+								className={styles.statName}
+								title="Contributors"
+							>
+								Contributors
+							</span>
+							<span className={styles.statValue}>
+								{contributors}
+							</span>
 						</div>
 					)}
 
