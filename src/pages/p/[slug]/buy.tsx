@@ -9,7 +9,8 @@ import {
 } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
 import { Big } from 'big.js'
-import { BigNumber, ethers } from 'ethers'
+import { ethers, BigNumber } from 'ethers'
+import { Web3Provider, JsonRpcProvider } from '@ethersproject/providers'
 
 import { IProject } from '@/types'
 import {
@@ -155,18 +156,13 @@ export default function BuyProject({
 	const [tokensSold, setTokensSold] = useState('')
 	const [contributors, setContributors] = useState(0)
 	const [isOpen, setIsOpen] = useState<boolean>()
+	const [provider, setProvider] = useState<Web3Provider | JsonRpcProvider>()
 
-	const { provider: metamaskProvider, status } = useMetamask()
+	const { provider: metamaskProvider, status: metamaskStatus } = useMetamask()
 	const { provider: rpcProvider } = useRpc()
 
 	const updateTokensSold = useCallback(async () => {
-		const provider =
-			metamaskProvider && status === MetamaskStatus.CONNECTED
-				? metamaskProvider
-				: rpcProvider
-
 		if (!provider) return
-
 		const Crowdsale = new ethers.Contract(
 			crowdsale.crowdsaleAddress,
 			crowdsaleAbi,
@@ -178,17 +174,19 @@ export default function BuyProject({
 		])
 		setIsOpen(isOpen)
 		setTokensSold(ethers.utils.formatEther(tokensSold))
-	}, [metamaskProvider, status, rpcProvider, crowdsale.crowdsaleAddress])
+	}, [provider, crowdsale.crowdsaleAddress])
 
 	useEffect(() => {
-		if (!tokensSold) return
-		const provider =
-			metamaskProvider && status === MetamaskStatus.CONNECTED
+		setProvider(
+			metamaskProvider && metamaskStatus === MetamaskStatus.CONNECTED
 				? metamaskProvider
 				: rpcProvider
-		if (!provider) return
-		let isSubscribed = true
+		)
+	}, [metamaskProvider, metamaskStatus, rpcProvider])
 
+	useEffect(() => {
+		if (!tokensSold || !provider) return
+		let isSubscribed = true
 		const Crowdsale = new ethers.Contract(
 			crowdsale.crowdsaleAddress,
 			crowdsaleAbi,
@@ -198,17 +196,10 @@ export default function BuyProject({
 			if (!isSubscribed) return
 			setContributors(contributors.toNumber())
 		})
-
 		return () => {
 			isSubscribed = false
 		}
-	}, [
-		tokensSold,
-		metamaskProvider,
-		status,
-		rpcProvider,
-		crowdsale.crowdsaleAddress,
-	])
+	}, [tokensSold, provider, crowdsale.crowdsaleAddress])
 
 	useEffect(() => {
 		updateTokensSold()

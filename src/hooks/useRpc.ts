@@ -8,7 +8,6 @@ export default function useRpc() {
 	const [provider, setProvider] = useState<JsonRpcProvider>()
 
 	useEffect(() => {
-		if (!window?.ethereum) return
 		try {
 			setProvider(new ethers.providers.JsonRpcProvider(RPC_URL))
 		} catch (e) {}
