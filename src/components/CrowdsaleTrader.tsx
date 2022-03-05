@@ -279,7 +279,7 @@ export default function CrowdsaleTrader({
 					<button
 						className={styles.button}
 						onClick={buy}
-						disabled={isOpen === false}
+						disabled={isBuying || isOpen === false}
 					>
 						{isBuying ? <BuyButtonContent /> : 'Buy'}
 					</button>
