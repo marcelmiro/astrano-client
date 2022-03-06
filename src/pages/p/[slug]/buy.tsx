@@ -678,6 +678,7 @@ export default function BuyProject({
 						token={token}
 						crowdsale={crowdsale}
 						isOpen={isOpen}
+						tokensSold={tokensSold}
 						updateTokensSold={updateCrowdsaleData}
 					/>
 					<p className={styles.traderDisclaimer}>

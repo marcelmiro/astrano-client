@@ -23,6 +23,7 @@ type CrowdsaleTraderProps = Pick<
 	'logoUri' | 'token' | 'crowdsale'
 > & {
 	isOpen?: boolean
+	tokensSold?: string
 	updateTokensSold(): void
 }
 
@@ -40,6 +41,7 @@ export default function CrowdsaleTrader({
 	token,
 	crowdsale,
 	isOpen,
+	tokensSold,
 	updateTokensSold,
 }: CrowdsaleTraderProps) {
 	const { track } = useMixpanel()
@@ -92,16 +94,18 @@ export default function CrowdsaleTrader({
 		let amount = 0
 		if (buyAmount) amount = Big(buyAmount).mul(rate).toNumber()
 
-		if (crowdsaleBalance) {
-			// Check if cap exceeded
-			const bigCap = !!cap && Big(cap)
+		// Check if cap exceeded
+		if (tokensSold && cap) {
+			const bigCap = Big(cap)
 			if (bigCap) {
-				const maxAmount = bigCap.sub(crowdsaleBalance)
+				const maxAmount = bigCap.sub(tokensSold)
 				if (maxAmount.lt(amount)) amount = maxAmount.toNumber()
 			}
+		}
 
-			// Check if individual cap exceeded
-			const bigIndividualCap = !!individualCap && Big(individualCap)
+		// Check if individual cap exceeded
+		if (crowdsaleBalance && individualCap) {
+			const bigIndividualCap = Big(individualCap)
 			if (bigIndividualCap && !bigIndividualCap.eq(0)) {
 				const maxAmount = bigIndividualCap.sub(crowdsaleBalance)
 				if (maxAmount.lt(amount)) amount = maxAmount.toNumber()
@@ -109,7 +113,7 @@ export default function CrowdsaleTrader({
 		}
 
 		setBuyTokenAmount(amount)
-	}, [buyAmount, rate, individualCap, crowdsaleBalance, cap])
+	}, [buyAmount, rate, individualCap, crowdsaleBalance, cap, tokensSold])
 
 	const onBuyAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value = e.target.value
