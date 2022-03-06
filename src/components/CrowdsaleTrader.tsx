@@ -91,15 +91,18 @@ export default function CrowdsaleTrader({
 	}, [updateBalances])
 
 	useEffect(() => {
-		let amount = 0
-		if (buyAmount) amount = Big(buyAmount).mul(rate).toNumber()
+		if (!buyAmount) return setBuyTokenAmount(0)
+		let amount = Big(buyAmount).mul(rate).toNumber()
 
 		// Check if cap exceeded
 		if (tokensSold && cap) {
 			const bigCap = Big(cap)
 			if (bigCap) {
 				const maxAmount = bigCap.sub(tokensSold)
-				if (maxAmount.lt(amount)) amount = maxAmount.toNumber()
+				if (maxAmount.lt(amount)) {
+					amount = maxAmount.toNumber()
+					setBuyAmount(Big(amount).div(rate).toString())
+				}
 			}
 		}
 
@@ -108,7 +111,10 @@ export default function CrowdsaleTrader({
 			const bigIndividualCap = Big(individualCap)
 			if (bigIndividualCap && !bigIndividualCap.eq(0)) {
 				const maxAmount = bigIndividualCap.sub(crowdsaleBalance)
-				if (maxAmount.lt(amount)) amount = maxAmount.toNumber()
+				if (maxAmount.lt(amount)) {
+					amount = maxAmount.toNumber()
+					setBuyAmount(Big(amount).div(rate).toString())
+				}
 			}
 		}
 
