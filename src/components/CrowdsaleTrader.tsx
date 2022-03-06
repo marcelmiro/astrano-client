@@ -93,9 +93,11 @@ export default function CrowdsaleTrader({
 		if (buyAmount) amount = Big(buyAmount).mul(rate).toNumber()
 
 		// Check if cap exceeded
-		const bigCap = Big(cap)
-		const maxAmount = bigCap.sub(crowdsaleBalance)
-		if (maxAmount.lt(amount)) amount = maxAmount.toNumber()
+		const bigCap = cap && Big(cap)
+		if (bigCap) {
+			const maxAmount = bigCap.sub(crowdsaleBalance)
+			if (maxAmount.lt(amount)) amount = maxAmount.toNumber()
+		}
 
 		// Check if individual cap exceeded
 		const bigIndividualCap = !!individualCap && Big(individualCap)
