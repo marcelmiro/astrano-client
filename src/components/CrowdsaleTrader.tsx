@@ -92,18 +92,20 @@ export default function CrowdsaleTrader({
 		let amount = 0
 		if (buyAmount) amount = Big(buyAmount).mul(rate).toNumber()
 
-		// Check if cap exceeded
-		const bigCap = cap && Big(cap)
-		if (bigCap) {
-			const maxAmount = bigCap.sub(crowdsaleBalance)
-			if (maxAmount.lt(amount)) amount = maxAmount.toNumber()
-		}
+		if (crowdsaleBalance) {
+			// Check if cap exceeded
+			const bigCap = !!cap && Big(cap)
+			if (bigCap) {
+				const maxAmount = bigCap.sub(crowdsaleBalance)
+				if (maxAmount.lt(amount)) amount = maxAmount.toNumber()
+			}
 
-		// Check if individual cap exceeded
-		const bigIndividualCap = !!individualCap && Big(individualCap)
-		if (bigIndividualCap && !bigIndividualCap.eq(0)) {
-			const maxAmount = bigIndividualCap.sub(crowdsaleBalance)
-			if (maxAmount.lt(amount)) amount = maxAmount.toNumber()
+			// Check if individual cap exceeded
+			const bigIndividualCap = !!individualCap && Big(individualCap)
+			if (bigIndividualCap && !bigIndividualCap.eq(0)) {
+				const maxAmount = bigIndividualCap.sub(crowdsaleBalance)
+				if (maxAmount.lt(amount)) amount = maxAmount.toNumber()
+			}
 		}
 
 		setBuyTokenAmount(amount)
