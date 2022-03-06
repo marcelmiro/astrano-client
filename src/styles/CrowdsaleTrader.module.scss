@@ -26,13 +26,13 @@
 	b {
 		font-weight: 500;
 	}
-    a {
-        color: rgb(var(--purple-accent));
-        transition: color 0.16s;
-        &:hover {
-            color: rgb(var(--purple-accent-500));
-        }
-    }
+	a {
+		color: rgb(var(--purple-accent));
+		transition: color 0.16s;
+		&:hover {
+			color: rgb(var(--purple-accent-500));
+		}
+	}
 }
 
 .content {
@@ -112,14 +112,14 @@
 	font-weight: 400;
 	font-size: 1rem;
 	display: flex;
-    justify-content: center;
-    align-items: center;
+	justify-content: center;
+	align-items: center;
 	gap: 0.625rem;
-    transition: background-color 0.16s;
+	transition: background-color 0.16s;
 	cursor: pointer;
-    &:hover:not(:disabled) {
-        background-color: rgb(var(--purple-accent-500));
-    }
+	&:hover:not(:disabled) {
+		background-color: rgb(var(--purple-accent-500));
+	}
 	&:disabled {
 		cursor: not-allowed;
 	}
@@ -138,4 +138,61 @@
 	font-size: 0.875rem;
 	margin-top: 1.5rem;
 	margin-bottom: -0.75rem;
+}
+
+.buyModalContainer {
+	padding: 1.75rem 2.75rem;
+	border-radius: 1rem;
+	overflow: hidden;
+	max-width: 30rem;
+}
+
+.buyModalContent {
+	text-align: center;
+	display: flex;
+	flex-flow: column nowrap;
+	align-items: center;
+
+	.text {
+		@include text;
+		a {
+			color: rgb(var(--purple-accent));
+		}
+	}
+	.primaryButton {
+		@include primaryButton;
+		margin-top: 1.75rem;
+	}
+}
+
+.buyModalIcon {
+	$size: 2.625rem;
+	$svgSize: 1.25rem;
+	width: $size;
+	height: $size;
+	border-radius: 50%;
+	margin-bottom: $size;
+	background-color: #75e49f;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	svg {
+		width: $svgSize;
+		height: $svgSize;
+		path {
+			fill: rgb(var(--background));
+		}
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.buyModalContainer {
+		padding: 1.75rem 2rem;
+	}
+}
+
+@media screen and (max-width: 460px) {
+	.buyModalContainer {
+		padding: 1.75rem 1.5rem;
+	}
 }

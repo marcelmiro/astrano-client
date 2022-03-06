@@ -16,6 +16,7 @@ export const addThousandSeparator = (
 }
 
 export const isNumber = (number: unknown): boolean => {
+	if (number === 0) return true
 	if (!number) return false
 	if (typeof number === 'string') number = parseInt(number)
 	if (typeof number !== 'number') return false
