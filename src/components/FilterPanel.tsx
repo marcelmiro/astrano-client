@@ -347,6 +347,13 @@ FilterPanelProps) {
 
 			<div className={styles.footer}>
 				<a
+					href="https://docs.astrano.io/"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					Docs
+				</a>
+				<a
 					href="https://astrano.io/#about"
 					target="_blank"
 					rel="noopener noreferrer"
