@@ -53,7 +53,8 @@ export default function CrowdsaleTrader({
 
 	const { name, symbol } = token
 
-	const { rate, minPurchaseAmount, crowdsaleAddress } = crowdsale
+	const { rate, cap, individualCap, minPurchaseAmount, crowdsaleAddress } =
+		crowdsale
 
 	const { getProvider, status, account, connectMetamask, changeNetwork } =
 		useMetamask()
@@ -90,8 +91,21 @@ export default function CrowdsaleTrader({
 	useEffect(() => {
 		let amount = 0
 		if (buyAmount) amount = Big(buyAmount).mul(rate).toNumber()
+
+		// Check if cap exceeded
+		const bigCap = Big(cap)
+		const maxAmount = bigCap.sub(crowdsaleBalance)
+		if (maxAmount.lt(amount)) amount = maxAmount.toNumber()
+
+		// Check if individual cap exceeded
+		const bigIndividualCap = !!individualCap && Big(individualCap)
+		if (bigIndividualCap && !bigIndividualCap.eq(0)) {
+			const maxAmount = bigIndividualCap.sub(crowdsaleBalance)
+			if (maxAmount.lt(amount)) amount = maxAmount.toNumber()
+		}
+
 		setBuyTokenAmount(amount)
-	}, [buyAmount, rate])
+	}, [buyAmount, rate, individualCap, crowdsaleBalance, cap])
 
 	const onBuyAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		let value = e.target.value
