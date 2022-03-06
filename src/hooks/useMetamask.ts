@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { ethers } from 'ethers'
 import { Web3Provider } from '@ethersproject/providers'
 
@@ -25,12 +25,27 @@ export enum MetamaskStatus {
 
 const useMetamask = () => {
 	const [status, setStatus] = useState<MetamaskStatus>()
-	const [provider, setProvider] = useState<Web3Provider>()
+	const [provider, _setProvider] = useState<Web3Provider>()
 	const [account, setAccount] = useState('')
 	const [chainId, setChainId] = useState('')
 
+	const setProvider = () => {
+		const provider = new ethers.providers.Web3Provider(
+			window.ethereum,
+			'any'
+		)
+		_setProvider(provider)
+		return provider
+	}
+
+	const getProvider = useCallback(() => {
+		if (provider) return provider
+		if (window?.ethereum) return setProvider()
+	}, [provider])
+
 	const connectMetamask = async () => {
-		if (!provider) throw new Error('Web3Provider not found')
+		const provider = getProvider()
+		if (!provider) return alert('Metamask extension not found')
 		try {
 			const accounts = await provider.send('eth_requestAccounts', [])
 			setAccount(accounts[0])
@@ -47,16 +62,17 @@ const useMetamask = () => {
 	}
 
 	const changeNetwork = async (chain: Chain) => {
-		if (!provider) throw new Error('Web3Provider not found')
+		const provider = getProvider()
+		if (!provider) return alert('Metamask extension not found')
 		try {
 			const params = [{ chainId: chain.chainId }]
 			await provider.send('wallet_switchEthereumChain', params)
-		} catch (e) {
+		} catch (_e) {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			if ((e as any).code === 4902) {
+			const e = _e as any
+			if (e.code === 4902) {
 				await provider.send('wallet_addEthereumChain', [chain])
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			} else if ((e as any).code === -32002) {
+			} else if (e.code === -32002) {
 				alert(
 					'Please open your Metamask extension to complete the transaction.'
 				)
@@ -67,6 +83,7 @@ const useMetamask = () => {
 	}
 
 	useEffect(() => {
+		const provider = getProvider()
 		if (!provider) return
 		let isSubscribed = true
 
@@ -90,7 +107,7 @@ const useMetamask = () => {
 		return () => {
 			isSubscribed = false
 		}
-	}, [provider])
+	}, [getProvider])
 
 	useEffect(() => {
 		if (!chainId) setStatus(MetamaskStatus.NOT_INSTALLED)
@@ -102,16 +119,12 @@ const useMetamask = () => {
 
 	useEffect(() => {
 		if (!window?.ethereum) return
-		try {
-			setProvider(
-				new ethers.providers.Web3Provider(window.ethereum, 'any')
-			)
-		} catch (e) {}
+		setProvider()
 	}, [])
 
 	return {
+		getProvider,
 		status,
-		provider,
 		account,
 		chainId,
 		connectMetamask,

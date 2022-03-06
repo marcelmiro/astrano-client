@@ -410,14 +410,14 @@ export const project = {
 	},
 	tags: {
 		min: 1,
-		max: 10,
+		max: 5,
 		customMaxLength: 16,
 		schema: {
 			validate: {
 				min: (value: string[]) =>
 					value.length > 0 || 'Please provide at least 1 project tag',
 				max: (value: string[]) =>
-					value.length <= 10 || 'A project can at most have 10 tags',
+					value.length <= 5 || 'A project can at most have 5 tags',
 			},
 		},
 	},

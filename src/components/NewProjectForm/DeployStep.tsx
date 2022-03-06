@@ -44,14 +44,28 @@ export default function DeployStep({
 	const [isDeploying, setIsDeploying] = useState(false)
 	const [isDeleting, setIsDeleting] = useState(false)
 
-	const { status, provider, connectMetamask, changeNetwork } = useMetamask()
+	const { getProvider, status, connectMetamask, changeNetwork } =
+		useMetamask()
 
 	const deployProject = async () => {
 		track('DeployProject')
 		if (isDeploying) return
-		if (!provider) return alert('Metamask extension not found')
 		setIsDeploying(true)
-		// TODO: Validate crowdsaleOpeningTime and crowdsaleClosingTime before deploying
+
+		const provider = getProvider()
+		if (!provider) return alert('Metamask extension not found')
+		if (status !== MetamaskStatus.CONNECTED)
+			return alert('Metamask not connected')
+
+		const openingTime = new Date(project.crowdsale.openingTime)
+		if (openingTime.getTime() && new Date() >= openingTime) {
+			alert(
+				'Crowdsale opening time has passed. You are required to create a new project. Sorry for the inconvenience.'
+			)
+			setIsDeploying(false)
+			deleteProject()
+			return
+		}
 
 		const dayInSeconds = 60 * 60 * 24
 
@@ -91,30 +105,25 @@ export default function DeployStep({
 
 			const signer = provider.getSigner()
 			const ProjectFactory = new ethers.Contract(address, abi, signer)
-
 			const creationFee = await ProjectFactory.creationFee()
 			const tx = (await ProjectFactory.createProject(input, {
 				value: creationFee,
 			})) as ContractTransaction
-
 			setTx(tx.hash)
-			deploySuccessful()
 
 			const receipt = await tx.wait()
-
 			const event = receipt.events?.find(
 				(ev) => ev.event === 'ProjectCreated'
 			)
-
 			const [, tokenAddress, crowdsaleAddress, vestingWalletAddress] =
 				event?.args || []
-
 			const data = {
 				tokenAddress,
 				crowdsaleAddress,
 				vestingWalletAddress,
 			}
 			await fetch('/projects/deploy', { method: 'POST', data })
+			deploySuccessful()
 		} catch (e) {
 			throw e
 		} finally {
@@ -185,7 +194,11 @@ export default function DeployStep({
 			)}
 
 			{status === MetamaskStatus.CONNECTED && (
-				<button className={styles.deployButton} onClick={deployProject}>
+				<button
+					className={styles.deployButton}
+					onClick={deployProject}
+					disabled={isDeploying}
+				>
 					{isDeploying ? (
 						<DeployButtonContent />
 					) : (
@@ -197,6 +210,7 @@ export default function DeployStep({
 			<button
 				className={styles.deployButtonSecondary}
 				onClick={deleteProject}
+				disabled={isDeleting}
 			>
 				{isDeleting ? <DeleteButtonContent /> : 'Cancel project'}
 			</button>

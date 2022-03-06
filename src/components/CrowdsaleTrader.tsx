@@ -50,10 +50,11 @@ export default function CrowdsaleTrader({
 
 	const { rate, minPurchaseAmount, crowdsaleAddress } = crowdsale
 
-	const { status, provider, account, connectMetamask, changeNetwork } =
+	const { getProvider, status, account, connectMetamask, changeNetwork } =
 		useMetamask()
 
 	const updateBalances = useCallback(async () => {
+		const provider = getProvider()
 		if (!provider || status !== MetamaskStatus.CONNECTED) return
 
 		const signer = provider.getSigner()
@@ -75,7 +76,7 @@ export default function CrowdsaleTrader({
 
 		setPairTokenBalance(ethers.utils.formatEther(tokenBalance))
 		setCrowdsaleBalance(ethers.utils.formatEther(crowdsaleBalance))
-	}, [provider, status, account, crowdsaleAddress])
+	}, [getProvider, status, account, crowdsaleAddress])
 
 	useEffect(() => {
 		updateBalances()
@@ -95,6 +96,7 @@ export default function CrowdsaleTrader({
 	}
 
 	const setBuyAmountToBalance = () => {
+		const provider = getProvider()
 		if (!provider) return alert('Metamask extension not found')
 		if (status !== MetamaskStatus.CONNECTED)
 			return alert('Metamask not connected')
@@ -106,6 +108,7 @@ export default function CrowdsaleTrader({
 		if (isBuying) return
 		if (!user) return setShowAuthModal(true)
 		if (!buyAmount) return alert('Select an amount of to buy')
+		const provider = getProvider()
 		if (!provider) return alert('Metamask extension not found')
 		if (status !== MetamaskStatus.CONNECTED)
 			return alert('Metamask not connected')

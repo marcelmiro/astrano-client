@@ -22,7 +22,7 @@ import {
 import Error from '@/pages/_error'
 import fetch from '@/utils/fetch'
 import useCountdown from '@/hooks/useCountdown'
-import { addThousandSeparator } from '@/utils/number'
+import { addThousandSeparator, isNumber } from '@/utils/number'
 import useMetamask, { MetamaskStatus } from '@/hooks/useMetamask'
 import useRpc from '@/hooks/useRpc'
 import { abi as crowdsaleAbi } from '@/contracts/Crowdsale'
@@ -154,14 +154,15 @@ export default function BuyProject({
 	createdAt,
 }: BuyProjectProps) {
 	const [tokensSold, setTokensSold] = useState('')
-	const [contributors, setContributors] = useState(0)
+	const [contributors, setContributors] = useState<number>()
 	const [isOpen, setIsOpen] = useState<boolean>()
 	const [provider, setProvider] = useState<Web3Provider | JsonRpcProvider>()
 
-	const { provider: metamaskProvider, status: metamaskStatus } = useMetamask()
+	const { getProvider: getMetamaskProvider, status: metamaskStatus } =
+		useMetamask()
 	const { provider: rpcProvider } = useRpc()
 
-	const updateTokensSold = useCallback(async () => {
+	const updateCrowdsaleData = useCallback(async () => {
 		if (!provider) return
 		const Crowdsale = new ethers.Contract(
 			crowdsale.crowdsaleAddress,
@@ -174,15 +175,17 @@ export default function BuyProject({
 		])
 		setIsOpen(isOpen)
 		setTokensSold(ethers.utils.formatEther(tokensSold))
+		if ((tokensSold as BigNumber).eq(0)) setContributors(0)
 	}, [provider, crowdsale.crowdsaleAddress])
 
 	useEffect(() => {
+		const metamaskProvider = getMetamaskProvider()
 		setProvider(
 			metamaskProvider && metamaskStatus === MetamaskStatus.CONNECTED
 				? metamaskProvider
 				: rpcProvider
 		)
-	}, [metamaskProvider, metamaskStatus, rpcProvider])
+	}, [getMetamaskProvider, rpcProvider, metamaskStatus])
 
 	useEffect(() => {
 		if (!tokensSold || !provider) return
@@ -202,8 +205,8 @@ export default function BuyProject({
 	}, [tokensSold, provider, crowdsale.crowdsaleAddress])
 
 	useEffect(() => {
-		updateTokensSold()
-	}, [updateTokensSold])
+		updateCrowdsaleData()
+	}, [updateCrowdsaleData])
 
 	if (errorCode)
 		return (
@@ -358,39 +361,47 @@ export default function BuyProject({
 					)}
 
 					{isOpen && (
-						<div>
+						<>
+							<>
+								<div className={styles.stat}>
+									<span
+										className={styles.statName}
+										title="Tokens sold"
+									>
+										Tokens sold
+									</span>
+									<span className={styles.statValue}>
+										{tokensSold || (
+											<Skeleton
+												className={
+													styles.skeletonStatValue
+												}
+											/>
+										)}{' '}
+										/ {addThousandSeparator(cap)}{' '}
+										{tokenSymbol}
+									</span>
+								</div>
+								<ProgressBar progress={tokensSoldProgress} />
+							</>
 							<div className={styles.stat}>
 								<span
 									className={styles.statName}
-									title="Tokens sold"
+									title="Contributors"
 								>
-									Tokens sold
+									Contributors
 								</span>
 								<span className={styles.statValue}>
-									{tokensSold || (
+									{isNumber(contributors) ? (
+										contributors
+									) : (
 										<Skeleton
 											className={styles.skeletonStatValue}
 										/>
-									)}{' '}
-									/ {addThousandSeparator(cap)} {tokenSymbol}
+									)}
 								</span>
 							</div>
-							<ProgressBar progress={tokensSoldProgress} />
-						</div>
-					)}
-
-					{!!contributors && (
-						<div className={styles.stat}>
-							<span
-								className={styles.statName}
-								title="Contributors"
-							>
-								Contributors
-							</span>
-							<span className={styles.statValue}>
-								{contributors}
-							</span>
-						</div>
+						</>
 					)}
 
 					<div className={styles.stat}>
@@ -667,7 +678,7 @@ export default function BuyProject({
 						token={token}
 						crowdsale={crowdsale}
 						isOpen={isOpen}
-						updateTokensSold={updateTokensSold}
+						updateTokensSold={updateCrowdsaleData}
 					/>
 					<p className={styles.traderDisclaimer}>
 						<b>DISCLAIMER</b> Astrano recommends its users to
