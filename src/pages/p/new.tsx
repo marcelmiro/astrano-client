@@ -314,7 +314,7 @@ export default function New({
 					Fund your project by creating your own cryptocurrency token.
 					For more information visit our documentation site by
 					clicking
-					<Link href="https://docs.astrano.io/">
+					<Link href="https://docs.astrano.io/tokens/how-to-create-your-token-and-crowdsale">
 						<a target="_blank" rel="noopener noreferrer">
 							here
 						</a>

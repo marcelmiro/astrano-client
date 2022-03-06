@@ -360,7 +360,7 @@ export default function BuyProject({
 						</div>
 					)}
 
-					{isOpen && (
+					{timeAfterOpen && (
 						<>
 							<>
 								<div className={styles.stat}>

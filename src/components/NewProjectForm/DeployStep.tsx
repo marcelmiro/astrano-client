@@ -152,7 +152,7 @@ export default function DeployStep({
 				project creation and gas fees. Currently, Astrano&apos;s project
 				creation fee is 0.01 BNB. For more information on how to deploy,
 				please visit our{' '}
-				<Link href="https://docs.astrano.io/">
+				<Link href="https://docs.astrano.io/tokens/how-to-create-your-token-and-crowdsale">
 					<a target="_blank" rel="noopener noreferrer">
 						docs
 					</a>
@@ -164,7 +164,7 @@ export default function DeployStep({
 				<p className={styles.text}>
 					Metamask extension not found. You can find more information
 					about Metamask and how to install it by visiting our{' '}
-					<Link href="https://docs.astrano.io/">
+					<Link href="https://docs.astrano.io/wallets/create-your-metamask-wallet">
 						<a target="_blank" rel="noopener noreferrer">
 							docs
 						</a>

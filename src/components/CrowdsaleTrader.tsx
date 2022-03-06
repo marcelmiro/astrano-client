@@ -180,7 +180,7 @@ export default function CrowdsaleTrader({
 				<p className={styles.description}>
 					Learn how to buy <b>{symbol}</b> by clicking{' '}
 					<a
-						href="https://docs.astrano.io/"
+						href="https://docs.astrano.io/tokens/how-to-purchase-crowdsale-tokens"
 						target="_blank"
 						rel="noopener noreferrer"
 					>
