@@ -51,7 +51,10 @@ export default function CrowdsaleTrader({
 	const [pairTokenBalance, setPairTokenBalance] = useState('')
 	const [crowdsaleBalance, setCrowdsaleBalance] = useState('')
 	const [isBuying, setIsBuying] = useState(false)
-	const [buyTx, setBuyTx] = useState('')
+	const [buyData, setBuyData] = useState<{
+		amount: string
+		hash: string
+	} | null>()
 
 	const { name, symbol } = token
 
@@ -196,7 +199,7 @@ export default function CrowdsaleTrader({
 				buyAmountUnits
 			)) as ContractTransaction
 			await tx.wait()
-			setBuyTx(tx.hash)
+			setBuyData({ amount: buyAmount, hash: tx.hash })
 			updateBalances()
 			updateTokensSold()
 		} catch (e) {
@@ -209,14 +212,14 @@ export default function CrowdsaleTrader({
 	}
 
 	const closeBuyModal = () => {
-		setBuyTx('')
+		setBuyData(null)
 		setBuyTokenAmount(0)
 	}
 
 	return (
 		<>
 			<Modal
-				show={Boolean(buyTx)}
+				show={Boolean(buyData)}
 				onClose={closeBuyModal}
 				className={styles.buyModalContainer}
 			>
@@ -225,9 +228,9 @@ export default function CrowdsaleTrader({
 						<CheckVector />
 					</div>
 					<p className={styles.text}>
-						You have successfully bought {buyTokenAmount} {symbol}!
+						You have successfully bought {buyData?.amount} {symbol}!
 						You can view your transaction{' '}
-						<Link href={TX_EXPLORER_BASE_URL + buyTx}>
+						<Link href={TX_EXPLORER_BASE_URL + buyData?.hash}>
 							<a target="_blank" rel="noopener noreferrer">
 								here
 							</a>
