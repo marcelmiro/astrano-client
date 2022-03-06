@@ -362,7 +362,7 @@ export default function BuyProject({
 
 					{timeAfterOpen && (
 						<>
-							<>
+							<div>
 								<div className={styles.stat}>
 									<span
 										className={styles.statName}
@@ -383,7 +383,7 @@ export default function BuyProject({
 									</span>
 								</div>
 								<ProgressBar progress={tokensSoldProgress} />
-							</>
+							</div>
 							<div className={styles.stat}>
 								<span
 									className={styles.statName}
